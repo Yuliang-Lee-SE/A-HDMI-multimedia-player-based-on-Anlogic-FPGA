@@ -1,0 +1,62 @@
+# ==========================================================
+# FPGA / 安路 Tang Dynasty (TD) 项目 .gitignore
+# 原则：忽略可再生的构建与仿真输出，保留设计源文件
+# ==========================================================
+
+# ---------- TD 构建产物 ----------
+*.bit
+*.rbf
+*.jed
+*.svf
+*.rpt
+*.log
+*.logfile
+
+# TD 工程缓存、布局布线中间目录与备份
+# 不同 TD 版本目录名可能不同，首次构建后可用 git status 继续补充
+*.cache/
+*_backup/
+*_synth/
+*_impl/
+*_pnr/
+*_timing/
+*_place_route/
+work/
+*.bak
+
+# ---------- 仿真输出 ----------
+*.vcd
+*.wlf
+*.fsdb
+*.vpd
+*.shm/
+xsim.dir/
+simv
+simv.daidir/
+csrc/
+*.jou
+*.pbw
+transcript
+ucli.key
+
+# ---------- 编辑器与个人配置 ----------
+.vscode/
+.idea/
+.metadata/
+*.swp
+*~
+*.user
+
+# ---------- 操作系统临时文件 ----------
+Thumbs.db
+desktop.ini
+.DS_Store
+
+# ---------- 生成的大体积资源目录（按需启用）----------
+# 如果展品图片/音频由脚本从 assets_src 生成，可只提交源文件和脚本：
+# assets/generated/
+# res_generated/
+#
+# 如确需提交 BMP/WAV，建议使用 Git LFS，而不是直接塞进普通 Git：
+# git lfs track "*.bmp"
+# git lfs track "*.wav"
