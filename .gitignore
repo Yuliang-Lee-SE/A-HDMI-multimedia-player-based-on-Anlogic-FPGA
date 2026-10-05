@@ -60,3 +60,14 @@ desktop.ini
 # 如确需提交 BMP/WAV，建议使用 Git LFS，而不是直接塞进普通 Git：
 # git lfs track "*.bmp"
 # git lfs track "*.wav"
+
+# ---------- lab_ex5 例程构建产物 ----------
+lab_ex5_i2s/src/td_project/log/
+lab_ex5_i2s/src/td_project/*_Runs/
+*.qdb
+*.qpg
+*.qtl
+*.vstf
+*.dmp
+.lock.f
+.recent_user_depot.ini
