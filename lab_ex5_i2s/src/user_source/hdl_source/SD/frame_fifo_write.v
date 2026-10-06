@@ -38,7 +38,7 @@ module frame_fifo_write
 	input[1:0]                       write_addr_index,           // select valid base address from write_addr_0 write_addr_1 write_addr_2 write_addr_3
 	input[ADDR_BITS - 1:0]           write_len,                  // data write module write request data length
 	output reg                       fifo_aclr,                  // to fifo asynchronous clear
-	input[9:0]                      rdusedw                     // from fifo read used words
+	input[BURST_BITS - 1:0]         rdusedw                     // from fifo read used words
 );
 localparam ONE                       = 256'd1;                   //256 bit '1'   you can use ONE[n-1:0] for n bit '1'
 localparam ZERO                      = 256'd0;                   //256 bit '0'

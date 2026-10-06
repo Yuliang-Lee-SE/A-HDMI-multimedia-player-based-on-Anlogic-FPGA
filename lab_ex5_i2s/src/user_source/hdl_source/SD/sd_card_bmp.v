@@ -13,6 +13,8 @@ module sd_card_bmp #(
     input  [15:0]               bmp_width,
     input  [15:0]               bmp_height,
     output reg                  display_valid,
+    output                      osd_auto_mode,
+    output [1:0]                osd_item_index,
 
     input                       write_finish_toggle,
     output reg [1:0]            write_buf_idx,
@@ -75,6 +77,8 @@ wire [1:0] next_from_current;
 
 assign write_en   = bmp_data_wr_en;
 assign write_data = {bmp_data[23:16], bmp_data[15:8], bmp_data[7:0], 8'b0};
+assign osd_auto_mode  = auto_play_en;
+assign osd_item_index = img_idx;
 assign auto_tick  = (auto_cnt == (CLK_FREQ_HZ - 1));
 assign next_from_current = next_index_limited(img_idx, img_found_count);
 assign write_finish_pulse = wrfin_tgl_sync[2] ^ wrfin_tgl_sync[1];
