@@ -48,6 +48,16 @@ wire de;
 
 wire [23:0] vout_data_raw;
 wire [23:0] vout_data;
+wire [23:0] osd_rgb;
+wire        osd_hs;
+wire        osd_vs;
+wire        osd_de;
+wire        osd_auto_mode_sd;
+wire [1:0]  osd_item_index_sd;
+reg         osd_auto_sync0;
+reg         osd_auto_sync1;
+reg  [1:0]  osd_item_sync0;
+reg  [1:0]  osd_item_sync1;
 wire        display_valid;
 
 wire [3:0]  state_code;
@@ -162,6 +172,8 @@ sd_card_bmp #(
     .bmp_width         (16'd640),
     .bmp_height        (16'd480),
     .display_valid     (display_valid),
+    .osd_auto_mode     (osd_auto_mode_sd),
+    .osd_item_index    (osd_item_index_sd),
 
     .write_finish_toggle(frame_write_toggle_mem),
     .write_buf_idx     (write_buf_idx),
@@ -222,6 +234,38 @@ video_delay video_delay_m0(
 
 // 首图提交前黑屏；提交后一直显示当前显示缓冲区内容
 assign vout_data = display_valid ? vout_data_raw : 24'd0;
+
+// Status changes slowly in the 100 MHz SD domain; synchronize them before
+// using them in the 25 MHz video-pixel domain.
+always @(posedge video_clk or posedge rst_all) begin
+    if (rst_all) begin
+        osd_auto_sync0 <= 1'b0;
+        osd_auto_sync1 <= 1'b0;
+        osd_item_sync0 <= 2'd0;
+        osd_item_sync1 <= 2'd0;
+    end else begin
+        osd_auto_sync0 <= osd_auto_mode_sd;
+        osd_auto_sync1 <= osd_auto_sync0;
+        osd_item_sync0 <= osd_item_index_sd;
+        osd_item_sync1 <= osd_item_sync0;
+    end
+end
+
+osd_overlay u_osd_overlay (
+    .clk        (video_clk),
+    .rst        (rst_all),
+    .enable     (display_valid),
+    .auto_mode  (osd_auto_sync1),
+    .item_index (osd_item_sync1),
+    .hs_in      (hs),
+    .vs_in      (vs),
+    .de_in      (de),
+    .rgb_in     (vout_data),
+    .hs_out     (osd_hs),
+    .vs_out     (osd_vs),
+    .de_out     (osd_de),
+    .rgb_out    (osd_rgb)
+);
 
 frame_read_write #(
     .WRITE_V_FLIP     (1),
@@ -326,9 +370,9 @@ audio_arc_calculate #(
 video_rgb_to_axis_640x480 u_video_rgb_to_axis_640x480(
     .I_clk         (video_clk),
     .I_rst         (rst_all),
-    .I_vs          (vs),
-    .I_de          (de),
-    .I_rgb         (vout_data),
+    .I_vs          (osd_vs),
+    .I_de          (osd_de),
+    .I_rgb         (osd_rgb),
     .O_video_user  (axis_s_user),
     .O_video_valid (axis_s_valid),
     .O_video_last  (axis_s_last),

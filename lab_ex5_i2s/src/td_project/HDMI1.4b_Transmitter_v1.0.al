@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<Project Version="3" Minor="2" Path="D:/FPGA/lab_ex5_i2s/src/td_project">
+<Project Version="3" Minor="2" Path="D:/FPGA/A-HDMI-multimedia-player-based-on-Anlogic-FPGA/lab_ex5_i2s/src/td_project">
     <Project_Created_Time></Project_Created_Time>
     <TD_Version>6.2.168116</TD_Version>
     <Name>HDMI1.4b_Transmitter_v1.0</Name>
@@ -296,6 +296,14 @@
                     <Attr Name="UsedInP&R" Val="true"/>
                     <Attr Name="BelongTo" Val="design_1"/>
                     <Attr Name="CompileOrder" Val="43"/>
+                </FileInfo>
+            </File>
+            <File Path="../user_source/hdl_source/osd_overlay.v">
+                <FileInfo>
+                    <Attr Name="UsedInSyn" Val="true"/>
+                    <Attr Name="UsedInP&R" Val="true"/>
+                    <Attr Name="BelongTo" Val="design_1"/>
+                    <Attr Name="CompileOrder" Val="44"/>
                 </FileInfo>
             </File>
         </Verilog>

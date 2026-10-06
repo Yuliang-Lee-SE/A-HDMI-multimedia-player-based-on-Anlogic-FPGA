@@ -71,3 +71,6 @@ lab_ex5_i2s/src/td_project/*_Runs/
 *.dmp
 .lock.f
 .recent_user_depot.ini
+
+# TD 本机设备配置
+lab_ex5_i2s/src/td_project/HDMI1.4b_Transmitter_v1.0_devicesetting.cfg
