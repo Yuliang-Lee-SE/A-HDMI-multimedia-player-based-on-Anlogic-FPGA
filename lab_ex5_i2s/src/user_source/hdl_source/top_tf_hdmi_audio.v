@@ -92,7 +92,6 @@ wire vs_0;
 wire de_0;
 
 // HDMI 1.4b 音频发射相关
-wire        audio_pll_lock;
 wire        audio_mclk;
 wire        audio_i2s_bclk;
 wire        audio_i2s_lrck;
@@ -120,8 +119,11 @@ wire [9:0]  tmds_ch2_data;
 wire [9:0]  tmds_clk_data;
 
 // 统一复位：TF 图像链路 + HDMI 音频链路
+wire    audio_pll_lock;
+wire    sys_pll_lock;
+wire    video_pll_lock;        
 wire rst_all;
-assign rst_all = ~rst_n | ~audio_pll_lock;
+assign rst_all = ~rst_n | ~audio_pll_lock | ~video_pll_lock | ~sys_pll_lock;
 
 // 保持你原来的 TF / SDRAM / video 时钟
 wire ext_mem_clk_sft_raw;
@@ -132,7 +134,8 @@ sys_pll sys_pll_m0(
     .clk0_out   (sd_card_clk),
     .clk1_out   (ext_mem_clk_raw),
     .clk2_out   (ext_mem_clk_sft_raw),
-    .reset      (1'b0)
+    .reset      (1'b0),
+    .extlock    (sys_pll_lock)
 );
 
 EG_LOGIC_BUFG bufg_mem_sft (
@@ -149,7 +152,8 @@ video_pll video_pll_m0(
     .refclk     (clk),
     .clk0_out   (video_clk),
     .clk1_out   (hdmi_5x_clk),
-    .reset      (1'b0)
+    .reset      (1'b0),
+    .extlock    (video_pll_lock)
 );
 
 // 复用你 I2S->HDMI 工程里的 PLL，只取 12.288MHz 音频主时钟

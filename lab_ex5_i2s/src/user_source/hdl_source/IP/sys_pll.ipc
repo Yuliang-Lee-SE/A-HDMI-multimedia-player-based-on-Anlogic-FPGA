@@ -10,6 +10,7 @@
         <enable_reset>ENABLE</enable_reset>
         <feedback_mode>Normal</feedback_mode>
         <input_frequency>50.0000000000000000MHz</input_frequency>
+        <pll_lock>ENABLE</pll_lock>
         <speed_grade>Any</speed_grade>
     </Page1>
     <Page2>

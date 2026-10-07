@@ -30,6 +30,7 @@ ENTITY sys_pll IS
   PORT (
     refclk : IN STD_LOGIC;
     reset : IN STD_LOGIC;
+    extlock : OUT STD_LOGIC;
     clk0_out : OUT STD_LOGIC;
     clk1_out : OUT STD_LOGIC;
     clk2_out : OUT STD_LOGIC 
@@ -81,6 +82,7 @@ BEGIN
     refclk => refclk,
     reset => reset,
     stdby => '0',
+    extlock => extlock,
     load_reg => '0',
     psclk => '0',
     psdown => '0',
