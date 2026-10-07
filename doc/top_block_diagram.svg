@@ -75,6 +75,16 @@
 <polygon points="0,0 -11,-5 -11,5" fill="#2563eb" transform="translate(1390,350) rotate(180)"/>
 <path d="M 800 165 L 800 290 L 1470 290 L 1470 800 L 1520 800" fill="none" stroke="#2563eb" stroke-width="2" stroke-dasharray="7 5" stroke-linejoin="round"/>
 <polygon points="0,0 -11,-5 -11,5" fill="#2563eb" transform="translate(1520,800) rotate(0)"/>
+<path d="M 450 165 L 450 180" fill="none" stroke="#dc2626" stroke-width="2" stroke-dasharray="7 5" stroke-linejoin="round"/>
+<polygon points="0,0 -11,-5 -11,5" fill="#dc2626" transform="translate(450,180) rotate(90)"/>
+<path d="M 750 165 L 750 180" fill="none" stroke="#dc2626" stroke-width="2" stroke-dasharray="7 5" stroke-linejoin="round"/>
+<polygon points="0,0 -11,-5 -11,5" fill="#dc2626" transform="translate(750,180) rotate(90)"/>
+<path d="M 1080 165 L 1080 180" fill="none" stroke="#dc2626" stroke-width="2" stroke-dasharray="7 5" stroke-linejoin="round"/>
+<polygon points="0,0 -11,-5 -11,5" fill="#dc2626" transform="translate(1080,180) rotate(90)"/>
+<path d="M 450 180 L 1400 180 L 1400 165" fill="none" stroke="#dc2626" stroke-width="2" stroke-dasharray="7 5" stroke-linejoin="round"/>
+<polygon points="0,0 -11,-5 -11,5" fill="#dc2626" transform="translate(1400,165) rotate(270)"/>
+<circle cx="750" cy="180" r="4" fill="#334155"/>
+<circle cx="1080" cy="180" r="4" fill="#334155"/>
 <circle cx="1350" cy="205" r="4" fill="#334155"/>
 <circle cx="700" cy="205" r="4" fill="#334155"/>
 <circle cx="1050" cy="205" r="4" fill="#334155"/>
@@ -102,19 +112,21 @@
 <text x="425" y="105" text-anchor="middle" font-family="Microsoft YaHei" font-size="12" fill="#475569">50 → 100 / 125 MHz</text>
 <text x="425" y="125" text-anchor="middle" font-family="Microsoft YaHei" font-size="12" fill="#475569">+125 MHz 移相 180°</text>
 <text x="425" y="145" text-anchor="middle" font-family="Microsoft YaHei" font-size="12" fill="#475569">sd_card_clk / ext_mem_clk</text>
+<text x="425" y="165" text-anchor="middle" font-family="Microsoft YaHei" font-size="12" fill="#475569">extlock → sys_pll_lock</text>
 <rect x="600" y="55" width="250" height="110" rx="9" fill="#eef2f7" stroke="#64748b" stroke-width="2"/>
 <text x="725" y="81" text-anchor="middle" font-family="Microsoft YaHei" font-size="17" font-weight="bold" fill="#0f172a">video_pll</text>
 <text x="725" y="105" text-anchor="middle" font-family="Microsoft YaHei" font-size="12" fill="#475569">50 → 25 / 125 MHz</text>
 <text x="725" y="125" text-anchor="middle" font-family="Microsoft YaHei" font-size="12" fill="#475569">video_clk / hdmi_5x_clk</text>
+<text x="725" y="145" text-anchor="middle" font-family="Microsoft YaHei" font-size="12" fill="#475569">extlock → video_pll_lock</text>
 <rect x="900" y="55" width="250" height="110" rx="9" fill="#eef2f7" stroke="#64748b" stroke-width="2"/>
 <text x="1025" y="81" text-anchor="middle" font-family="Microsoft YaHei" font-size="17" font-weight="bold" fill="#0f172a">PLL_HDMI_AUDIO</text>
 <text x="1025" y="105" text-anchor="middle" font-family="Microsoft YaHei" font-size="12" fill="#475569">50 → 12.295 MHz</text>
 <text x="1025" y="125" text-anchor="middle" font-family="Microsoft YaHei" font-size="12" fill="#475569">extlock → audio_pll_lock</text>
 <rect x="1200" y="55" width="300" height="110" rx="9" fill="#eef2f7" stroke="#64748b" stroke-width="2"/>
 <text x="1350" y="81" text-anchor="middle" font-family="Microsoft YaHei" font-size="17" font-weight="bold" fill="#0f172a">复位生成</text>
-<text x="1350" y="105" text-anchor="middle" font-family="Microsoft YaHei" font-size="12" fill="#475569">rst_all = ~rst_n | ~audio_pll_lock</text>
-<text x="1350" y="125" text-anchor="middle" font-family="Microsoft YaHei" font-size="12" fill="#475569">高有效 · 异步复位</text>
-<text x="1350" y="145" text-anchor="middle" font-family="Microsoft YaHei" font-size="12" fill="#475569">PLL 未锁定 → 全系统保持复位</text>
+<text x="1350" y="105" text-anchor="middle" font-family="Microsoft YaHei" font-size="12" fill="#475569">rst_all = ~rst_n | ~sys_pll_lock</text>
+<text x="1350" y="125" text-anchor="middle" font-family="Microsoft YaHei" font-size="12" fill="#475569">| ~video_pll_lock | ~audio_pll_lock</text>
+<text x="1350" y="145" text-anchor="middle" font-family="Microsoft YaHei" font-size="12" fill="#475569">三者全锁定才释放 · 任一失锁即复位</text>
 <rect x="300" y="400" width="270" height="210" rx="9" fill="#dbeafe" stroke="#2563eb" stroke-width="2"/>
 <text x="435" y="426" text-anchor="middle" font-family="Microsoft YaHei" font-size="17" font-weight="bold" fill="#0f172a">sd_card_bmp</text>
 <text x="435" y="450" text-anchor="middle" font-family="Microsoft YaHei" font-size="12" fill="#475569">TF 卡扫描 · BMP 解析</text>
@@ -246,6 +258,8 @@
 <text x="860" y="311" text-anchor="middle" font-family="Microsoft YaHei" font-size="12" fill="#1e293b">video_clk 25M</text>
 <rect x="943" y="268" width="113" height="18" rx="4" fill="#ffffff" fill-opacity="0.92"/>
 <text x="1000" y="281" text-anchor="middle" font-family="Microsoft YaHei" font-size="12" fill="#1e293b">hdmi_5x_clk 125M</text>
+<rect x="1041" y="180" width="98" height="18" rx="4" fill="#ffffff" fill-opacity="0.92"/>
+<text x="1090" y="193" text-anchor="middle" font-family="Microsoft YaHei" font-size="12" fill="#1e293b">三个 PLL 的 lock</text>
 <rect x="40" y="880" width="210" height="300" rx="9" fill="#ffffff" stroke="#cbd5e1" stroke-width="2"/>
 <text x="145" y="906" text-anchor="middle" font-family="Microsoft YaHei" font-size="14" font-weight="bold" fill="#0f172a">图例</text>
 <rect x="56" y="917" width="26" height="16" rx="4" fill="#f8fafc" stroke="#94a3b8" stroke-width="2"/>

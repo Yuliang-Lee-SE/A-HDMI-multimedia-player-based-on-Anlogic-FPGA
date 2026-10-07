@@ -74,3 +74,5 @@ lab_ex5_i2s/src/td_project/*_Runs/
 
 # TD 本机设备配置
 lab_ex5_i2s/src/td_project/HDMI1.4b_Transmitter_v1.0_devicesetting.cfg
+*.cr.mti
+lab_ex5_i2s/sim/*.mpf
