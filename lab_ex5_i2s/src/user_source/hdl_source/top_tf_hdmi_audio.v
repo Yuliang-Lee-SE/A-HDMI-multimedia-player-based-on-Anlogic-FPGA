@@ -28,9 +28,9 @@ module top(
 parameter MEM_DATA_BITS = 32;
 parameter ADDR_BITS     = 21;
 parameter BUSRT_BITS    = 10;
-parameter FRAME_PIXELS  = 24'd307200;   // 640*480
-parameter BUF0_ADDR     = 24'd0;
-parameter BUF1_ADDR     = FRAME_PIXELS;
+parameter [ADDR_BITS-1:0] FRAME_PIXELS = 307200;   // 640*480，与 frame_read_write 的地址端口同宽
+parameter [ADDR_BITS-1:0] BUF0_ADDR    = 0;
+parameter [ADDR_BITS-1:0] BUF1_ADDR    = FRAME_PIXELS;
 
 wire Sdr_init_done;
 wire Sdr_init_ref_vld;
@@ -124,12 +124,25 @@ wire rst_all;
 assign rst_all = ~rst_n | ~audio_pll_lock;
 
 // 保持你原来的 TF / SDRAM / video 时钟
+wire ext_mem_clk_sft_raw;
+wire ext_mem_clk_raw;
+
 sys_pll sys_pll_m0(
     .refclk     (clk),
     .clk0_out   (sd_card_clk),
-    .clk1_out   (ext_mem_clk),
-    .clk2_out   (ext_mem_clk_sft),
+    .clk1_out   (ext_mem_clk_raw),
+    .clk2_out   (ext_mem_clk_sft_raw),
     .reset      (1'b0)
+);
+
+EG_LOGIC_BUFG bufg_mem_sft (
+    .i (ext_mem_clk_sft_raw),
+    .o (ext_mem_clk_sft)
+);
+
+EG_LOGIC_BUFG bufg_mem (
+    .i (ext_mem_clk_raw),
+    .o (ext_mem_clk)
 );
 
 video_pll video_pll_m0(
@@ -289,8 +302,8 @@ frame_read_write #(
     .read_finish       (),
     .read_addr_0       (BUF0_ADDR),
     .read_addr_1       (BUF1_ADDR),
-    .read_addr_2       (24'd0),
-    .read_addr_3       (24'd0),
+    .read_addr_2       ({ADDR_BITS{1'b0}}),
+    .read_addr_3       ({ADDR_BITS{1'b0}}),
     .read_addr_index   (disp_buf_idx),
     .read_len          (FRAME_PIXELS),
     .read_en           (video_read_en),
@@ -307,8 +320,8 @@ frame_read_write #(
     .write_finish      (frame_write_finish),
     .write_addr_0      (BUF0_ADDR),
     .write_addr_1      (BUF1_ADDR),
-    .write_addr_2      (24'd0),
-    .write_addr_3      (24'd0),
+    .write_addr_2      ({ADDR_BITS{1'b0}}),
+    .write_addr_3      ({ADDR_BITS{1'b0}}),
     .write_addr_index  (write_buf_idx),
     .write_len         (FRAME_PIXELS),
     .write_en          (sd_card_write_en),
