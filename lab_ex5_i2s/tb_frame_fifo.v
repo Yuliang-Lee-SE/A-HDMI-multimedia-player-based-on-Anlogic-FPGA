@@ -9,9 +9,9 @@
 //     原文件 SD/frame_read_write.v 里
 //         wire[BURST_BITS-1:0] wrusedw;   // 9bit
 //         wire[BURST_BITS-1:0] rdusedw;   // 9bit
-//     而 frame_fifo_write/read 的端口是 input[9:0]（10bit），
-//     FIFO IP 的 usedw 输出本身也只有 9bit。综合时高位补 0 掩盖了这个问题，
-//     RTL 仿真时高位悬空(Z)，会让 into_burst / wrusedw 比较变成 X，写/读突发进不去。
+//     注：早期版本这两个端口曾误写成 input[9:0]（10bit），当时靠本 TB 补零绕开；
+//     该位宽问题已在 RTL 中修复（frame_fifo_write.v 的 BURST_BITS 参数），补零层已移除。
+//     FIFO IP 的 usedw 输出是 9bit，两侧位宽现已一致，直接相连。
 //     本 TB 直接把两个子模块按正确位宽接起来，既避开这个坑，也更方便看波形。
 //======================================================================
 `timescale 1ns/1ps
@@ -42,8 +42,8 @@ module tb_frame_fifo;
   wire        O_wr_busy, O_rd_busy;
   wire        write_fifo_aclr, read_fifo_aclr;
   wire [8:0]  wfifo_rdusedw, rfifo_wrusedw;
-  wire [9:0]  rdusedw = {1'b0, wfifo_rdusedw};   // 补零扩展到 10bit（关键）
-  wire [9:0]  wrusedw = {1'b0, rfifo_wrusedw};
+
+
 
   //---------------- 写侧 ----------------
   reg         write_req        = 1'b0;
@@ -100,7 +100,7 @@ module tb_frame_fifo;
     .write_addr_index  (write_addr_index),
     .write_len         (write_len),
     .fifo_aclr         (write_fifo_aclr),
-    .rdusedw           (rdusedw)
+    .rdusedw           (wfifo_rdusedw)
   );
 
   //---------------- 读侧 ----------------
@@ -140,7 +140,7 @@ module tb_frame_fifo;
     .read_addr_index   (read_addr_index),
     .read_len          (read_len),
     .fifo_aclr         (read_fifo_aclr),
-    .wrusedw           (wrusedw)
+    .wrusedw           (rfifo_wrusedw)
   );
 
   rfifo_32_32_512 u_rfifo (
