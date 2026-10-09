@@ -4,6 +4,7 @@ module top(
     input                       rst_n,
     input                       key1,           // 手动下一张
     input                       key2,           // 自动播放 开/关
+    input                       key3,           // Board KEY3 / B1: 1x <-> center 2x
 
     output [5:0]                seg_sel,
     output [7:0]                seg_data,
@@ -37,6 +38,7 @@ wire Sdr_init_ref_vld;
 wire Sdr_busy;
 
 wire sd_card_clk;
+wire sd_card_write_ready;
 wire ext_mem_clk;
 wire ext_mem_clk_sft;
 wire video_clk;
@@ -177,6 +179,7 @@ end
 // ===================== TF 多图扫描与缓存（双缓冲） =====================
 sd_card_bmp #(
     .CLK_FREQ_HZ       (100_000_000),
+    .ENABLE_ZOOM       (1),
     .SCAN_START_SECTOR (32'd0),
     .SCAN_MAX_SECTOR   (32'd131071),
     .SCAN_TARGET_COUNT (3'd4)
@@ -185,6 +188,8 @@ sd_card_bmp #(
     .rst               (rst_all),
     .key_next          (key1),
     .key_auto          (key2),
+    .key_zoom          (key3),
+    .write_ready       (sd_card_write_ready),
     .state_code        (state_code),
     .bmp_width         (16'd640),
     .bmp_height        (16'd480),
@@ -329,7 +334,8 @@ frame_read_write #(
     .write_addr_index  (write_buf_idx),
     .write_len         (FRAME_PIXELS),
     .write_en          (sd_card_write_en),
-    .write_data        (sd_card_write_data)
+    .write_data        (sd_card_write_data),
+    .write_ready       (sd_card_write_ready)
 );
 
 sdram U3(

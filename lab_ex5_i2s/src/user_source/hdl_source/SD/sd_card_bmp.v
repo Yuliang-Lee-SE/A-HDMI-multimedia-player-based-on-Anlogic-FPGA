@@ -1,6 +1,9 @@
 
 module sd_card_bmp #(
     parameter integer CLK_FREQ_HZ       = 100_000_000,
+    parameter integer ENABLE_ZOOM      = 0,
+    parameter integer FRAME_WIDTH      = 640,
+    parameter integer FRAME_HEIGHT     = 480,
     parameter [31:0]  SCAN_START_SECTOR = 32'd0,
     parameter [31:0]  SCAN_MAX_SECTOR   = 32'd131071,
     parameter [2:0]   SCAN_TARGET_COUNT = 3'd4
@@ -9,6 +12,8 @@ module sd_card_bmp #(
     input                       rst,
     input                       key_next,
     input                       key_auto,
+    input                       key_zoom,
+    input                       write_ready,
     output [3:0]                state_code,
     input  [15:0]               bmp_width,
     input  [15:0]               bmp_height,
@@ -32,6 +37,11 @@ module sd_card_bmp #(
 
 wire key_next_press;
 wire key_auto_press;
+wire key_zoom_press;
+wire [3:0] bmp_state_code;
+wire zoom_source_done, zoom_output_done, zoom_overflow;
+reg zoom_requested, zoom_loading, zoom_displayed;
+reg write_done_seen, source_started_seen, load_error;
 
 wire             sd_sec_read;
 wire [31:0]      sd_sec_read_addr;
@@ -64,9 +74,11 @@ reg [31:0]       img_sector2;
 reg [31:0]       img_sector3;
 reg              next_req_pending;
 reg              load_busy;
-
-// bmp_ready 先表示“源文件读取/送 FIFO 完成”；真正切显示要等 write_finish_toggle 同步后
 reg              source_done_seen;
+wire load_complete = load_busy && !load_error && !zoom_overflow &&
+    source_done_seen && zoom_source_done && zoom_output_done && write_done_seen;
+
+// Source reading, processed output and SDRAM write completion are distinct.
 
 // 同步 mem_clk 域的 write_finish_toggle
 reg [2:0]        wrfin_tgl_sync;
@@ -78,13 +90,39 @@ reg [1:0]        wr_ack_sync;
 wire auto_tick;
 wire [1:0] next_from_current;
 
-assign write_en   = bmp_data_wr_en;
-assign write_data = {bmp_data[23:16], bmp_data[15:8], bmp_data[7:0], 8'b0};
+assign state_code = load_error ? 4'hf : bmp_state_code;
+generate if (ENABLE_ZOOM) begin : g_zoom
+    wire pixel_valid;
+    wire [23:0] pixel_rgb;
+    bmp_center_zoom_2x #(.WIDTH(FRAME_WIDTH), .HEIGHT(FRAME_HEIGHT)) zoom (
+        .clk(clk), .rst(rst || !sd_init_done), .frame_start(load_start_pulse),
+        .zoom_enable(zoom_loading), .in_valid(bmp_data_wr_en), .in_rgb(bmp_data),
+        .out_valid(pixel_valid), .out_ready(write_ready && !load_error),
+        .out_rgb(pixel_rgb), .out_last(), .out_frame_last(),
+        .source_done(zoom_source_done), .output_done(zoom_output_done),
+        .overflow(zoom_overflow)
+    );
+    assign write_en = pixel_valid && write_ready && !load_error;
+    assign write_data = {pixel_rgb, 8'b0};
+end else begin : g_original
+    assign write_en = bmp_data_wr_en;
+    assign write_data = {bmp_data, 8'b0};
+    assign zoom_source_done = 1'b1;
+    assign zoom_output_done = 1'b1;
+    assign zoom_overflow = 1'b0;
+end endgenerate
 assign osd_auto_mode  = auto_play_en;
 assign osd_item_index = img_idx;
 assign auto_tick  = (auto_cnt == (CLK_FREQ_HZ - 1));
 assign next_from_current = next_index_limited(img_idx, img_found_count);
 assign write_finish_pulse = wrfin_tgl_sync[2] ^ wrfin_tgl_sync[1];
+
+key_press_debounce #(
+    .CLK_FREQ_HZ (CLK_FREQ_HZ),
+    .DEBOUNCE_MS (20)
+) u_key_zoom (
+    .clk(clk), .rst(rst), .button_in(key_zoom), .press_pulse(key_zoom_press)
+);
 
 key_press_debounce #(
     .CLK_FREQ_HZ (CLK_FREQ_HZ),
@@ -171,6 +209,12 @@ always @(posedge clk or posedge rst) begin
         source_done_seen      <= 1'b0;
         display_valid         <= 1'b0;
         wr_ack_sync           <= 2'b00;
+        zoom_requested        <= 1'b0;
+        zoom_loading          <= 1'b0;
+        zoom_displayed        <= 1'b0;
+        write_done_seen       <= 1'b0;
+        source_started_seen   <= 1'b0;
+        load_error            <= 1'b0;
     end else begin
         wrfin_tgl_sync   <= {wrfin_tgl_sync[1:0], write_finish_toggle};
         wr_ack_sync      <= {wr_ack_sync[0], write_req_ack};
@@ -196,6 +240,12 @@ always @(posedge clk or posedge rst) begin
             load_busy             <= 1'b0;
             source_done_seen      <= 1'b0;
             display_valid         <= 1'b0;
+            zoom_requested        <= 1'b0;
+            zoom_loading          <= 1'b0;
+            zoom_displayed        <= 1'b0;
+            write_done_seen       <= 1'b0;
+            source_started_seen   <= 1'b0;
+            load_error            <= 1'b0;
         end else begin
             // 扫描阶段缓存前 4 张图的起始 sector
             if (scan_found_valid) begin
@@ -212,17 +262,30 @@ always @(posedge clk or posedge rst) begin
             end
 
             // 记住 bmp_read 已经把源图送完 FIFO，但还不能切显示，得等整帧写完
-            if (load_busy && bmp_ready)
+            if (load_start_pulse) begin
+                source_started_seen <= 1'b0;
+                source_done_seen <= 1'b0;
+                write_done_seen <= 1'b0;
+            end else if (load_busy) begin
+                if (!bmp_ready) source_started_seen <= 1'b1;
+                if (write_finish_pulse) write_done_seen <= 1'b1;
+            end
+            if (load_busy && !load_start_pulse && source_started_seen && bmp_ready)
                 source_done_seen <= 1'b1;
 
-            // 只有真正收到 write_finish_toggle 脉冲，才提交新图并切换显示缓冲区
-            if (load_busy && source_done_seen && write_finish_pulse) begin
+            if (load_busy && (zoom_overflow ||
+                (source_done_seen && !zoom_source_done)))
+                load_error <= 1'b1;
+
+            // Commit only after all three completion conditions have been latched.
+            if (load_complete) begin
                 load_busy             <= 1'b0;
                 source_done_seen      <= 1'b0;
                 disp_buf_idx          <= pending_buf_idx;
                 img_idx               <= load_idx;
                 display_valid         <= 1'b1;
                 first_image_committed <= 1'b1;
+                zoom_displayed        <= zoom_loading;
             end
 
             // 上电后自动发起一次“扫描前 4 张 BMP”
@@ -247,6 +310,9 @@ always @(posedge clk or posedge rst) begin
                 if (key_next_press && scan_done && (img_found_count > 3'd0))
                     next_req_pending <= 1'b1;
 
+                if (ENABLE_ZOOM && key_zoom_press && scan_done && !load_error)
+                    zoom_requested <= !zoom_requested;
+
                 // 自动播放开/关
                 if (key_auto_press && scan_done && (img_found_count > 3'd1)) begin
                     auto_play_en <= ~auto_play_en;
@@ -264,36 +330,53 @@ always @(posedge clk or posedge rst) begin
                 end
 
                 // 首图自动加载到 buffer0
-                if (scan_done && !first_image_committed && bmp_ready && !load_busy && (img_found_count != 3'd0)) begin
+                if (scan_done && !load_error && !first_image_committed && bmp_ready && !load_busy && (img_found_count != 3'd0)) begin
                     load_idx         <= 2'd0;
                     load_sector      <= img_sector0;
                     pending_buf_idx  <= 2'd0;
                     write_buf_idx    <= 2'd0;
                     load_start_pulse <= 1'b1;
+                    zoom_loading     <= zoom_requested;
                     load_busy        <= 1'b1;
                     source_done_seen <= 1'b0;
                     next_req_pending <= 1'b0;
                     auto_cnt         <= 32'd0;
                 end
-                // 手动下一张优先：写到“非当前显示”的另一块 buffer
-                else if (scan_done && bmp_ready && display_valid && !load_busy && next_req_pending && (img_found_count != 3'd0)) begin
+                // Reload the current file into the other buffer when zoom changes.
+                // A second press while busy is handled after the current load commits.
+                else if (ENABLE_ZOOM && scan_done && !load_error && bmp_ready &&
+                         display_valid && !load_busy && zoom_requested != zoom_displayed) begin
+                    load_idx         <= img_idx;
+                    load_sector      <= sector_lut(img_idx);
+                    pending_buf_idx  <= next_buf_lut(disp_buf_idx, display_valid);
+                    write_buf_idx    <= next_buf_lut(disp_buf_idx, display_valid);
+                    load_start_pulse <= 1'b1;
+                    zoom_loading     <= zoom_requested;
+                    load_busy        <= 1'b1;
+                    source_done_seen <= 1'b0;
+                    auto_cnt         <= 32'd0;
+                end
+                // Manual next remains pending across zoom reloads.
+                else if (scan_done && !load_error && bmp_ready && display_valid && !load_busy && next_req_pending && (img_found_count != 3'd0)) begin
                     load_idx         <= next_from_current;
                     load_sector      <= sector_lut(next_from_current);
                     pending_buf_idx  <= next_buf_lut(disp_buf_idx, display_valid);
                     write_buf_idx    <= next_buf_lut(disp_buf_idx, display_valid);
                     load_start_pulse <= 1'b1;
+                    zoom_loading     <= zoom_requested;
                     load_busy        <= 1'b1;
                     source_done_seen <= 1'b0;
                     next_req_pending <= 1'b0;
                     auto_cnt         <= 32'd0;
                 end
                 // 自动播放下一张：同样写到“非当前显示”的另一块 buffer
-                else if (scan_done && bmp_ready && display_valid && !load_busy && auto_play_en && auto_tick && (img_found_count > 3'd1)) begin
+                else if (scan_done && !load_error && bmp_ready && display_valid && !load_busy && auto_play_en && auto_tick && (img_found_count > 3'd1)) begin
                     load_idx         <= next_from_current;
                     load_sector      <= sector_lut(next_from_current);
                     pending_buf_idx  <= next_buf_lut(disp_buf_idx, display_valid);
                     write_buf_idx    <= next_buf_lut(disp_buf_idx, display_valid);
                     load_start_pulse <= 1'b1;
+                    zoom_loading     <= zoom_requested;
                     load_busy        <= 1'b1;
                     source_done_seen <= 1'b0;
                     auto_cnt         <= 32'd0;
@@ -321,7 +404,7 @@ bmp_read bmp_read_m0(
     .load_sector            (load_sector),
 
     .sd_init_done           (sd_init_done),
-    .state_code             (state_code),
+    .state_code             (bmp_state_code),
     .bmp_width              (bmp_width),
     .bmp_height             (bmp_height),
     .write_req              (write_req),

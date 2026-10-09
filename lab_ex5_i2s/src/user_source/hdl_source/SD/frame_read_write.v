@@ -69,7 +69,8 @@ module frame_read_write
 	input[1:0]                       write_addr_index,           // select valid base address from write_addr_0 write_addr_1 write_addr_2 write_addr_3
 	input[ADDR_BITS - 1:0]           write_len,                  // data write module write request data length
 	input                            write_en,                   // data write module write request for one data
-	input[WRITE_DATA_BITS - 1:0]     write_data                 // write data
+	input[WRITE_DATA_BITS - 1:0]     write_data,                // write data
+    output                           write_ready                // write_clk domain
 
 );
 wire[BURST_BITS - 1:0]                           wrusedw;                    // write used words
@@ -83,6 +84,15 @@ wire                                 write_fifo_aclr;            // fifo Asynchr
 
 wire O_wr_busy;
 wire O_rd_busy;
+wire write_fifo_full;
+reg [2:0] write_reset_release;
+wire write_fifo_reset = rst || write_fifo_aclr;
+// Asynchronous assertion, synchronous release in the FIFO write domain.
+always @(posedge write_clk or posedge write_fifo_reset)
+    if (write_fifo_reset) write_reset_release <= 3'b111;
+    else write_reset_release <= {write_reset_release[1:0], 1'b0};
+// Hold ready low during FIFO reset and for three write clocks after release.
+assign write_ready = !write_reset_release[2] && !write_fifo_full;
 
 assign App_wr_busy = O_wr_busy;//下个时钟写指令拉高
 assign App_rd_busy = O_rd_busy;//读指令还没有过去十个时钟;因为写指令优先，不需要在意下个时钟是否是读指令
@@ -98,7 +108,7 @@ wfifo_32_32_512 write_buf
 	.re                      	(App_wr_en        		  ),          // Read Request
 	.di                       	(write_data               ),          // Input Data
 	.empty_flag                 (                         ),          // Read side Empty flag
-	.full_flag                  (                         ),          // Write side Full flag
+	.full_flag                  (write_fifo_full          ),          // Write side Full flag
 	.wrusedw                	(              	  		  ),          // Read Used Words
 	.rdusedw                	(rdusedw                  ),          // Write Used Words
 	.dout                       (App_wr_din		          )
