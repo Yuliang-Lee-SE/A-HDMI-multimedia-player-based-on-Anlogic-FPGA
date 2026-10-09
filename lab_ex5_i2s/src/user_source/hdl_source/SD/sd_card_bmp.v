@@ -72,6 +72,9 @@ reg              source_done_seen;
 reg [2:0]        wrfin_tgl_sync;
 wire             write_finish_pulse;
 
+// 同步sd与卡侧握手
+reg [1:0]        wr_ack_sync;
+
 wire auto_tick;
 wire [1:0] next_from_current;
 
@@ -167,8 +170,10 @@ always @(posedge clk or posedge rst) begin
         load_busy             <= 1'b0;
         source_done_seen      <= 1'b0;
         display_valid         <= 1'b0;
+        wr_ack_sync           <= 2'b00;
     end else begin
         wrfin_tgl_sync   <= {wrfin_tgl_sync[1:0], write_finish_toggle};
+        wr_ack_sync      <= {wr_ack_sync[0], write_req_ack};
         scan_start_pulse <= 1'b0;
         load_start_pulse <= 1'b0;
 
@@ -320,7 +325,7 @@ bmp_read bmp_read_m0(
     .bmp_width              (bmp_width),
     .bmp_height             (bmp_height),
     .write_req              (write_req),
-    .write_req_ack          (write_req_ack),
+    .write_req_ack          (wr_ack_sync[1]),
     .sd_sec_read            (sd_sec_read),
     .sd_sec_read_addr       (sd_sec_read_addr),
     .sd_sec_read_data       (sd_sec_read_data),

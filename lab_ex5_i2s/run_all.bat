@@ -12,7 +12,7 @@ if not exist "%MS%\vsim.exe" set MS=
 cd /d "%~dp0"
 
 echo [1/2] compiling ...
-"%MS%\vsim.exe" -c -do compile.do
+"%MS%\vsim.exe" -c -l compile.log -do "do compile.do; quit -f"
 if errorlevel 1 goto err
 
 set ONLY=%1
