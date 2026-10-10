@@ -15,7 +15,13 @@
 //
 // 使用（顶层里怎么接，见 doc/音频通路说明.md）：
 //     osd_overlay -> waveform_overlay -> video_rgb_to_axis_640x480
-//   注意基础版通过验收前不要接进顶层（分工计划"基础版不稳定不加新功能"）。
+//
+// 写法说明（重要）：本文件刻意只用最保守的 Verilog-2001 写法——
+//   1) 组合逻辑一律放在 always @(*) 里，包括波形缓冲的读出；
+//      （早期版本写成 wire col_mag = buf[col_idx]; 在连续赋值里读存储器，
+//        TD 6.2.1 没能正确绑定该模块，把它标成"未使用"自动排除，故改写）
+//   2) 数组边界用 localparam 常量，不在边界里写移位表达式；
+//   3) 乘法先声明足够宽的中间量（避免按 12 位上下文截断）。
 //======================================================================
 module waveform_overlay #(
     parameter H_ACTIVE   = 640,
@@ -24,7 +30,7 @@ module waveform_overlay #(
     parameter WAV_Y      = 16,      // 波形窗口左上角 y
     parameter WAV_W      = 512,     // 窗口宽度（必须 = 缓冲点数 × 2）
     parameter WAV_H      = 72,      // 窗口高度
-    parameter BUF_AW     = 8,       // 缓冲深度 2^8 = 256 点
+    parameter BUF_AW     = 8,       // 缓冲地址位宽，深度 = 2^BUF_AW = 256 点
     parameter DECIM      = 6,       // 48kHz -> 8kHz
     parameter BORDER_COLOR = 24'h404040,
     parameter AXIS_COLOR   = 24'h606060,
@@ -45,17 +51,20 @@ module waveform_overlay #(
     output reg  [23:0] rgb_out
 );
 
-    localparam integer HALF_H = WAV_H / 2;
+    localparam integer BUF_DEPTH = 256;         // = 2^BUF_AW，与 BUF_AW 保持一致
+    localparam integer HALF_H    = WAV_H / 2;   // 36
 
     //------------------------------------------------------------------
     // 波形缓冲：每次 audio_valid 抽点，每 DECIM 个采样写一次
     //------------------------------------------------------------------
-    reg [7:0]  buf [0:(1<<BUF_AW)-1];
+    reg [7:0]  buf [0:BUF_DEPTH-1];
     reg [BUF_AW-1:0] wr_ptr;
     reg [2:0]  dec_cnt;
 
-    wire signed [23:0] s_smp = audio_sample;
-    wire [7:0] mag = s_smp[23] ? (~s_smp[23:16] + 8'd1) : s_smp[23:16];
+    // 取绝对值包络：24bit 有符号样本 -> 高 8 位幅度
+    wire [7:0] mag;
+    assign mag = audio_sample[23] ? (~audio_sample[23:16] + 8'd1)
+                                  : audio_sample[23:16];
 
     always @(posedge clk or posedge rst) begin
         if (rst) begin
@@ -101,23 +110,35 @@ module waveform_overlay #(
     //------------------------------------------------------------------
     // 画波形：WAV_W = 2 × 256，所以列索引 = (x - WAV_X) >> 1
     //------------------------------------------------------------------
-    wire in_win = (x >= WAV_X) && (x < WAV_X + WAV_W) &&
-                  (y >= WAV_Y) && (y < WAV_Y + WAV_H);
+    wire [11:0] dx;
+    wire [BUF_AW-1:0] col_idx;
+    wire [19:0] mul20;
+    wire [11:0] half_h;
+    wire [11:0] cy;
+    wire in_win, on_border, on_axis, on_wave;
+    reg  [7:0] col_mag;
 
-    wire [11:0] dx = x - WAV_X;
-    wire [BUF_AW-1:0] col_idx = dx[BUF_AW:1];
-    wire [7:0]  col_mag = buf[col_idx];
+    assign dx      = x - WAV_X;
+    assign col_idx = dx[BUF_AW:1];              // /2
 
-    // 半高 = mag/255 × HALF_H，用移位乘法避免 DSP：mag×HALF_H/256
-    wire [11:0] half_h = (col_mag * HALF_H) >> 8;
+    // 组合读缓冲：放在 always @(*) 里，综合成分布式 RAM 的一段读端口
+    always @(*) begin
+        col_mag = buf[col_idx];
+    end
 
-    wire [11:0] cy = WAV_Y + HALF_H;
-    wire on_border = in_win &&
-                     ((x == WAV_X) || (x == WAV_X + WAV_W - 1) ||
-                      (y == WAV_Y) || (y == WAV_Y + WAV_H - 1));
-    wire on_axis   = in_win && (y == cy);
-    wire on_wave   = in_win && (col_mag != 8'd0) &&
-                     (y >= (cy - half_h)) && (y <= (cy + half_h));
+    // 半高 = col_mag/256 × HALF_H；先在 20 位上下文里乘，避免被截断
+    assign mul20  = col_mag * HALF_H;
+    assign half_h = mul20[19:8];
+    assign cy     = WAV_Y + HALF_H;
+
+    assign in_win  = (x >= WAV_X) && (x < (WAV_X + WAV_W)) &&
+                     (y >= WAV_Y) && (y < (WAV_Y + WAV_H));
+    assign on_border = in_win &&
+                       ((x == WAV_X) || (x == (WAV_X + WAV_W - 1)) ||
+                        (y == WAV_Y) || (y == (WAV_Y + WAV_H - 1)));
+    assign on_axis   = in_win && (y == cy);
+    assign on_wave   = in_win && (col_mag != 8'd0) &&
+                       (y >= (cy - half_h)) && (y <= (cy + half_h));
 
     always @(posedge clk or posedge rst) begin
         if (rst) begin
