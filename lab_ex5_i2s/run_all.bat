@@ -2,7 +2,8 @@
 rem ============================================================
 rem  Pure-RTL subsystem simulation runner (ASCII only on purpose)
 rem  Usage:  run_all.bat          -> run all 5 testbenches
-rem          run_all.bat s1       -> run only S1 (s1..s5)
+rem          run_all.bat s1       -> run only S1 (s1..s7)
+rem  S1~S5 vendor subsystems; S6/S7 are team cases under repo-root tb/
 rem  Set MS to your ModelSim bin dir if vsim is not in PATH.
 rem ============================================================
 setlocal
@@ -24,12 +25,16 @@ if "%ONLY%"=="all" (
   call :run tb_frame_fifo "S3 frame buffer read/write"
   call :run tb_audio_i2s  "S4 I2S audio chain"
   call :run tb_video_axis "S5 video timing + AXIS"
+  call :run tb_audio_rom_player "S6 ROM speech player (C)"
+  call :run tb_key_control      "S7 key/auto-play/AV link (C)"
 ) else (
   if /i "%ONLY%"=="s1" call :run tb_bmp_read   "S1"
   if /i "%ONLY%"=="s2" call :run tb_sd_card    "S2"
   if /i "%ONLY%"=="s3" call :run tb_frame_fifo "S3"
   if /i "%ONLY%"=="s4" call :run tb_audio_i2s  "S4"
   if /i "%ONLY%"=="s5" call :run tb_video_axis "S5"
+  if /i "%ONLY%"=="s6" call :run tb_audio_rom_player "S6"
+  if /i "%ONLY%"=="s7" call :run tb_key_control      "S7"
 )
 echo.
 echo ==== done. logs are in this folder (tb_*.log) ====
