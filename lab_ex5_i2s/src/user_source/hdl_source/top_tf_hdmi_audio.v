@@ -60,6 +60,12 @@ reg  [1:0]  osd_item_sync0;
 reg  [1:0]  osd_item_sync1;
 wire        display_valid;
 
+// 角色 C：音频可视化波形层的输出（串在 osd_overlay 之后）
+wire [23:0] wav_rgb;
+wire        wav_hs;
+wire        wav_vs;
+wire        wav_de;
+
 wire [3:0]  state_code;
 wire [6:0]  seg_data_0;
 
@@ -102,6 +108,12 @@ wire [23:0] audio_right_data;
 wire        acr_valid;
 wire [19:0] acr_cts;
 wire [19:0] acr_n;
+
+// 角色 C：片内 ROM 语音通路（音频段索引/换段从 sd_card_clk 域传过来）
+wire        audio_track_toggle;
+wire [1:0]  audio_track_idx;
+wire [7:0]  audio_rom_data;
+wire [15:0] audio_rom_addr;
 
 wire        axis_s_user;
 wire        axis_s_valid;
@@ -179,7 +191,8 @@ sd_card_bmp #(
     .CLK_FREQ_HZ       (100_000_000),
     .SCAN_START_SECTOR (32'd0),
     .SCAN_MAX_SECTOR   (32'd131071),
-    .SCAN_TARGET_COUNT (3'd4)
+    .SCAN_TARGET_COUNT (3'd4),
+    .AUTO_INTERVAL_MS  (3000)
 ) sd_card_bmp_m0(
     .clk               (sd_card_clk),
     .rst               (rst_all),
@@ -191,6 +204,10 @@ sd_card_bmp #(
     .display_valid     (display_valid),
     .osd_auto_mode     (osd_auto_mode_sd),
     .osd_item_index    (osd_item_index_sd),
+
+    // 音画联动：当前图号 + 换段脉冲（音频域内部自己同步）
+    .audio_track_idx   (audio_track_idx),
+    .audio_track_toggle(audio_track_toggle),
 
     .write_finish_toggle(frame_write_toggle_mem),
     .write_buf_idx     (write_buf_idx),
@@ -284,6 +301,29 @@ osd_overlay u_osd_overlay (
     .rgb_out    (osd_rgb)
 );
 
+// 角色 C：音频可视化（时域波形）。串在 OSD 之后，只改像素、不改时序，
+// 与输入同延迟 1 拍。位置/大小是波形模块的参数，可用参数挪走或缩窄。
+waveform_overlay #(
+    .WAV_X (64),
+    .WAV_Y (16),
+    .WAV_W (512),
+    .WAV_H (72)
+) u_waveform_overlay (
+    .clk          (video_clk),
+    .rst          (rst_all),
+    .enable       (display_valid),
+    .audio_valid  (audio_valid),
+    .audio_sample (audio_left_data),
+    .hs_in        (osd_hs),
+    .vs_in        (osd_vs),
+    .de_in        (osd_de),
+    .rgb_in       (osd_rgb),
+    .hs_out       (wav_hs),
+    .vs_out       (wav_vs),
+    .de_out       (wav_de),
+    .rgb_out      (wav_rgb)
+);
+
 frame_read_write #(
     .WRITE_V_FLIP     (1),
     .FRAME_WIDTH      (640),
@@ -349,16 +389,34 @@ sdram U3(
     .Sdr_rd_dout       (Sdr_rd_dout)
 );
 
-// ===================== 音频：内部 I2S 测试音 =====================
-hdmi_audio_tone_i2s_64fs #(
-    .PHASE_INC (32'd39370534),
-    .AMP       (24'sd2000000)
-) u_hdmi_audio_tone_i2s_64fs (
-    .I_mclk      (audio_mclk),
-    .I_rst       (rst_all),
-    .O_i2s_BCLK  (audio_i2s_bclk),
-    .O_i2s_LRCK  (audio_i2s_lrck),
-    .O_i2s_DOUT  (audio_i2s_dout)
+// ===================== 音频：片内 ROM 语音（角色 C） =====================
+// 素材：4 段 × 1.536s @ 8kHz signed 8bit（team/audio_speech_rom.mif）
+// ROM 读口挂在 audio_mclk 上，读延迟 1 拍由播放器内部对齐
+AUDIO_SPEECH_ROM u_audio_speech_rom (
+    .doa    (audio_rom_data),
+    .addra  (audio_rom_addr),
+    .clka   (audio_mclk)
+);
+
+audio_rom_player #(
+    .MCLK_HZ     (12295000),
+    .SRC_HZ      (8000),
+    .SEG_SAMPLES (12288),
+    .TRACK0_ADDR (16'd0),
+    .TRACK1_ADDR (16'd12288),
+    .TRACK2_ADDR (16'd24576),
+    .TRACK3_ADDR (16'd36864),
+    .RAMP_FRAMES (960)
+) u_audio_rom_player (
+    .I_mclk          (audio_mclk),
+    .I_rst           (rst_all),
+    .I_track_idx     (audio_track_idx),
+    .I_track_toggle  (audio_track_toggle),
+    .I_rom_data      (audio_rom_data),
+    .O_rom_addr      (audio_rom_addr),
+    .O_i2s_BCLK      (audio_i2s_bclk),
+    .O_i2s_LRCK      (audio_i2s_lrck),
+    .O_i2s_DOUT      (audio_i2s_dout)
 );
 
 I2S_receiver u_I2S_receiver(
@@ -387,9 +445,9 @@ audio_arc_calculate #(
 video_rgb_to_axis_640x480 u_video_rgb_to_axis_640x480(
     .I_clk         (video_clk),
     .I_rst         (rst_all),
-    .I_vs          (osd_vs),
-    .I_de          (osd_de),
-    .I_rgb         (osd_rgb),
+    .I_vs          (wav_vs),
+    .I_de          (wav_de),
+    .I_rgb         (wav_rgb),
     .O_video_user  (axis_s_user),
     .O_video_valid (axis_s_valid),
     .O_video_last  (axis_s_last),

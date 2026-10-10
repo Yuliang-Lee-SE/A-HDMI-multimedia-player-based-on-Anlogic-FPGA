@@ -3,7 +3,12 @@ module sd_card_bmp #(
     parameter integer CLK_FREQ_HZ       = 100_000_000,
     parameter [31:0]  SCAN_START_SECTOR = 32'd0,
     parameter [31:0]  SCAN_MAX_SECTOR   = 32'd131071,
-    parameter [2:0]   SCAN_TARGET_COUNT = 3'd4
+    parameter [2:0]   SCAN_TARGET_COUNT = 3'd4,
+    parameter integer AUTO_INTERVAL_MS  = 3000,   // 自动轮播间隔（原来硬编码 1s）
+    parameter integer DEBOUNCE_MS       = 20,     // 按键消抖时间
+    // SD 卡 SPI 分频：默认值 = 官方例程，只有仿真会调小
+    parameter integer SPI_LOW_SPEED_DIV  = 248,
+    parameter integer SPI_HIGH_SPEED_DIV = 0
 )(
     input                       clk,
     input                       rst,
@@ -15,6 +20,10 @@ module sd_card_bmp #(
     output reg                  display_valid,
     output                      osd_auto_mode,
     output [1:0]                osd_item_index,
+
+    // 音画联动：把"当前显示第几张图"送给音频播放器（audio_mclk 域自己同步）
+    output reg [1:0]            audio_track_idx,
+    output reg                  audio_track_toggle,
 
     input                       write_finish_toggle,
     output reg [1:0]            write_buf_idx,
@@ -62,7 +71,7 @@ reg [31:0]       img_sector0;
 reg [31:0]       img_sector1;
 reg [31:0]       img_sector2;
 reg [31:0]       img_sector3;
-reg              next_req_pending;
+reg [1:0]        next_req_pending;      // 最多记 3 次连按，加载期间不再丢按键
 reg              load_busy;
 
 // bmp_ready 先表示“源文件读取/送 FIFO 完成”；真正切显示要等 write_finish_toggle 同步后
@@ -78,17 +87,20 @@ reg [1:0]        wr_ack_sync;
 wire auto_tick;
 wire [1:0] next_from_current;
 
+// 轮播间隔 = AUTO_INTERVAL_MS 毫秒（100MHz 下 3000ms -> 300,000,000 拍，32bit 足够）
+localparam [31:0] AUTO_TICKS = (CLK_FREQ_HZ / 1000) * AUTO_INTERVAL_MS;
+
 assign write_en   = bmp_data_wr_en;
 assign write_data = {bmp_data[23:16], bmp_data[15:8], bmp_data[7:0], 8'b0};
 assign osd_auto_mode  = auto_play_en;
 assign osd_item_index = img_idx;
-assign auto_tick  = (auto_cnt == (CLK_FREQ_HZ - 1));
+assign auto_tick  = (auto_cnt == (AUTO_TICKS - 1));
 assign next_from_current = next_index_limited(img_idx, img_found_count);
 assign write_finish_pulse = wrfin_tgl_sync[2] ^ wrfin_tgl_sync[1];
 
 key_press_debounce #(
     .CLK_FREQ_HZ (CLK_FREQ_HZ),
-    .DEBOUNCE_MS (20)
+    .DEBOUNCE_MS (DEBOUNCE_MS)
 ) u_key_next (
     .clk        (clk),
     .rst        (rst),
@@ -98,7 +110,7 @@ key_press_debounce #(
 
 key_press_debounce #(
     .CLK_FREQ_HZ (CLK_FREQ_HZ),
-    .DEBOUNCE_MS (20)
+    .DEBOUNCE_MS (DEBOUNCE_MS)
 ) u_key_auto (
     .clk        (clk),
     .rst        (rst),
@@ -166,11 +178,13 @@ always @(posedge clk or posedge rst) begin
         img_sector1           <= 32'd0;
         img_sector2           <= 32'd0;
         img_sector3           <= 32'd0;
-        next_req_pending      <= 1'b0;
+        next_req_pending      <= 2'd0;
         load_busy             <= 1'b0;
         source_done_seen      <= 1'b0;
         display_valid         <= 1'b0;
         wr_ack_sync           <= 2'b00;
+        audio_track_idx       <= 2'd0;
+        audio_track_toggle    <= 1'b0;
     end else begin
         wrfin_tgl_sync   <= {wrfin_tgl_sync[1:0], write_finish_toggle};
         wr_ack_sync      <= {wr_ack_sync[0], write_req_ack};
@@ -192,7 +206,7 @@ always @(posedge clk or posedge rst) begin
             img_sector1           <= 32'd0;
             img_sector2           <= 32'd0;
             img_sector3           <= 32'd0;
-            next_req_pending      <= 1'b0;
+            next_req_pending      <= 2'd0;
             load_busy             <= 1'b0;
             source_done_seen      <= 1'b0;
             display_valid         <= 1'b0;
@@ -223,6 +237,9 @@ always @(posedge clk or posedge rst) begin
                 img_idx               <= load_idx;
                 display_valid         <= 1'b1;
                 first_image_committed <= 1'b1;
+                // 音画联动：图像提交的那一拍同步换音频段
+                audio_track_idx       <= load_idx;
+                audio_track_toggle    <= ~audio_track_toggle;
             end
 
             // 上电后自动发起一次“扫描前 4 张 BMP”
@@ -238,14 +255,16 @@ always @(posedge clk or posedge rst) begin
                 pending_buf_idx       <= 2'd0;
                 write_buf_idx         <= 2'd0;
                 disp_buf_idx          <= 2'd0;
-                next_req_pending      <= 1'b0;
+                next_req_pending      <= 2'd0;
                 display_valid         <= 1'b0;
                 load_busy             <= 1'b0;
                 source_done_seen      <= 1'b0;
             end else begin
-                // 忙的时候也只记 1 次“下一张”请求，不会累积成连跳两张
-                if (key_next_press && scan_done && (img_found_count > 3'd0))
-                    next_req_pending <= 1'b1;
+                // 按键计数：最多记 3 次“下一张”，加载期间连按不再丢
+                if (key_next_press && scan_done && (img_found_count > 3'd0)) begin
+                    if (next_req_pending != 2'd3)
+                        next_req_pending <= next_req_pending + 2'd1;
+                end
 
                 // 自动播放开/关
                 if (key_auto_press && scan_done && (img_found_count > 3'd1)) begin
@@ -253,7 +272,7 @@ always @(posedge clk or posedge rst) begin
                     auto_cnt     <= 32'd0;
                 end
 
-                // 自动播放 1s 计数：只有当前没有写图任务时才计时
+                // 自动播放间隔计数（AUTO_INTERVAL_MS，默认 3s）：只有当前没有写图任务时才计时
                 if (scan_done && auto_play_en && display_valid && !load_busy && first_image_committed && (img_found_count > 3'd1)) begin
                     if (auto_tick)
                         auto_cnt <= 32'd0;
@@ -272,11 +291,11 @@ always @(posedge clk or posedge rst) begin
                     load_start_pulse <= 1'b1;
                     load_busy        <= 1'b1;
                     source_done_seen <= 1'b0;
-                    next_req_pending <= 1'b0;
+                    next_req_pending <= 2'd0;
                     auto_cnt         <= 32'd0;
                 end
                 // 手动下一张优先：写到“非当前显示”的另一块 buffer
-                else if (scan_done && bmp_ready && display_valid && !load_busy && next_req_pending && (img_found_count != 3'd0)) begin
+                else if (scan_done && bmp_ready && display_valid && !load_busy && (next_req_pending != 2'd0) && (img_found_count != 3'd0)) begin
                     load_idx         <= next_from_current;
                     load_sector      <= sector_lut(next_from_current);
                     pending_buf_idx  <= next_buf_lut(disp_buf_idx, display_valid);
@@ -284,7 +303,7 @@ always @(posedge clk or posedge rst) begin
                     load_start_pulse <= 1'b1;
                     load_busy        <= 1'b1;
                     source_done_seen <= 1'b0;
-                    next_req_pending <= 1'b0;
+                    next_req_pending <= next_req_pending - 2'd1;
                     auto_cnt         <= 32'd0;
                 end
                 // 自动播放下一张：同样写到“非当前显示”的另一块 buffer
@@ -335,7 +354,10 @@ bmp_read bmp_read_m0(
     .bmp_data               (bmp_data)
 );
 
-sd_card_top sd_card_top_m0(
+sd_card_top #(
+    .SPI_LOW_SPEED_DIV  (SPI_LOW_SPEED_DIV),
+    .SPI_HIGH_SPEED_DIV (SPI_HIGH_SPEED_DIV)
+) sd_card_top_m0(
     .clk                    (clk),
     .rst                    (rst),
     .SD_nCS                 (SD_nCS),
