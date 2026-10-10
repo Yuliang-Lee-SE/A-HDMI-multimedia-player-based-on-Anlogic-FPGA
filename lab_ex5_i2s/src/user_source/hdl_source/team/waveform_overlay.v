@@ -22,6 +22,8 @@
 //        TD 6.2.1 没能正确绑定该模块，把它标成"未使用"自动排除，故改写）
 //   2) 数组边界用 localparam 常量，不在边界里写移位表达式；
 //   3) 乘法先声明足够宽的中间量（避免按 12 位上下文截断）。
+//   4) 存储器变量名不能叫 buf —— buf/bufif0/bufif1 是 Verilog 门原语关键字，
+//      写成 reg [7:0] buf [...] 会报 "keyword 'buf' used in incorrect context"。
 //======================================================================
 module waveform_overlay #(
     parameter H_ACTIVE   = 640,
@@ -57,7 +59,7 @@ module waveform_overlay #(
     //------------------------------------------------------------------
     // 波形缓冲：每次 audio_valid 抽点，每 DECIM 个采样写一次
     //------------------------------------------------------------------
-    reg [7:0]  buf [0:BUF_DEPTH-1];
+    reg [7:0]  wave_buf [0:BUF_DEPTH-1];    // 不要用 buf 这个名字（Verilog 关键字）
     reg [BUF_AW-1:0] wr_ptr;
     reg [2:0]  dec_cnt;
 
@@ -73,7 +75,7 @@ module waveform_overlay #(
         end else if (audio_valid) begin
             if (dec_cnt == DECIM - 1) begin
                 dec_cnt <= 3'd0;
-                buf[wr_ptr] <= mag;
+                wave_buf[wr_ptr] <= mag;
                 wr_ptr <= wr_ptr + 1'b1;
             end else
                 dec_cnt <= dec_cnt + 3'd1;
@@ -123,7 +125,7 @@ module waveform_overlay #(
 
     // 组合读缓冲：放在 always @(*) 里，综合成分布式 RAM 的一段读端口
     always @(*) begin
-        col_mag = buf[col_idx];
+        col_mag = wave_buf[col_idx];
     end
 
     // 半高 = col_mag/256 × HALF_H；先在 20 位上下文里乘，避免被截断
