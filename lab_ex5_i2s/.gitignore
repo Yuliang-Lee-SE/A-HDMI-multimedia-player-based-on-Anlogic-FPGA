@@ -2,3 +2,14 @@
 /modelsim.ini
 /transcript
 /vsim.wlf
+osd_sim_inputs/
+osd_sim_build/
+osd_video_sim_build/
+osd_probe_sim_build/
+tools/__pycache__/
+/osd_gate_audit.v
+/audit_osd_rom_commands.tcl
+
+/td_*.logw
+
+/OSD_THREE_DELIVERY_README.md

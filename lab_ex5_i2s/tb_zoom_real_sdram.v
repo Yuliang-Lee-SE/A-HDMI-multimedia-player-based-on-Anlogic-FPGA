@@ -7,6 +7,7 @@ parameter H=48;
 parameter FORCED_REFRESH=0;
 parameter OUTPUT_DIV=1;
 parameter PACE_ZOOM=1;
+parameter DISPLAY_COMMIT=0;
 integer integer_placeholder;
 localparam W=640, N=W*H;
 localparam BANK_BASE=307200;
@@ -38,6 +39,13 @@ reg finished_seen=0;
 reg video_clk=0, read_req=0, consume=0, seed_only=0;
 always #20 video_clk=~video_clk;
 wire read_ack;
+reg commit_toggle=0;
+wire commit_ack,committed_valid,bridge_read_req;
+wire [1:0] committed_bank,committed_item;
+osd_display_commit display_bridge(.clk(video_clk),.rst(rst),.src_toggle(commit_toggle),
+ .src_bank(read_bank),.src_item(read_zoom),.src_valid(1'b1),
+ .frame_read_req(read_req),.mem_read_ack(read_ack),.read_req(bridge_read_req),
+ .ack_toggle(commit_ack),.bank(committed_bank),.item(committed_item),.valid(committed_valid));
 wire out_valid, ready, source_done, output_done, overflow, ack, finish, wr_en;
 wire [23:0] out_rgb;
 wire [20:0] address;
@@ -126,9 +134,9 @@ bmp_center_zoom_2x #(.WIDTH(W),.HEIGHT(H),.PACE_ZOOM_OUTPUT(PACE_ZOOM), .ENABLE_
 frame_read_write #(.BURST_SIZE(256),.FRAME_WIDTH(W),.FRAME_HEIGHT(H)) store (
     .rst(rst),.mem_clk(mem_clk),.Sdr_init_done(init_done),.Sdr_init_ref_vld(refresh_active),.Sdr_busy(sdr_busy),
     .App_rd_en(),.App_rd_addr(),.Sdr_rd_en(core_valid),.Sdr_rd_dout(core_data),
-    .read_clk(video_clk),.read_req(read_req),.read_req_ack(read_ack),.read_finish(),
+    .read_clk(video_clk),.read_req(DISPLAY_COMMIT ? bridge_read_req : read_req),.read_req_ack(read_ack),.read_finish(),
     .read_addr_0(21'd0),.read_addr_1(BANK_BASE),.read_addr_2(21'd0),.read_addr_3(21'd0),
-    .read_addr_index(read_bank),.read_len(N),.read_en(consume),.read_data(),
+    .read_addr_index(DISPLAY_COMMIT ? committed_bank : read_bank),.read_len(N),.read_en(consume),.read_data(),
     .App_wr_en(wr_en),.App_wr_addr(address),.App_wr_din(data),.App_wr_dm(dm),
     .write_clk(clk),.write_req(req),.write_req_ack(ack),.write_finish(finish),
     .write_addr_0(21'd0),.write_addr_1(BANK_BASE),.write_addr_2(21'd0),.write_addr_3(21'd0),
@@ -158,6 +166,10 @@ task frame;
 input [1:0] mode;
 integer i, j;
 begin
+    if(DISPLAY_COMMIT && !seed_only) begin
+        commit_toggle=~commit_toggle;
+        repeat(8) @(negedge video_clk);
+    end
     @(negedge clk); zoom=mode; start=1; req=1; count=0;
     frame_physical_start=physical_write_words; frame_unknown_start=physical_unknown_words; refresh_snapshot=physical_refresh_commands; read_req=!seed_only; underflows=0; consumed=0; overlap_samples=0; requests=0; returns=0; bad_returns=0; refresh_cycles=0;
     @(negedge clk); start=0;
@@ -175,6 +187,9 @@ begin
         begin
             if(!seed_only) begin
             wait(read_ack); @(negedge video_clk); read_req=0;
+            if(DISPLAY_COMMIT && (committed_bank!=read_bank || committed_item!=read_zoom)) begin
+                errors=errors+1;$display("[FAIL] Real controller bank / caption mismatch");
+            end
             wait(store.read_buf.rdusedw >= 256);
             for(j=0;j<N;j=j+1) begin
                 @(negedge video_clk); consume=1;
@@ -202,9 +217,16 @@ integer k;
 begin
     repeat(100) @(negedge mem_clk);
     read_bank=1; read_zoom=mode;
+    if(DISPLAY_COMMIT) begin
+        commit_toggle=~commit_toggle;
+        repeat(8) @(negedge video_clk);
+    end
     requests=0; returns=0; bad_returns=0; consumed=0; underflows=0;
     @(negedge video_clk); read_req=1;
     wait(read_ack); @(negedge video_clk); read_req=0;
+    if(DISPLAY_COMMIT && (committed_bank!=read_bank || committed_item!=read_zoom)) begin
+        errors=errors+1;$display("[FAIL] New frame bank / caption mismatch");
+    end
     wait(store.read_buf.rdusedw>=256);
     for(k=0;k<N;k=k+1) begin
         @(negedge video_clk); consume=1;

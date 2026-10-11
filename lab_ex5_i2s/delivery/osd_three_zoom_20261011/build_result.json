@@ -1,0 +1,10 @@
+{
+    "Run":  "osd_three_20261011",
+    "Bit":  "C:\\Users\\j1573\\Documents\\ChatGPT\\PLD\\repo-osd-three-zoom\\lab_ex5_i2s\\src\\td_project\\osd_three_20261011_Runs\\phy_1\\HDMI1.4b_Transmitter_v1.0.bit",
+    "SHA256":  "BAA4B7EA996FC737675FC59E257518446236007B214473CE9C06C9EA9647D3CE",
+    "SetupWNS":  0.136,
+    "SetupTNS":  0,
+    "HoldWNS":  0.003,
+    "HoldTNS":  0,
+    "Status":  "Local candidate only; inspect warnings/coverage; board unverified"
+}

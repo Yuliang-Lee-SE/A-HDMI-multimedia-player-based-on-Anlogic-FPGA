@@ -58,9 +58,13 @@ wire        osd_auto_mode_sd;
 wire [1:0]  osd_item_index_sd;
 reg         osd_auto_sync0;
 reg         osd_auto_sync1;
-reg  [1:0]  osd_item_sync0;
-reg  [1:0]  osd_item_sync1;
+reg         osd_auto_frame;
 wire        display_valid;
+wire display_commit_toggle, display_commit_ack, video_display_valid;
+wire [1:0] video_bank, video_item;
+wire memory_read_req;
+wire [23:0] caption_rgb;
+wire caption_hs, caption_vs, caption_de;
 
 // 角色 C：音频可视化波形层的输出（串在 osd_overlay 之后）
 wire [23:0] wav_rgb;
@@ -192,6 +196,7 @@ end
 sd_card_bmp #(
     .CLK_FREQ_HZ       (100_000_000),
     .ENABLE_ZOOM       (1),
+    .ENABLE_DISPLAY_COMMIT(1),
     .SCAN_START_SECTOR (32'd0),
     .SCAN_MAX_SECTOR   (32'd131071),
     .SCAN_TARGET_COUNT (3'd4),
@@ -209,6 +214,8 @@ sd_card_bmp #(
     .display_valid     (display_valid),
     .osd_auto_mode     (osd_auto_mode_sd),
     .osd_item_index    (osd_item_index_sd),
+    .display_commit_toggle(display_commit_toggle),
+    .display_commit_ack(display_commit_ack),
 
     // 音画联动：当前图号 + 换段脉冲（音频域内部自己同步）
     .audio_track_idx   (audio_track_idx),
@@ -272,7 +279,14 @@ video_delay video_delay_m0(
 );
 
 // 首图提交前黑屏；提交后一直显示当前显示缓冲区内容
-assign vout_data = display_valid ? vout_data_raw : 24'd0;
+assign vout_data = video_display_valid ? vout_data_raw : 24'd0;
+
+osd_display_commit u_display_commit(
+    .clk(video_clk),.rst(rst_all),.src_toggle(display_commit_toggle),
+    .src_bank(disp_buf_idx),.src_item(osd_item_index_sd),.src_valid(display_valid),
+    .frame_read_req(video_read_req),.mem_read_ack(video_read_req_ack),
+    .read_req(memory_read_req),.ack_toggle(display_commit_ack),
+    .bank(video_bank),.item(video_item),.valid(video_display_valid));
 
 // Status changes slowly in the 100 MHz SD domain; synchronize them before
 // using them in the 25 MHz video-pixel domain.
@@ -280,22 +294,20 @@ always @(posedge video_clk or posedge rst_all) begin
     if (rst_all) begin
         osd_auto_sync0 <= 1'b0;
         osd_auto_sync1 <= 1'b0;
-        osd_item_sync0 <= 2'd0;
-        osd_item_sync1 <= 2'd0;
+        osd_auto_frame <= 1'b0;
     end else begin
         osd_auto_sync0 <= osd_auto_mode_sd;
         osd_auto_sync1 <= osd_auto_sync0;
-        osd_item_sync0 <= osd_item_index_sd;
-        osd_item_sync1 <= osd_item_sync0;
+        if(video_read_req) osd_auto_frame <= osd_auto_sync1;
     end
 end
 
-osd_overlay u_osd_overlay (
+osd_overlay #(.TEXT_Y_REL(8)) u_osd_overlay (
     .clk        (video_clk),
     .rst        (rst_all),
-    .enable     (display_valid),
-    .auto_mode  (osd_auto_sync1),
-    .item_index (osd_item_sync1),
+    .enable     (video_display_valid),
+    .auto_mode  (osd_auto_frame),
+    .item_index (video_item),
     .hs_in      (hs),
     .vs_in      (vs),
     .de_in      (de),
@@ -305,6 +317,11 @@ osd_overlay u_osd_overlay (
     .de_out     (osd_de),
     .rgb_out    (osd_rgb)
 );
+
+osd_text_renderer u_osd_text(
+    .clk(video_clk),.rst(rst_all),.enable(video_display_valid),.item_index(video_item),
+    .hs_in(osd_hs),.vs_in(osd_vs),.de_in(osd_de),.rgb_in(osd_rgb),
+    .hs_out(caption_hs),.vs_out(caption_vs),.de_out(caption_de),.rgb_out(caption_rgb));
 
 // 角色 C：音频可视化（时域波形）。串在 OSD 之后，只改像素、不改时序，
 // 与输入同延迟 1 拍。位置/大小是波形模块的参数，可用参数挪走或缩窄。
@@ -316,13 +333,13 @@ waveform_overlay #(
 ) u_waveform_overlay (
     .clk          (video_clk),
     .rst          (rst_all),
-    .enable       (display_valid),
+    .enable       (video_display_valid),
     .audio_valid  (audio_valid),
     .audio_sample (audio_left_data),
-    .hs_in        (osd_hs),
-    .vs_in        (osd_vs),
-    .de_in        (osd_de),
-    .rgb_in       (osd_rgb),
+    .hs_in        (caption_hs),
+    .vs_in        (caption_vs),
+    .de_in        (caption_de),
+    .rgb_in       (caption_rgb),
     .hs_out       (wav_hs),
     .vs_out       (wav_vs),
     .de_out       (wav_de),
@@ -346,14 +363,14 @@ frame_read_write #(
     .Sdr_rd_dout       (Sdr_rd_dout),
 
     .read_clk          (video_clk),
-    .read_req          (video_read_req),
+    .read_req          (memory_read_req),
     .read_req_ack      (video_read_req_ack),
     .read_finish       (),
     .read_addr_0       (BUF0_ADDR),
     .read_addr_1       (BUF1_ADDR),
     .read_addr_2       ({ADDR_BITS{1'b0}}),
     .read_addr_3       ({ADDR_BITS{1'b0}}),
-    .read_addr_index   (disp_buf_idx),
+    .read_addr_index   (video_bank),
     .read_len          (FRAME_PIXELS),
     .read_en           (video_read_en),
     .read_data         (video_read_data),

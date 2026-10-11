@@ -2,6 +2,7 @@
 module sd_card_bmp #(
     parameter integer CLK_FREQ_HZ       = 100_000_000,
     parameter integer ENABLE_ZOOM      = 0,
+    parameter integer ENABLE_DISPLAY_COMMIT = 0,
     parameter integer FRAME_WIDTH      = 640,
     parameter integer FRAME_HEIGHT     = 480,
     parameter [31:0]  SCAN_START_SECTOR = 32'd0,
@@ -25,6 +26,8 @@ module sd_card_bmp #(
     output reg                  display_valid,
     output                      osd_auto_mode,
     output [1:0]                osd_item_index,
+    output reg                  display_commit_toggle,
+    input                       display_commit_ack,
 
     // 音画联动：把"当前显示第几张图"送给音频播放器（audio_mclk 域自己同步）
     output reg [1:0]            audio_track_idx,
@@ -54,6 +57,8 @@ wire zoom_source_permit;
 reg zoom_write_request_seen, zoom_write_armed;
 wire zoom_write_allowed = zoom_loading != 2 || zoom_write_armed;
 reg write_done_seen, source_started_seen, load_error;
+reg commit_wait;
+reg [2:0] commit_ack_sync;
 
 wire             sd_sec_read;
 wire [31:0]      sd_sec_read_addr;
@@ -255,7 +260,17 @@ always @(posedge clk or posedge rst) begin
         write_done_seen       <= 1'b0;
         source_started_seen   <= 1'b0;
         load_error            <= 1'b0;
+        display_commit_toggle <= 1'b0;
+        commit_wait           <= 1'b0;
+        commit_ack_sync       <= 3'b000;
     end else begin
+        commit_ack_sync <= {commit_ack_sync[1:0],display_commit_ack};
+        if (ENABLE_DISPLAY_COMMIT && commit_wait &&
+            commit_ack_sync[2] == display_commit_toggle) begin
+            commit_wait <= 1'b0;
+            audio_track_idx <= img_idx;
+            audio_track_toggle <= ~audio_track_toggle;
+        end
         wrfin_tgl_sync   <= {wrfin_tgl_sync[1:0], write_finish_toggle};
         wr_ack_sync      <= {wr_ack_sync[0], write_req_ack};
         scan_start_pulse <= 1'b0;
@@ -319,6 +334,10 @@ always @(posedge clk or posedge rst) begin
 
             // Commit only after all three completion conditions have been latched.
             if (load_complete) begin
+                if (ENABLE_DISPLAY_COMMIT) begin
+                    display_commit_toggle <= ~display_commit_toggle;
+                    commit_wait <= 1'b1;
+                end
                 load_busy             <= 1'b0;
                 source_done_seen      <= 1'b0;
                 disp_buf_idx          <= pending_buf_idx;
@@ -326,8 +345,10 @@ always @(posedge clk or posedge rst) begin
                 display_valid         <= 1'b1;
                 first_image_committed <= 1'b1;
                 // 音画联动：图像提交的那一拍同步换音频段
-                audio_track_idx       <= load_idx;
-                audio_track_toggle    <= ~audio_track_toggle;
+                if (!ENABLE_DISPLAY_COMMIT) begin
+                    audio_track_idx       <= load_idx;
+                    audio_track_toggle    <= ~audio_track_toggle;
+                end
                 zoom_displayed        <= zoom_loading;
             end
 
@@ -365,7 +386,7 @@ always @(posedge clk or posedge rst) begin
                 end
 
                 // 自动播放间隔计数（AUTO_INTERVAL_MS，默认 3s）：只有当前没有写图任务时才计时
-                if (scan_done && auto_play_en && display_valid && !load_busy && first_image_committed && (img_found_count > 3'd1)) begin
+                if (scan_done && auto_play_en && display_valid && !load_busy && !commit_wait && first_image_committed && (img_found_count > 3'd1)) begin
                     if (auto_tick)
                         auto_cnt <= 32'd0;
                     else
@@ -375,7 +396,7 @@ always @(posedge clk or posedge rst) begin
                 end
 
                 // 首图自动加载到 buffer0
-                if (scan_done && !load_error && !first_image_committed && bmp_ready && !load_busy && (img_found_count != 3'd0)) begin
+                if (scan_done && !load_error && !first_image_committed && bmp_ready && !load_busy && !commit_wait && (img_found_count != 3'd0)) begin
                     load_idx         <= 2'd0;
                     load_sector      <= img_sector0;
                     pending_buf_idx  <= 2'd0;
@@ -390,7 +411,7 @@ always @(posedge clk or posedge rst) begin
                 // Reload the current file into the other buffer when zoom changes.
                 // A second press while busy is handled after the current load commits.
                 else if (ENABLE_ZOOM && scan_done && !load_error && bmp_ready &&
-                         display_valid && !load_busy && zoom_requested != zoom_displayed) begin
+                         display_valid && !load_busy && !commit_wait && zoom_requested != zoom_displayed) begin
                     load_idx         <= img_idx;
                     load_sector      <= sector_lut(img_idx);
                     pending_buf_idx  <= next_buf_lut(disp_buf_idx, display_valid);
@@ -403,7 +424,7 @@ always @(posedge clk or posedge rst) begin
                 end
                 // 缩放重载优先于手动切图（角色 B）；下面这条是手动下一张（角色 C，
                 // 2bit 连按计数：加载期间连按最多记 3 次，用一次减一）。
-                else if (scan_done && !load_error && bmp_ready && display_valid && !load_busy && (next_req_pending != 2'd0) && (img_found_count != 3'd0)) begin
+                else if (scan_done && !load_error && bmp_ready && display_valid && !load_busy && !commit_wait && (next_req_pending != 2'd0) && (img_found_count != 3'd0)) begin
                     load_idx         <= next_from_current;
                     load_sector      <= sector_lut(next_from_current);
                     pending_buf_idx  <= next_buf_lut(disp_buf_idx, display_valid);
@@ -416,7 +437,7 @@ always @(posedge clk or posedge rst) begin
                     auto_cnt         <= 32'd0;
                 end
                 // 自动播放下一张：同样写到“非当前显示”的另一块 buffer
-                else if (scan_done && !load_error && bmp_ready && display_valid && !load_busy && auto_play_en && auto_tick && (img_found_count > 3'd1)) begin
+                else if (scan_done && !load_error && bmp_ready && display_valid && !load_busy && !commit_wait && auto_play_en && auto_tick && (img_found_count > 3'd1)) begin
                     load_idx         <= next_from_current;
                     load_sector      <= sector_lut(next_from_current);
                     pending_buf_idx  <= next_buf_lut(disp_buf_idx, display_valid);

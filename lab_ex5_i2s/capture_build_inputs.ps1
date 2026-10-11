@@ -26,6 +26,17 @@ foreach ($node in $projectXml.SelectNodes('/Project/Source_Files/*/File')) {
 # claim that each file was consumed by the tool or used by a historical build.
 $inputFiles = @(Get-ChildItem -LiteralPath $projectDir -Recurse -File | Where-Object { $_.FullName -notmatch '[\\/]([^\\/]*_Runs|audit_[^\\/]+)[\\/]' })
 if (Test-Path -LiteralPath $sourceDir) { $inputFiles += @(Get-ChildItem -LiteralPath $sourceDir -Recurse -File) }
+$labDir = [IO.Path]::GetFullPath((Join-Path $projectDir '../..'))
+# OSD resources are compiled as initialized HDL; retain the UTF-8 source,
+# generator, font identity manifest and preview inputs in the same audit.
+foreach ($folder in @('osd_assets','tools')) {
+    $extra = Join-Path $labDir $folder
+    if (Test-Path -LiteralPath $extra) {
+        $inputFiles += @(Get-ChildItem -LiteralPath $extra -File | Where-Object {$_.Extension -in @('.py','.json','.png')})
+    }
+}
+$inputFiles += @(Get-Item -LiteralPath $PSCommandPath)
+$inputFiles += @(Get-Item -LiteralPath (Join-Path $labDir 'run_verified_project_build.ps1'))
 $hashes = @($inputFiles | Sort-Object FullName -Unique | ForEach-Object {
     [ordered]@{ Path=$_.FullName; Bytes=$_.Length; SHA256=(Get-FileHash -LiteralPath $_.FullName -Algorithm SHA256).Hash }
 })

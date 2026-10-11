@@ -1,3 +1,11 @@
+# 三档缩放＋中文字幕
+
+本分支的上板文件和操作说明见 [当前交付](delivery/README.md)。源码工程在 `src/td_project/`，改文案和重建见 [说明](OSD_STATIC_CN_20261011.md)。
+
+---
+
+以下为原有子系统仿真记录；本次整机验证请使用上面的入口。
+
 # lab_ex5_i2s 纯 RTL 子系统仿真（ModelSim）
 
 > **工作目录 / 建库位置：`D:\FPGA\lab_ex5_i2s`**

@@ -1,0 +1,17 @@
+{
+  "status": "PASS",
+  "text_entries": 512,
+  "glyph_rows": 2048,
+  "bram_cells": [
+    "u_osd_text/resources/ramread0_syn_6",
+    "u_osd_text/resources/ramread1_syn_5",
+    "u_osd_text/resources/ramread1_syn_10",
+    "u_osd_text/resources/ramread1_syn_15",
+    "u_osd_text/resources/ramread1_syn_20"
+  ],
+  "source_sha256": "e59a6c926c71b9087fa95d5ceed0abdc91ad3e6cdc4f8fddfaf1582b121dfdc7",
+  "audit_sha256": "e4a112c9de92b50c400e5e61f16250a53f57d425ed2e7cb53bb0390780be2faf",
+  "note": "Mapped gate database ROM INIT words match generated text/glyph data; frontend HDL-5314 does not imply lost ROM initialization in this build",
+  "gate_db_sha256": "3a20936d167f1f986ff6ddfc7c9e109be34cf241a93e62774640e7141ba48fa1",
+  "mapped_netlist_sha256": "b06fb24eab410039cbf935c199fb15243423ce86c213f46fa9d4e7f78b3aacf2"
+}

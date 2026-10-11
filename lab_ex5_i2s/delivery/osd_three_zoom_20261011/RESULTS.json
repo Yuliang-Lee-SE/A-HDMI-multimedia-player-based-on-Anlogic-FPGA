@@ -1,0 +1,59 @@
+{
+  "Run": "osd_three_20261011",
+  "Bit": "osd_three_zoom_candidate.bit",
+  "SHA256": "BAA4B7EA996FC737675FC59E257518446236007B214473CE9C06C9EA9647D3CE",
+  "SetupWNS": 0.136,
+  "SetupTNS": 0,
+  "HoldWNS": 0.003,
+  "HoldTNS": 0,
+  "Status": "Local candidate only; inspect warnings/coverage; board unverified",
+  "SourceCommit": "40f4d665428443006db8079eea1acffac7fdf522",
+  "Baseline": "cf3d3fb19154b1a978b25c14ac606c444e25fb7a",
+  "Branch": "feat/osd-three-zoom",
+  "IntegratedFrom": [
+    "3da821f",
+    "8f50462"
+  ],
+  "InputFileCount": 106,
+  "SourceSHA256": {
+    "src\\user_source\\hdl_source\\top_tf_hdmi_audio.v": "E468216599FFC56864C6897C6CC640C3591AEEA58B3C97794F96DD132B02B86E",
+    "src\\user_source\\hdl_source\\SD\\sd_card_bmp.v": "971921D70B08551A03D816BF9BB8EBCCC66DB14A4E70C98EDB19D6FE788B88D0",
+    "src\\user_source\\hdl_source\\SD\\frame_read_write.v": "3F6E5C9216927D110A8FC08246DEA01D52BD65CEF9D1F6F568C59D7AFA9597BE",
+    "src\\user_source\\hdl_source\\team\\osd_resources.v": "E59A6C926C71B9087FA95D5CEED0ABDC91AD3E6CDC4F8FDDFAF1582B121DFDC7",
+    "src\\user_source\\hdl_source\\team\\osd_text_renderer.v": "F04409ABCE9A98FF7A4E5FBC7ACF14B378EBB2BF95B136A8868421D1623B530B",
+    "src\\user_source\\hdl_source\\team\\osd_display_commit.v": "168488A6C0066177E67D92FD51A6C7A971531D443C5CC5DD95EBC046A6D48FBC",
+    "src\\user_source\\hdl_source\\SD\\bmp_read.v": "BAFC43DD79BD3619ADB3D3C3602B1DC4DD0507162FC8E5190A9DD739F339922A",
+    "src\\user_source\\hdl_source\\team\\bmp_center_zoom_2x.v": "D4DCEAC31103E8851E49CB8CFE818E434665A572F06704438C56BF56188373A1"
+  },
+  "Coverage": "96.04%",
+  "Utilization": {
+    "lut": 5579,
+    "reg": 4322,
+    "bram9k": 33,
+    "bram32k": 12,
+    "dsp": 1
+  },
+  "PixelsCompared": 2150400,
+  "StatusWaveformPixelsCompared": 294144,
+  "MappedRomInitCheck": {
+    "status": "PASS",
+    "text_entries": 512,
+    "glyph_rows": 2048,
+    "bram_cells": [
+      "u_osd_text/resources/ramread0_syn_6",
+      "u_osd_text/resources/ramread1_syn_5",
+      "u_osd_text/resources/ramread1_syn_10",
+      "u_osd_text/resources/ramread1_syn_15",
+      "u_osd_text/resources/ramread1_syn_20"
+    ],
+    "source_sha256": "e59a6c926c71b9087fa95d5ceed0abdc91ad3e6cdc4f8fddfaf1582b121dfdc7",
+    "audit_sha256": "e4a112c9de92b50c400e5e61f16250a53f57d425ed2e7cb53bb0390780be2faf",
+    "note": "Mapped gate database ROM INIT words match generated text/glyph data; frontend HDL-5314 does not imply lost ROM initialization in this build",
+    "gate_db_sha256": "3a20936d167f1f986ff6ddfc7c9e109be34cf241a93e62774640e7141ba48fa1",
+    "mapped_netlist_sha256": "b06fb24eab410039cbf935c199fb15243423ce86c213f46fa9d4e7f78b3aacf2"
+  },
+  "Board": "UNVERIFIED",
+  "Copy": "TEST ONLY; formal text/font not frozen",
+  "KnownLimits": "Synthetic source/custom SDRAM model; new read waits 100 mem clocks; full automatic refresh not observed; physical tail after write finish retained; no physical HDMI/SD/Flash signing",
+  "EvidenceNote": "Integrated three-mode source verified with modules, real-BMP display-commit test, and full-size/forced-refresh SDRAM readback. Separate feature board feedback does not qualify the integrated candidate."
+}

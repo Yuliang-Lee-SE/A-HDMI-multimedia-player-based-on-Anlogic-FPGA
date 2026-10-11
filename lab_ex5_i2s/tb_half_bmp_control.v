@@ -1,7 +1,7 @@
 `timescale 1ns/1ps
-// Controller integration with a synthetic BMP reader and SDRAM completion sink.
-// The real parser/FIFO/SDRAM/HDMI are NOT modeled by this test.
+// Real BMP parser with controller/scaler/display commit and synthetic memory sink.
 module tb_half_bmp_control;
+parameter DISPLAY_COMMIT=0;
 reg clk=0;
 always #5 clk=~clk;
 reg rst=1, key_next=1, key_auto=1, key_zoom=1, finish_toggle=0;
@@ -18,12 +18,30 @@ reg [23:0] expected;
 reg [1:0] saved_buf;
 reg [1:0] mode;
 reg short_source=0;
-sd_card_bmp #(.CLK_FREQ_HZ(1000), .AUTO_INTERVAL_MS(1000), .ENABLE_ZOOM(1),
+reg vclk=0;always #19 vclk=~vclk;
+reg frame_req=0,mem_ack=0;
+integer frame_cycle=0;
+wire commit_req,commit_ack,mem_req,vvalid;
+wire [1:0] vbank,vitem;
+reg [3:0] req_delay=0;
+always @(posedge vclk) begin
+ if(rst) begin frame_cycle<=0;frame_req<=0;req_delay<=0;mem_ack<=0;end
+ else begin
+  frame_cycle<=(frame_cycle+1)%400;frame_req<=frame_cycle<8;
+  req_delay<={req_delay[2:0],mem_req};mem_ack<=req_delay[3];
+ end
+end
+osd_display_commit bridge(.clk(vclk),.rst(rst),.src_toggle(commit_req),
+ .src_bank(disp_buf),.src_item(item),.src_valid(display_valid),
+ .frame_read_req(frame_req),.mem_read_ack(mem_ack),.read_req(mem_req),
+ .ack_toggle(commit_ack),.bank(vbank),.item(vitem),.valid(vvalid));
+sd_card_bmp #(.CLK_FREQ_HZ(1000), .AUTO_INTERVAL_MS(1000), .ENABLE_ZOOM(1), .ENABLE_DISPLAY_COMMIT(DISPLAY_COMMIT),
     .SCAN_MAX_SECTOR(13), .SCAN_TARGET_COUNT(2), .FRAME_WIDTH(8), .FRAME_HEIGHT(8)) dut (
     .clk(clk), .rst(rst), .key_next(key_next), .key_auto(key_auto),
     .key_zoom(key_zoom), .write_ready(write_ready), .state_code(state_code),
     .bmp_width(16'd8), .bmp_height(16'd8), .display_valid(display_valid),
     .osd_auto_mode(auto_mode), .osd_item_index(item),
+    .display_commit_toggle(commit_req),.display_commit_ack(commit_ack),
     .audio_track_idx(audio_idx), .audio_track_toggle(audio_toggle),
     .write_finish_toggle(finish_toggle), .write_buf_idx(write_buf), .disp_buf_idx(disp_buf),
     .write_req(write_req), .write_req_ack(write_req), .write_en(write_en),
@@ -37,7 +55,7 @@ always @(posedge clk) begin
     if(rst) begin count=0; finish_toggle<=0; previous_audio=0; end
     else begin
         if(audio_toggle!=previous_audio) begin
-            if(audio_idx!==item || !display_valid || dut.load_busy) begin
+            if(audio_idx!==item || !display_valid || dut.load_busy || (DISPLAY_COMMIT && (commit_req!=commit_ack || vitem!=item || vbank!=disp_buf))) begin
                 errors=errors+1; $display("[FAIL] Audio notification outside committed image");
             end
         end
@@ -85,7 +103,7 @@ endtask
 task wait_mode;
 input [1:0] target;
 begin
-    wait(!dut.load_busy && display_valid && dut.zoom_displayed==target);
+    wait(!dut.load_busy && !dut.commit_wait && display_valid && dut.zoom_displayed==target);
     @(negedge clk);
     if(count!=64 || dut.load_error) begin errors=errors+1; $display("[FAIL] Incomplete committed frame"); end
 end
@@ -115,11 +133,11 @@ initial begin
     press_zoom; wait_mode(0);
     @(negedge clk); key_next=0;
     repeat(25) @(negedge clk); key_next=1;
-    wait(item==1 && !dut.load_busy);
+    wait(item==1 && !dut.load_busy && !dut.commit_wait);
     $display("[PASS] Original next-picture key preserved");
     @(negedge clk); key_auto=0;
     repeat(25) @(negedge clk); key_auto=1;
-    wait(auto_mode); wait(item==0 && !dut.load_busy);
+    wait(auto_mode); wait(item==0 && !dut.load_busy && !dut.commit_wait);
     @(negedge clk); key_auto=0;
     repeat(25) @(negedge clk); key_auto=1;
     wait(!auto_mode);
