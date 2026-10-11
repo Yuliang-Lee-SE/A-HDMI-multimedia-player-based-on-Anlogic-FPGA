@@ -1,0 +1,108 @@
+# do run_board_zoom_control_tests.do
+# C:/Users/j1573/Documents/ChatGPT/PLD/repo-key3-half/lab_ex5_i2s
+# C:/Users/j1573/Documents/ChatGPT/PLD/repo-key3-half/lab_ex5_i2s/scaler_sim_build/board_control
+# Model Technology ModelSim - Intel FPGA Edition vmap 2020.1 Lib Mapping Utility 2020.02 Feb 28 2020
+# vmap board_control C:/Users/j1573/Documents/ChatGPT/PLD/repo-key3-half/lab_ex5_i2s/scaler_sim_build/board_control/work 
+# Modifying modelsim.ini
+# C:/Users/j1573/Documents/ChatGPT/PLD/repo-key3-half/lab_ex5_i2s/src/user_source/hdl_source
+# Model Technology ModelSim - Intel FPGA Edition vlog 2020.1 Compiler 2020.02 Feb 28 2020
+# Start time: 13:03:14 on Oct 11,2026
+# vlog -work board_control C:/Users/j1573/Documents/ChatGPT/PLD/repo-key3-half/lab_ex5_i2s/src/user_source/hdl_source/team/image_scaler_2x_pingpong.v C:/Users/j1573/Documents/ChatGPT/PLD/repo-key3-half/lab_ex5_i2s/src/user_source/hdl_source/team/bmp_center_zoom_2x.v C:/Users/j1573/Documents/ChatGPT/PLD/repo-key3-half/lab_ex5_i2s/src/user_source/hdl_source/SD/sd_card_bmp.v C:/Users/j1573/Documents/ChatGPT/PLD/repo-key3-half/lab_ex5_i2s/tb_board_zoom_control.v 
+# -- Compiling module image_scaler_2x_pingpong
+# -- Compiling module bmp_center_zoom_2x
+# -- Compiling module bmp_half_canvas
+# -- Compiling module sd_card_bmp
+# -- Compiling module key_press_debounce
+# -- Compiling module tb_board_zoom_control
+# -- Compiling module bmp_read
+# -- Compiling module sd_card_top
+# 
+# Top level modules:
+# 	tb_board_zoom_control
+# End time: 13:03:14 on Oct 11,2026, Elapsed time: 0:00:00
+# Errors: 0, Warnings: 0
+# vsim -onfinish stop board_control.tb_board_zoom_control 
+# Start time: 13:03:14 on Oct 11,2026
+# Loading board_control.tb_board_zoom_control
+# Loading board_control.sd_card_bmp
+# Loading board_control.key_press_debounce
+# Loading board_control.bmp_read
+# Loading board_control.sd_card_top
+# Loading board_control.bmp_center_zoom_2x
+# Loading board_control.bmp_half_canvas
+# Loading board_control.image_scaler_2x_pingpong
+# [INFO] load=1 mode=00 sector=11 buffer=0
+# [PASS] Initial normal frame committed
+# [INFO] load=2 mode=01 sector=11 buffer=1
+# [PASS] Write completion arrives before source file end
+# [PASS] KEY3 debounce/hold and center 2x reload
+# [INFO] load=3 mode=10 sector=11 buffer=0
+# [PASS] Half canvas
+# [INFO] load=4 mode=00 sector=11 buffer=1
+# [PASS] KEY3 returns to normal
+# [INFO] load=5 mode=01 sector=11 buffer=0
+# [PASS] Write completion arrives before source file end
+# [INFO] load=6 mode=10 sector=11 buffer=1
+# [PASS] Second press while loading retained and applied
+# [INFO] load=7 mode=00 sector=11 buffer=0
+# [INFO] load=8 mode=00 sector=13 buffer=1
+# [PASS] Original next-picture key preserved
+# [INFO] load=9 mode=00 sector=11 buffer=0
+# [PASS] Original auto-play key preserved
+# [INFO] load=10 mode=01 sector=11 buffer=1
+# [PASS] Write completion arrives before source file end
+# [PASS] Three busy presses preserve latched frame and latest target
+# [INFO] load=11 mode=10 sector=11 buffer=0
+# [INFO] load=12 mode=00 sector=11 buffer=1
+# [INFO] load=13 mode=01 sector=11 buffer=0
+# [PASS] Overflow keeps old frame and reports F (reset required)
+# [INFO] load=14 mode=00 sector=11 buffer=0
+# [PASS] Board reset restores normal initial load
+# [TEST PASS] Board zoom controller integration is correct.
+# ** Note: $finish    : C:/Users/j1573/Documents/ChatGPT/PLD/repo-key3-half/lab_ex5_i2s/tb_board_zoom_control.v(148)
+#    Time: 93410 ns  Iteration: 1  Instance: /tb_board_zoom_control
+# Break in Module tb_board_zoom_control at C:/Users/j1573/Documents/ChatGPT/PLD/repo-key3-half/lab_ex5_i2s/tb_board_zoom_control.v line 148
+# Stopped at C:/Users/j1573/Documents/ChatGPT/PLD/repo-key3-half/lab_ex5_i2s/tb_board_zoom_control.v line 148
+# End time: 13:03:14 on Oct 11,2026, Elapsed time: 0:00:00
+# Errors: 0, Warnings: 0
+#  do run_bmp_prime.do
+# ** Warning: (vlib-34) Library already exists at "scaler_sim_build/bmp_prime/work".
+# Model Technology ModelSim - Intel FPGA Edition vmap 2020.1 Lib Mapping Utility 2020.02 Feb 28 2020
+# vmap bmp_prime scaler_sim_build/bmp_prime/work 
+# Modifying modelsim.ini
+# Model Technology ModelSim - Intel FPGA Edition vlog 2020.1 Compiler 2020.02 Feb 28 2020
+# Start time: 13:03:14 on Oct 11,2026
+# vlog -work bmp_prime src/user_source/hdl_source/SD/bmp_read.v tb_bmp_prime.v 
+# -- Compiling module bmp_read
+# -- Compiling module tb_bmp_prime
+# 
+# Top level modules:
+# 	tb_bmp_prime
+# End time: 13:03:14 on Oct 11,2026, Elapsed time: 0:00:00
+# Errors: 0, Warnings: 0
+# vsim -onfinish stop bmp_prime.tb_bmp_prime 
+# Start time: 13:03:14 on Oct 11,2026
+# Loading bmp_prime.tb_bmp_prime
+# Loading bmp_prime.bmp_read
+# === S1: bmp_read 子系统仿真 ===
+#    [dbg] t=5285000 第 1 个扇区读完，addr=0 header_0=5a header_1=5a width=23130 height=23130 bitcnt=23130 comp=1515870810 filelen=1515870810
+#    [dbg] t=10445000 第 2 个扇区读完，addr=1 header_0=5a header_1=5a width=23130 height=23130 bitcnt=23130 comp=1515870810 filelen=1515870810
+#    [dbg] t=15605000 第 3 个扇区读完，addr=2 header_0=5a header_1=5a width=23130 height=23130 bitcnt=23130 comp=1515870810 filelen=1515870810
+#    [dbg] t=20765000 第 4 个扇区读完，addr=3 header_0=42 header_1=4d width=640 height=480 bitcnt=24 comp=0 filelen=60
+#    [dbg] t=20775000 scan_found_valid: sector=3 total=1
+# ✓ 扫描命中扇区 = 3
+# ✓ 命中张数 = 1
+#    [dbg] t=25955000 第 5 个扇区读完，addr=3 header_0=42 header_1=4d width=640 height=480 bitcnt=24 comp=0 filelen=60
+# ✓ 像素 0 = 332211（3 字节按 [7:0]->[15:8]->[23:16] 拼接）
+# ✓ 像素 1 = 665544
+# ✓ 一共输出 2 个像素（= file_len 60 - 54 偏移，/3）
+#    [dbg] t=41135000 第 6 个扇区读完，addr=3 header_0=42 header_1=4d width=640 height=480 bitcnt=24 comp=0 filelen=60
+# ✓ 整帧读完后 state_code 回到 1 (IDLE)
+# === S1 全部通过 ===
+# ** Note: $finish    : tb_bmp_prime.v(203)
+#    Time: 41155 ns  Iteration: 1  Instance: /tb_bmp_prime
+# Break in Module tb_bmp_prime at tb_bmp_prime.v line 203
+# Stopped at tb_bmp_prime.v line 203
+# End time: 13:03:15 on Oct 11,2026, Elapsed time: 0:00:01
+# Errors: 0, Warnings: 0
+#  quit -f

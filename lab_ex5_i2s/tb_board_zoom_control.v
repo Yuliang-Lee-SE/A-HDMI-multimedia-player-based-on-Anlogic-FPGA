@@ -7,20 +7,23 @@ always #5 clk=~clk;
 reg rst=1, key_next=1, key_auto=1, key_zoom=1, finish_toggle=0;
 reg write_ready=1, force_stall=0;
 wire display_valid, write_req, write_en, auto_mode;
-wire [1:0] write_buf, disp_buf, item;
+wire [1:0] write_buf, disp_buf, item, audio_idx;
+wire audio_toggle;
+reg previous_audio=0;
 wire [31:0] write_data;
 wire [3:0] state_code;
 integer errors=0, completed=0, count=0, loads=0, cycles=0;
 integer sx, sy, base;
 reg [23:0] expected;
 reg [1:0] saved_buf;
-reg mode;
+reg [1:0] mode;
 sd_card_bmp #(.CLK_FREQ_HZ(1000), .AUTO_INTERVAL_MS(1000), .ENABLE_ZOOM(1),
     .FRAME_WIDTH(8), .FRAME_HEIGHT(8)) dut (
     .clk(clk), .rst(rst), .key_next(key_next), .key_auto(key_auto),
     .key_zoom(key_zoom), .write_ready(write_ready), .state_code(state_code),
     .bmp_width(16'd8), .bmp_height(16'd8), .display_valid(display_valid),
     .osd_auto_mode(auto_mode), .osd_item_index(item),
+    .audio_track_idx(audio_idx), .audio_track_toggle(audio_toggle),
     .write_finish_toggle(finish_toggle), .write_buf_idx(write_buf), .disp_buf_idx(disp_buf),
     .write_req(write_req), .write_req_ack(write_req), .write_en(write_en),
     .write_data(write_data), .SD_nCS(), .SD_DCLK(), .SD_MOSI(), .SD_MISO(1'b1)
@@ -30,8 +33,14 @@ always @(negedge clk) begin
     write_ready=!force_stall && cycles%7!=0 && cycles%7!=1;
 end
 always @(posedge clk) begin
-    if(rst) begin count=0; finish_toggle<=0; end
+    if(rst) begin count=0; finish_toggle<=0; previous_audio=0; end
     else begin
+        if(audio_toggle!=previous_audio) begin
+            if(audio_idx!==item || !display_valid || dut.load_busy) begin
+                errors=errors+1; $display("[FAIL] Audio notification outside committed image");
+            end
+        end
+        previous_audio=audio_toggle;
         if(dut.load_start_pulse) begin
             loads=loads+1; count=0; mode=dut.zoom_loading;
             $display("[INFO] load=%0d mode=%b sector=%0d buffer=%0d",loads,mode,dut.load_sector,write_buf);
@@ -41,9 +50,17 @@ always @(posedge clk) begin
             end
         end
         if(write_en) begin
-            sx=mode ? 2+(count%8)/2 : count%8;
-            sy=mode ? 2+(count/8)/2 : count/8;
+            if(mode==2 && (!dut.zoom_write_armed || write_req)) begin
+                errors=errors+1; $display("[FAIL] Padding sent before writer request completed");
+            end
+            sx=mode==1 ? 2+(count%8)/2 : count%8;
+            sy=mode==1 ? 2+(count/8)/2 : count/8;
             expected=24'h112200+base+sy*8+sx;
+            if(mode==2) begin
+                sx=2*((count%8)-2); sy=2*((count/8)-2)+1;
+                expected=(count%8>=2 && count%8<6 && count/8>=2 && count/8<6) ?
+                         24'h112200+base+sy*8+sx : 0;
+            end
             if(!write_ready || count>=64 || write_data !== {expected,8'b0}) begin
                 $display("[FAIL] Sink pixel %0d: %h expected %h",count,write_data,{expected,8'b0});
                 errors=errors+1;
@@ -65,7 +82,7 @@ begin
 end
 endtask
 task wait_mode;
-input target;
+input [1:0] target;
 begin
     wait(!dut.load_busy && display_valid && dut.zoom_displayed==target);
     @(negedge clk);
@@ -86,13 +103,15 @@ initial begin
     if(!dut.zoom_requested || loads!=saved_loads+1) begin errors=errors+1; $display("[FAIL] Long hold toggled repeatedly"); end
     key_zoom=1; repeat(25) @(negedge clk);
     wait_mode(1); $display("[PASS] KEY3 debounce/hold and center 2x reload");
+    press_zoom; wait_mode(2); $display("[PASS] Half canvas");
     press_zoom; wait_mode(0); $display("[PASS] KEY3 returns to normal");
     press_zoom;
     wait(dut.load_busy);
     press_zoom;
-    wait_mode(0);
-    if(dut.zoom_requested) begin errors=errors+1; $display("[FAIL] Busy press lost"); end
+    wait_mode(2);
+    if(dut.zoom_requested!=2) begin errors=errors+1; $display("[FAIL] Busy press lost"); end
     $display("[PASS] Second press while loading retained and applied");
+    press_zoom; wait_mode(0);
     @(negedge clk); key_next=0;
     repeat(25) @(negedge clk); key_next=1;
     wait(item==1 && !dut.load_busy);
@@ -104,6 +123,18 @@ initial begin
     repeat(25) @(negedge clk); key_auto=1;
     wait(!auto_mode);
     $display("[PASS] Original auto-play key preserved");
+    // Three accepted presses while a 2x load is active return the target to 2x.
+    saved_loads=loads;
+    press_zoom; wait(dut.load_busy);
+    press_zoom; press_zoom; press_zoom;
+    if(dut.zoom_loading!=1 || dut.zoom_requested!=1) begin
+        errors=errors+1; $display("[FAIL] Busy mode was not latched or three-press cycle lost");
+    end
+    wait_mode(1); repeat(40) @(negedge clk);
+    if(loads!=saved_loads+1) begin errors=errors+1; $display("[FAIL] Redundant reload after full busy cycle"); end
+    $display("[PASS] Three busy presses preserve latched frame and latest target");
+    press_zoom; wait_mode(2);
+    press_zoom; wait_mode(0);
     saved_buf=disp_buf;
     force_stall=1; press_zoom;
     wait(dut.load_error);
@@ -126,13 +157,13 @@ initial begin
 end
 endmodule
 
-module bmp_read (
+module bmp_read #(parameter USE_PIXEL_START_PERMIT=0) (
     input clk, rst, scan_start, input [31:0] scan_start_sector, scan_max_sector,
     input [2:0] scan_target_count, output reg scan_done, scan_found_valid,
     output reg [31:0] scan_found_sector, output [2:0] scan_found_total,
     input load_start, input [31:0] load_sector, input sd_init_done,
     output [3:0] state_code, input [15:0] bmp_width, bmp_height,
-    output reg write_req, input write_req_ack, output sd_sec_read,
+    output reg write_req, input write_req_ack, pixel_start_permit, output sd_sec_read,
     output [31:0] sd_sec_read_addr, input [7:0] sd_sec_read_data,
     input sd_sec_read_data_valid, sd_sec_read_end,
     output reg bmp_data_wr_en, output reg [23:0] bmp_data, output ready
@@ -154,8 +185,12 @@ always @(posedge clk) begin
         else if(scan_step==1) begin scan_found_valid<=1; scan_found_sector<=11; scan_step<=2; end
         else if(scan_step==2) begin scan_found_valid<=1; scan_found_sector<=13; scan_step<=3; end
         else if(scan_step==3) begin scan_done<=1; scan_step<=0; end
-        if(load_start) begin step<=1; pixel<=0; gap<=0; base<=load_sector==11 ? 0 : 256; write_req<=1; end
-        else if(step==1 && write_req_ack) begin write_req<=0; step<=2; end
+        if(load_start) begin step<=1; pixel<=0; gap<=0; base<=load_sector==11 ? 0 : 256; write_req<=0; gap<=50; step<=5; end
+        else if(step==5) begin
+            if(gap==0) begin write_req<=1; step<=1; end else gap<=gap-1;
+        end
+        else if(step==1 && write_req_ack) begin write_req<=0; step<=4; end
+        else if(step==4 && (!USE_PIXEL_START_PERMIT || pixel_start_permit)) step<=2;
         else if(step==2) begin
             if(gap==0) begin
                 bmp_data_wr_en<=1; bmp_data<=24'h112200+base+pixel; pixel<=pixel+1; gap<=7;

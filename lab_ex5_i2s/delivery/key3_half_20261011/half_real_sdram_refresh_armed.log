@@ -1,0 +1,119 @@
+# set diag_height 48
+# 48
+#  set forced_refresh 1
+# 1
+#  set diag_library half_sdram_refresh
+# half_sdram_refresh
+#  do run_zoom_real_sdram.do
+# C:/Users/j1573/Documents/ChatGPT/PLD/repo-key3-half/lab_ex5_i2s
+# C:/Users/j1573/Documents/ChatGPT/PLD/repo-key3-half/lab_ex5_i2s/scaler_sim_build/half_sdram_refresh
+# Model Technology ModelSim - Intel FPGA Edition vmap 2020.1 Lib Mapping Utility 2020.02 Feb 28 2020
+# vmap half_sdram_refresh C:/Users/j1573/Documents/ChatGPT/PLD/repo-key3-half/lab_ex5_i2s/scaler_sim_build/half_sdram_refresh/work 
+# Modifying modelsim.ini
+# C:/Users/j1573/Documents/ChatGPT/PLD/repo-key3-half/lab_ex5_i2s/src/user_source/hdl_source
+# Model Technology ModelSim - Intel FPGA Edition vlog 2020.1 Compiler 2020.02 Feb 28 2020
+# Start time: 13:11:28 on Oct 11,2026
+# vlog -work half_sdram_refresh "+incdir+src/td_project" "+incdir+src/user_source/hdl_source/include" src/user_source/hdl_source/include/sdr_as_ram.enc.v src/user_source/hdl_source/include/sdr_init_ref.enc.v src/user_source/hdl_source/include/sdr_wrrd.enc.v 
+# -- Compiling module sdr_as_ram
+# -- Compiling module sdr_init_ref
+# ** Warning: src/user_source/hdl_source/include/sdr_init_ref.enc.v(207): (vlog-2121) Illegal concatenation of an unsized constant. Will treat it as a 32-bit value.
+# ** Warning: src/user_source/hdl_source/include/sdr_wrrd.enc.v(77): (vlog-2121) Illegal concatenation of an unsized constant. Will treat it as a 32-bit value.
+# 
+# Top level modules:
+# 	sdr_as_ram
+# End time: 13:11:28 on Oct 11,2026, Elapsed time: 0:00:00
+# Errors: 0, Warnings: 2
+# Model Technology ModelSim - Intel FPGA Edition vlog 2020.1 Compiler 2020.02 Feb 28 2020
+# Start time: 13:11:28 on Oct 11,2026
+# vlog -work half_sdram_refresh C:/Users/j1573/Documents/ChatGPT/PLD/repo-key3-half/lab_ex5_i2s/src/user_source/hdl_source/IP/afifo_16_32_256.v C:/Users/j1573/Documents/ChatGPT/PLD/repo-key3-half/lab_ex5_i2s/src/user_source/hdl_source/IP/afifo_32_16_256.v C:/Users/j1573/Documents/ChatGPT/PLD/repo-key3-half/lab_ex5_i2s/src/user_source/hdl_source/SD/frame_fifo_write.v C:/Users/j1573/Documents/ChatGPT/PLD/repo-key3-half/lab_ex5_i2s/src/user_source/hdl_source/SD/frame_fifo_read.v C:/Users/j1573/Documents/ChatGPT/PLD/repo-key3-half/lab_ex5_i2s/src/user_source/hdl_source/SD/frame_read_write.v C:/Users/j1573/Documents/ChatGPT/PLD/repo-key3-half/lab_ex5_i2s/src/user_source/hdl_source/team/image_scaler_2x_pingpong.v C:/Users/j1573/Documents/ChatGPT/PLD/repo-key3-half/lab_ex5_i2s/src/user_source/hdl_source/team/bmp_center_zoom_2x.v C:/Users/j1573/Documents/ChatGPT/PLD/repo-key3-half/lab_ex5_i2s/diagnostic_sdram_pin_model.v C:/Users/j1573/Documents/ChatGPT/PLD/repo-key3-half/lab_ex5_i2s/tb_zoom_real_sdram.v 
+# -- Compiling module wfifo_32_32_512
+# -- Compiling module fifo_cross_domain_addr_process_al_wfifo_32_32_512
+# -- Compiling module ram_infer_wfifo_32_32_512
+# -- Compiling module rfifo_32_32_512
+# -- Compiling module fifo_cross_domain_addr_process_al_rfifo_32_32_512
+# -- Compiling module ram_infer_rfifo_32_32_512
+# -- Compiling module frame_fifo_write
+# -- Compiling module frame_fifo_read
+# -- Compiling module frame_read_write
+# -- Compiling module image_scaler_2x_pingpong
+# -- Compiling module bmp_center_zoom_2x
+# -- Compiling module bmp_half_canvas
+# -- Compiling module sdram_pin_model
+# -- Compiling module tb_zoom_real_sdram
+# 
+# Top level modules:
+# 	tb_zoom_real_sdram
+# End time: 13:11:29 on Oct 11,2026, Elapsed time: 0:00:01
+# Errors: 0, Warnings: 0
+# 1
+# 1
+# vsim -onfinish stop half_sdram_refresh.tb_zoom_real_sdram -gH=48 -gFORCED_REFRESH=1 -gPACE_ZOOM=1 -gOUTPUT_DIV=1 
+# Start time: 13:11:29 on Oct 11,2026
+# Loading half_sdram_refresh.tb_zoom_real_sdram
+# Loading half_sdram_refresh.sdr_as_ram
+# Loading half_sdram_refresh.sdr_init_ref
+# Loading half_sdram_refresh.sdram_pin_model
+# Loading half_sdram_refresh.bmp_center_zoom_2x
+# Loading half_sdram_refresh.bmp_half_canvas
+# Loading half_sdram_refresh.image_scaler_2x_pingpong
+# Loading half_sdram_refresh.frame_read_write
+# Loading half_sdram_refresh.wfifo_32_32_512
+# Loading half_sdram_refresh.fifo_cross_domain_addr_process_al_wfifo_32_32_512
+# Loading half_sdram_refresh.ram_infer_wfifo_32_32_512
+# Loading half_sdram_refresh.frame_fifo_write
+# Loading half_sdram_refresh.rfifo_32_32_512
+# Loading half_sdram_refresh.fifo_cross_domain_addr_process_al_rfifo_32_32_512
+# Loading half_sdram_refresh.ram_infer_rfifo_32_32_512
+# Loading half_sdram_refresh.frame_fifo_read
+# ** Warning: (vsim-3015) [PCDPC] - Port size (21) does not match connection size (32) for port 'read_addr_1'. The port definition is at: C:/Users/j1573/Documents/ChatGPT/PLD/repo-key3-half/lab_ex5_i2s/src/user_source/hdl_source/SD/frame_read_write.v(40).
+#    Time: 0 ps  Iteration: 0  Instance: /tb_zoom_real_sdram/store File: C:/Users/j1573/Documents/ChatGPT/PLD/repo-key3-half/lab_ex5_i2s/tb_zoom_real_sdram.v Line: 126
+# ** Warning: (vsim-3015) [PCDPC] - Port size (21) does not match connection size (32) for port 'read_len'. The port definition is at: C:/Users/j1573/Documents/ChatGPT/PLD/repo-key3-half/lab_ex5_i2s/src/user_source/hdl_source/SD/frame_read_write.v(44).
+#    Time: 0 ps  Iteration: 0  Instance: /tb_zoom_real_sdram/store File: C:/Users/j1573/Documents/ChatGPT/PLD/repo-key3-half/lab_ex5_i2s/tb_zoom_real_sdram.v Line: 126
+# ** Warning: (vsim-3015) [PCDPC] - Port size (21) does not match connection size (32) for port 'write_addr_1'. The port definition is at: C:/Users/j1573/Documents/ChatGPT/PLD/repo-key3-half/lab_ex5_i2s/src/user_source/hdl_source/SD/frame_read_write.v(66).
+#    Time: 0 ps  Iteration: 0  Instance: /tb_zoom_real_sdram/store File: C:/Users/j1573/Documents/ChatGPT/PLD/repo-key3-half/lab_ex5_i2s/tb_zoom_real_sdram.v Line: 126
+# ** Warning: (vsim-3015) [PCDPC] - Port size (21) does not match connection size (32) for port 'write_len'. The port definition is at: C:/Users/j1573/Documents/ChatGPT/PLD/repo-key3-half/lab_ex5_i2s/src/user_source/hdl_source/SD/frame_read_write.v(70).
+#    Time: 0 ps  Iteration: 0  Instance: /tb_zoom_real_sdram/store File: C:/Users/j1573/Documents/ChatGPT/PLD/repo-key3-half/lab_ex5_i2s/tb_zoom_real_sdram.v Line: 126
+# ** Warning: (vsim-2685) [TFMPC] - Too few port connections for 'write_buf'.  Expected 14, found 11.
+#    Time: 0 ps  Iteration: 0  Instance: /tb_zoom_real_sdram/store/write_buf File: C:/Users/j1573/Documents/ChatGPT/PLD/repo-key3-half/lab_ex5_i2s/src/user_source/hdl_source/SD/frame_read_write.v Line: 102
+# ** Warning: (vsim-3722) C:/Users/j1573/Documents/ChatGPT/PLD/repo-key3-half/lab_ex5_i2s/src/user_source/hdl_source/SD/frame_read_write.v(102): [TFMPC] - Missing connection for port 'valid'.
+# ** Warning: (vsim-3722) C:/Users/j1573/Documents/ChatGPT/PLD/repo-key3-half/lab_ex5_i2s/src/user_source/hdl_source/SD/frame_read_write.v(102): [TFMPC] - Missing connection for port 'afull'.
+# ** Warning: (vsim-3722) C:/Users/j1573/Documents/ChatGPT/PLD/repo-key3-half/lab_ex5_i2s/src/user_source/hdl_source/SD/frame_read_write.v(102): [TFMPC] - Missing connection for port 'aempty'.
+# ** Warning: (vsim-2685) [TFMPC] - Too few port connections for 'ram_inst'.  Expected 16, found 14.
+#    Time: 0 ps  Iteration: 0  Instance: /tb_zoom_real_sdram/store/write_buf/ram_inst File: C:/Users/j1573/Documents/ChatGPT/PLD/repo-key3-half/lab_ex5_i2s/src/user_source/hdl_source/IP/afifo_16_32_256.v Line: 231
+# ** Warning: (vsim-3722) C:/Users/j1573/Documents/ChatGPT/PLD/repo-key3-half/lab_ex5_i2s/src/user_source/hdl_source/IP/afifo_16_32_256.v(231): [TFMPC] - Missing connection for port 'doa'.
+# ** Warning: (vsim-3722) C:/Users/j1573/Documents/ChatGPT/PLD/repo-key3-half/lab_ex5_i2s/src/user_source/hdl_source/IP/afifo_16_32_256.v(231): [TFMPC] - Missing connection for port 'dib'.
+# ** Warning: (vsim-2685) [TFMPC] - Too few port connections for 'read_buf'.  Expected 14, found 11.
+#    Time: 0 ps  Iteration: 0  Instance: /tb_zoom_real_sdram/store/read_buf File: C:/Users/j1573/Documents/ChatGPT/PLD/repo-key3-half/lab_ex5_i2s/src/user_source/hdl_source/SD/frame_read_write.v Line: 154
+# ** Warning: (vsim-3722) C:/Users/j1573/Documents/ChatGPT/PLD/repo-key3-half/lab_ex5_i2s/src/user_source/hdl_source/SD/frame_read_write.v(154): [TFMPC] - Missing connection for port 'valid'.
+# ** Warning: (vsim-3722) C:/Users/j1573/Documents/ChatGPT/PLD/repo-key3-half/lab_ex5_i2s/src/user_source/hdl_source/SD/frame_read_write.v(154): [TFMPC] - Missing connection for port 'afull'.
+# ** Warning: (vsim-3722) C:/Users/j1573/Documents/ChatGPT/PLD/repo-key3-half/lab_ex5_i2s/src/user_source/hdl_source/SD/frame_read_write.v(154): [TFMPC] - Missing connection for port 'aempty'.
+# ** Warning: (vsim-2685) [TFMPC] - Too few port connections for 'ram_inst'.  Expected 16, found 14.
+#    Time: 0 ps  Iteration: 0  Instance: /tb_zoom_real_sdram/store/read_buf/ram_inst File: C:/Users/j1573/Documents/ChatGPT/PLD/repo-key3-half/lab_ex5_i2s/src/user_source/hdl_source/IP/afifo_32_16_256.v Line: 231
+# ** Warning: (vsim-3722) C:/Users/j1573/Documents/ChatGPT/PLD/repo-key3-half/lab_ex5_i2s/src/user_source/hdl_source/IP/afifo_32_16_256.v(231): [TFMPC] - Missing connection for port 'doa'.
+# ** Warning: (vsim-3722) C:/Users/j1573/Documents/ChatGPT/PLD/repo-key3-half/lab_ex5_i2s/src/user_source/hdl_source/IP/afifo_32_16_256.v(231): [TFMPC] - Missing connection for port 'dib'.
+# [WRITE BUS] mode=0 words=23040 unknown=0
+# [PASS] Real async FIFO / vertical address flip mode=00 buffer=0 words=30720
+# [DIAGNOSTIC] mode=0 consumed=30720 underflows=0 write_overlap=3075
+# [WRITE BUS] mode=0 words=23040 unknown=0
+# [PASS] Real async FIFO / vertical address flip mode=00 buffer=1 words=30720
+# [CORE] mode=0 requests=30720 returns=30720 bad=0 refresh=1240 trailing_writes=1 protocol=0
+# [PHYSICAL] mode=0 refresh_cmds=782 last_cmd_after_finish_ns=4 last_write_after_finish_ns=20
+# [NEW FRAME] mode=0 base=307200 requests=30720 returns=30720 bad=0 underflows=0
+# [DIAGNOSTIC] mode=1 consumed=30720 underflows=0 write_overlap=3561
+# [WRITE BUS] mode=1 words=23040 unknown=0
+# [PASS] Real async FIFO / vertical address flip mode=01 buffer=1 words=30720
+# [CORE] mode=1 requests=30720 returns=30720 bad=0 refresh=1220 trailing_writes=1 protocol=0
+# [PHYSICAL] mode=1 refresh_cmds=751 last_cmd_after_finish_ns=4 last_write_after_finish_ns=20
+# [NEW FRAME] mode=1 base=307200 requests=30720 returns=30720 bad=0 underflows=0
+# [DIAGNOSTIC] mode=2 consumed=30720 underflows=0 write_overlap=1429
+# [WRITE BUS] mode=2 words=23040 unknown=0
+# [PASS] Real async FIFO / vertical address flip mode=10 buffer=1 words=30720
+# [NEW FRAME] mode=2 base=307200 requests=30720 returns=30720 bad=0 underflows=0
+# [TEST PASS] Center zoom to original FIFO/address scheduler is correct.
+# ** Note: $finish    : C:/Users/j1573/Documents/ChatGPT/PLD/repo-key3-half/lab_ex5_i2s/tb_zoom_real_sdram.v(250)
+#    Time: 15829160 ns  Iteration: 1  Instance: /tb_zoom_real_sdram
+# Break in Module tb_zoom_real_sdram at C:/Users/j1573/Documents/ChatGPT/PLD/repo-key3-half/lab_ex5_i2s/tb_zoom_real_sdram.v line 250
+# Stopped at C:/Users/j1573/Documents/ChatGPT/PLD/repo-key3-half/lab_ex5_i2s/tb_zoom_real_sdram.v line 250
+# End time: 13:12:14 on Oct 11,2026, Elapsed time: 0:00:45
+# Errors: 0, Warnings: 18
+#  quit -f

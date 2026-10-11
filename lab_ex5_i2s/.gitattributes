@@ -4,3 +4,5 @@
 /delivery/key3_pacing_20261011/*.log -text
 /build_flow_templates/** -text
 /KEY3_2x_write_pacing_635888d.patch -text
+
+/delivery/key3_half_20261011/** -text

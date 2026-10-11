@@ -1,0 +1,10 @@
+{
+  "Run": "half_zoom_final_20261011",
+  "Bit": "C:\\Users\\j1573\\Documents\\ChatGPT\\PLD\\repo-key3-half\\lab_ex5_i2s\\src\\td_project\\half_zoom_final_20261011_Runs\\phy_1\\HDMI1.4b_Transmitter_v1.0.bit",
+  "SHA256": "E8FCBE093EFB6075C6A8681C570787C717A26A6713A13DB1CE77955883366F8F",
+  "SetupWNS": 0.157,
+  "SetupTNS": 0.0,
+  "HoldWNS": 0.003,
+  "HoldTNS": 0.0,
+  "Status": "Local candidate only; inspect warnings/coverage; board unverified"
+}

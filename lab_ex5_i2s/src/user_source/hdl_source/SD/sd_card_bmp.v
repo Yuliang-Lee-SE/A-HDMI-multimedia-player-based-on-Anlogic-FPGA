@@ -49,7 +49,10 @@ wire key_auto_press;
 wire key_zoom_press;
 wire [3:0] bmp_state_code;
 wire zoom_source_done, zoom_output_done, zoom_overflow;
-reg zoom_requested, zoom_loading, zoom_displayed;
+reg [1:0] zoom_requested, zoom_loading, zoom_displayed;
+wire zoom_source_permit;
+reg zoom_write_request_seen, zoom_write_armed;
+wire zoom_write_allowed = zoom_loading != 2 || zoom_write_armed;
 reg write_done_seen, source_started_seen, load_error;
 
 wire             sd_sec_read;
@@ -110,15 +113,16 @@ assign state_code = load_error ? 4'hf : bmp_state_code;
 generate if (ENABLE_ZOOM) begin : g_zoom
     wire pixel_valid;
     wire [23:0] pixel_rgb;
-    bmp_center_zoom_2x #(.WIDTH(FRAME_WIDTH), .HEIGHT(FRAME_HEIGHT)) zoom (
+    bmp_center_zoom_2x #(.WIDTH(FRAME_WIDTH), .HEIGHT(FRAME_HEIGHT), .ENABLE_HALF(1)) zoom (
         .clk(clk), .rst(rst || !sd_init_done), .frame_start(load_start_pulse),
-        .zoom_enable(zoom_loading), .in_valid(bmp_data_wr_en), .in_rgb(bmp_data),
-        .out_valid(pixel_valid), .out_ready(write_ready && !load_error),
+        .zoom_enable(zoom_loading == 2'd1),
+        .half_enable(zoom_loading == 2'd2), .source_permit(zoom_source_permit), .in_valid(bmp_data_wr_en), .in_rgb(bmp_data),
+        .out_valid(pixel_valid), .out_ready(write_ready && !load_error && zoom_write_allowed),
         .out_rgb(pixel_rgb), .out_last(), .out_frame_last(),
         .source_done(zoom_source_done), .output_done(zoom_output_done),
         .overflow(zoom_overflow)
     );
-    assign write_en = pixel_valid && write_ready && !load_error;
+    assign write_en = pixel_valid && write_ready && !load_error && zoom_write_allowed;
     assign write_data = {pixel_rgb, 8'b0};
 end else begin : g_original
     assign write_en = bmp_data_wr_en;
@@ -126,6 +130,7 @@ end else begin : g_original
     assign zoom_source_done = 1'b1;
     assign zoom_output_done = 1'b1;
     assign zoom_overflow = 1'b0;
+    assign zoom_source_permit = 1'b1;
 end endgenerate
 assign osd_auto_mode  = auto_play_en;
 assign osd_item_index = img_idx;
@@ -163,6 +168,19 @@ key_press_debounce #(
     .button_in  (key_zoom),
     .press_pulse(key_zoom_press)
 );
+
+// Half canvas emits padding before source pixels. Wait for this load's
+// request to be seen and withdrawn before accepting any output into the FIFO.
+// write_ready then supplies the existing reset-release / full protection.
+always @(posedge clk or posedge rst) begin
+    if(rst) begin zoom_write_request_seen<=0; zoom_write_armed<=0; end
+    else if(!sd_init_done || load_start_pulse) begin
+        zoom_write_request_seen<=0; zoom_write_armed<=0;
+    end else if(load_busy) begin
+        if(write_req) zoom_write_request_seen<=1;
+        if(zoom_write_request_seen && !write_req) zoom_write_armed<=1;
+    end
+end
 
 function [1:0] next_index_limited;
     input [1:0] cur;
@@ -338,7 +356,7 @@ always @(posedge clk or posedge rst) begin
                 end
 
                 if (ENABLE_ZOOM && key_zoom_press && scan_done && !load_error)
-                    zoom_requested <= !zoom_requested;
+                    zoom_requested <= (zoom_requested == 2'd2) ? 2'd0 : zoom_requested + 2'd1;
 
                 // 自动播放开/关
                 if (key_auto_press && scan_done && (img_found_count > 3'd1)) begin
@@ -414,7 +432,7 @@ always @(posedge clk or posedge rst) begin
     end
 end
 
-bmp_read bmp_read_m0(
+bmp_read #(.USE_PIXEL_START_PERMIT(1)) bmp_read_m0(
     .clk                    (clk),
     .rst                    (rst),
     .ready                  (bmp_ready),
@@ -437,6 +455,7 @@ bmp_read bmp_read_m0(
     .bmp_height             (bmp_height),
     .write_req              (write_req),
     .write_req_ack          (wr_ack_sync[1]),
+    .pixel_start_permit     (zoom_source_permit),
     .sd_sec_read            (sd_sec_read),
     .sd_sec_read_addr       (sd_sec_read_addr),
     .sd_sec_read_data       (sd_sec_read_data),
