@@ -6,7 +6,7 @@ reg rst=1,enable=1,hs=0,vs=0,de=0;
 reg [1:0] item=0;
 reg [23:0] rgb=0;
 wire oh,ov,od;wire [23:0] out;
-osd_text_renderer dut(clk,rst,enable,item,hs,vs,de,rgb,oh,ov,od,out);
+osd_text_renderer #(.SCROLL_ENABLE(0)) dut(clk,rst,enable,item,hs,vs,de,rgb,oh,ov,od,out,1'b0);
 reg [23:0] golden[0:307199];
 reg [26:0] queue0,queue1,queue2,expected;
 integer errors=0,completed=0,checked=0,p=0,x,y,f,n;

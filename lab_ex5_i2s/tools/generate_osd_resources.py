@@ -88,7 +88,9 @@ def generate(config, font_path):
     lines += [f"text_rom[{i}] = 8'h{v:02x};" for i,v in enumerate(text)]
     flat = [v for g in glyphs for v in g] + [0]*((depth-len(chars))*16)
     lines += [f"glyph_rom[{i}] = 16'h{v:04x};" for i,v in enumerate(flat)]
-    lines += ['end', 'always @(posedge clk) begin', ' text_id <= text_rom[text_addr];', f' glyph_row <= glyph_rom[glyph_addr[{(depth*16-1).bit_length()-1}:0]];', 'end', 'endmodule', '']
+    lines += ['end', 'always @(posedge clk) begin', ' text_id <= text_rom[text_addr];', f' glyph_row <= glyph_rom[glyph_addr[{(depth*16-1).bit_length()-1}:0]];', 'end', 'endmodule', '', 'module osd_text_lengths(input [1:0] item_index, output reg [6:0] description_length);', 'always @* begin', ' case(item_index)']
+    lines += [f"  2'd{i['id']}: description_length = 7'd{len(i['description'])};" for i in items]
+    lines += ["  default: description_length = 7'd0;", ' endcase', 'end', 'endmodule', '']
     OUT.write_text('\n'.join(lines), encoding='utf-8')
     res = ROOT/'osd_assets'
     res.mkdir(exist_ok=True)

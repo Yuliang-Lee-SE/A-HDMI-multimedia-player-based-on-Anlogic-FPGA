@@ -32,7 +32,7 @@ $labDir = [IO.Path]::GetFullPath((Join-Path $projectDir '../..'))
 foreach ($folder in @('osd_assets','tools')) {
     $extra = Join-Path $labDir $folder
     if (Test-Path -LiteralPath $extra) {
-        $inputFiles += @(Get-ChildItem -LiteralPath $extra -File | Where-Object {$_.Extension -in @('.py','.json','.png')})
+        $inputFiles += @(Get-ChildItem -LiteralPath $extra -File | Where-Object {$_.Extension -in @('.py','.json','.png','.gif')})
     }
 }
 $inputFiles += @(Get-Item -LiteralPath $PSCommandPath)

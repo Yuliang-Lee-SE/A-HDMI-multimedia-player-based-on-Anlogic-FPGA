@@ -9,9 +9,9 @@
     "u_osd_text/resources/ramread1_syn_15",
     "u_osd_text/resources/ramread1_syn_20"
   ],
-  "source_sha256": "ec8e225c5475845bd865fb6386a5602cda17821a6d8c6d2cf17bb5256292de10",
-  "audit_sha256": "3decc38a1b7abdcb0e9b1774fd681d42b0d39c4a274e07217e9919581a94bafc",
+  "source_sha256": "e8ad5d32318cbd8bd3862598565dd6923e312aa730da014a4a361bcdaa698c1d",
+  "audit_sha256": "be0663306332bf8aaba90e0df78b7f7ad5b43948166709e2a770998bb62df0cf",
   "note": "Mapped gate database ROM INIT words match generated text/glyph data; frontend HDL-5314 does not imply lost ROM initialization in this build",
-  "gate_db_sha256": "4c79692e31c87564a89af6335a81dfad969bcc66c3661f2ea4c14decdf54074c",
-  "mapped_netlist_sha256": "27b9f1da0b5939cb10da458505787141c4b3073267e306807941f9c10abfa372"
+  "gate_db_sha256": "d7e548b55b031a47ee70265ca174f788eabe4f7c701beea81d702f69f28df824",
+  "mapped_netlist_sha256": "d610fa8072d115fb7cadf527b47ccbc40d19c5960b3cbd315eab7e54eb0d493b"
 }

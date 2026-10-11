@@ -320,6 +320,7 @@ osd_overlay #(.TEXT_Y_REL(8)) u_osd_overlay (
 
 osd_text_renderer u_osd_text(
     .clk(video_clk),.rst(rst_all),.enable(video_display_valid),.item_index(video_item),
+    .scroll_pause(1'b0),
     .hs_in(osd_hs),.vs_in(osd_vs),.de_in(osd_de),.rgb_in(osd_rgb),
     .hs_out(caption_hs),.vs_out(caption_vs),.de_out(caption_de),.rgb_out(caption_rgb));
 

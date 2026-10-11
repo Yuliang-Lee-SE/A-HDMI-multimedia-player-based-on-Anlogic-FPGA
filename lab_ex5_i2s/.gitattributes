@@ -15,3 +15,6 @@
 /delivery/osd_three_zoom_20261011/** -text
 
 /delivery/osd_punctuation_20261011/** -text
+
+/src/user_source/hdl_source/team/osd_text_renderer.v -text
+/delivery/osd_scroll_20261011/** -text

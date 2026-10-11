@@ -8,7 +8,7 @@ wire sh,sv,sd;wire [23:0] sr;
 wire ch,cv,cd;wire [23:0] cr;
 wire ah,asv,ad,bh,bv,bd;wire [23:0] ar,br;
 osd_overlay #(.TEXT_Y_REL(8)) status(clk,rst,1'b1,1'b0,2'd0,hs,vs,de,rgb,sh,sv,sd,sr);
-osd_text_renderer captions(clk,rst,1'b1,2'd0,sh,sv,sd,sr,ch,cv,cd,cr);
+osd_text_renderer captions(clk,rst,1'b1,2'd0,sh,sv,sd,sr,ch,cv,cd,cr,1'b0);
 waveform_overlay actual(clk,rst,1'b1,av,sample,ch,cv,cd,cr,ah,asv,ad,ar);
 waveform_overlay baseline(clk,rst,1'b1,av,sample,sh,sv,sd,sr,bh,bv,bd,br);
 reg [26:0] q0=0,q1=0,q2=0;

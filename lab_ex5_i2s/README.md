@@ -1,3 +1,9 @@
+# 滚动简介字幕
+
+本轮增加长简介滚动，标题固定，沿用原三档缩放和标点修正。操作与候选bit见 [交付入口](delivery/README.md)，复现见 [开发说明](OSD_SCROLL_20261011.md)，[滚动预览](osd_assets/scroll_preview.gif)。P2候选待上板。
+
+下面为历史说明。
+
 # 中文字幕标点修正版
 
 当前bit和上板说明见 [交付入口](delivery/README.md)。本次只修正标点位置，上一版已上板正常。
