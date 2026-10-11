@@ -3,17 +3,17 @@
   "font_name": "simhei.ttf",
   "font_sha256": "9b1959db3b3abeb7efdaec26edf7dfe871a6039de8d614af7248575207be629e",
   "config_sha256": "dd97b94a5bf393fa9cb8203702aa211c256642a0dd8da8c8870bb62cc88fed30",
-  "generator_sha256": "bbc02ae41b55b82ae30a14054bf77453f448b01f2a4aea876f75c4aa79b24d17",
+  "generator_sha256": "d5b2ac1109bfc3c7661116a4a0592152116249f47dbbf006fea7e1ceabcab2ea",
   "pillow": "12.3.0",
   "glyph_count": 73,
   "glyph_rom_bytes": 4096,
   "text_bytes": 512,
   "files": {
-    "src/user_source/hdl_source/team/osd_resources.v": "e59a6c926c71b9087fa95d5ceed0abdc91ad3e6cdc4f8fddfaf1582b121dfdc7",
-    "osd_assets/text_ids.json": "57ba11ab7b4c811383cbc7e9c6d22ab4a18ed30af0d9908fd484bcc762e20e90",
-    "osd_assets/preview_1.png": "288ce5eabe35020a2d68f6f433806bd09aceaa20ea43d66e86e60f1e26060cd3",
-    "osd_assets/preview_2.png": "62fd6b7c17a68e54e6d93043a6b08095357c3848d8b75911df2d8ae2150beefa",
-    "osd_assets/preview_3.png": "e4015e04ebbcb22780f97891311be126279d7b78c9ff080254dce8688ef1f150",
-    "osd_assets/preview_4.png": "8d868f1254c006f02e343fd1d41d45a4166c8e10a7b3014d403bbc7f90afda36"
+    "src/user_source/hdl_source/team/osd_resources.v": "ec8e225c5475845bd865fb6386a5602cda17821a6d8c6d2cf17bb5256292de10",
+    "osd_assets/text_ids.json": "ee72e8c034fd7e529ab79e3907f877d236ecc204cb1cad7ab1e044c2750a902d",
+    "osd_assets/preview_1.png": "2a27c21efb3bfa1126b785952aa1e7ebaa415f7fb273532787e600b0a34136c0",
+    "osd_assets/preview_2.png": "c2cdec9bd95c76bef3755df2da937428a9686fd3fb5c227c3ce93261d4f56037",
+    "osd_assets/preview_3.png": "bf9def113a8c0290c20692ab41ad598279c222c96757012970dd412f22aba942",
+    "osd_assets/preview_4.png": "dee8a3f919dad5bc73004f2b7609caedebaa9c65f9286f180608d5f10474083a"
   }
 }

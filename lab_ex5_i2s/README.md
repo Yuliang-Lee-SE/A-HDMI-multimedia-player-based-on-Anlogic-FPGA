@@ -1,3 +1,7 @@
+# 中文字幕标点修正版
+
+当前bit和上板说明见 [交付入口](delivery/README.md)。本次只修正标点位置，上一版已上板正常。
+
 # 三档缩放＋中文字幕
 
 本分支的上板文件和操作说明见 [当前交付](delivery/README.md)。源码工程在 `src/td_project/`，改文案和重建见 [说明](OSD_STATIC_CN_20261011.md)。

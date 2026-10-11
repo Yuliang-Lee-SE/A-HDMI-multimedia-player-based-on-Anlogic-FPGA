@@ -57,6 +57,10 @@ def generate(config, font_path):
     if len(chars) > 256:
         raise ValueError('More than 256 glyphs')
     font = ImageFont.truetype(str(font_path), 16)
+    # Share one font origin/baseline: punctuation retains its native bearings.
+    boxes = [font.getbbox(c) for c in chars if c not in (' ', '\u25a1')]
+    cell_top = min(0, min(b[1] for b in boxes))
+    cell_bottom = max(16, max(b[3] for b in boxes))
     glyphs = []
     for char in chars:
         im = Image.new('L', (16, 16))
@@ -64,8 +68,10 @@ def generate(config, font_path):
             ImageDraw.Draw(im).rectangle((1, 1, 14, 14), outline=255)
         elif char != ' ':
             if not has_glyph(font_path,char):raise ValueError('Missing glyph: '+repr(char))
-            box = font.getbbox(char)
-            ImageDraw.Draw(im).text(((16 - (box[2]-box[0]))//2-box[0], (16-(box[3]-box[1]))//2-box[1]), char, font=font, fill=255)
+            im = Image.new('L', (16, cell_bottom-cell_top))
+            ImageDraw.Draw(im).text((0, -cell_top), char, font=font, fill=255)
+            if im.height != 16:
+                im = im.resize((16,16), Image.Resampling.NEAREST)
             if not im.getbbox():
                 raise ValueError('Empty glyph: ' + char)
         glyphs.append([sum((1 << (15-x)) for x in range(16) if im.getpixel((x,y)) >= 128) for y in range(16)])
