@@ -4,7 +4,8 @@
 // On overflow the frame is invalid; the controller must NOT commit it.
 module bmp_center_zoom_2x #(
     parameter integer WIDTH = 640,
-    parameter integer HEIGHT = 480
+    parameter integer HEIGHT = 480,
+    parameter integer PACE_ZOOM_OUTPUT = 1
 )(
     input clk,
     input rst,
@@ -31,12 +32,18 @@ reg [15:0] x, y;
 reg pass_valid;
 reg [23:0] pass_rgb;
 reg pass_last, pass_frame_last;
+reg zoom_output_gap;
 wire crop = x >= X0 && x < X0+CW && y >= Y0 && y < Y0+CH;
 wire scale_in_ready, scale_valid, scale_last, scale_frame_last;
 wire [23:0] scale_rgb;
 wire local_reset = rst || frame_start;
 wire enabled = !local_reset && !overflow && !output_done;
-assign out_valid = enabled && (zoom_latched ? scale_valid : pass_valid);
+// A completed zoom transfer inserts one idle source clock before the next.
+// Once valid is presented it stays presented while the consumer is stalled.
+// Do not use this as a per-word SDRAM busy/ack substitute: the original FIFO
+// and burst scheduler remain responsible for the memory interface.
+wire zoom_output_allowed = !PACE_ZOOM_OUTPUT || !zoom_output_gap;
+assign out_valid = enabled && (zoom_latched ? (scale_valid && zoom_output_allowed) : pass_valid);
 assign out_rgb = zoom_latched ? scale_rgb : pass_rgb;
 assign out_last = zoom_latched ? scale_last : pass_last;
 assign out_frame_last = zoom_latched ? scale_frame_last : pass_frame_last;
@@ -45,10 +52,19 @@ image_scaler_2x_pingpong #(.SRC_WIDTH(CW), .SRC_HEIGHT(CH)) scaler (
     .clk(clk), .rst(local_reset),
     .in_valid(in_valid && source_active && crop && zoom_latched && enabled),
     .in_ready(scale_in_ready), .in_rgb(in_rgb),
-    .out_valid(scale_valid), .out_ready(out_ready && enabled && zoom_latched),
+    .out_valid(scale_valid), .out_ready(out_ready && enabled && zoom_latched && zoom_output_allowed),
     .out_rgb(scale_rgb), .out_last(scale_last),
     .out_frame_last(scale_frame_last)
 );
+
+always @(posedge clk or posedge rst) begin
+    if (rst)
+        zoom_output_gap <= 1'b0;
+    else if (frame_start)
+        zoom_output_gap <= 1'b0;
+    else
+        zoom_output_gap <= PACE_ZOOM_OUTPUT && zoom_latched && out_valid && out_ready;
+end
 
 always @(posedge clk or posedge rst) begin
     if (rst) begin

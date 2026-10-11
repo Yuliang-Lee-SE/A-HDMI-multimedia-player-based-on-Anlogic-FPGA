@@ -15,7 +15,7 @@ integer sx, sy, base;
 reg [23:0] expected;
 reg [1:0] saved_buf;
 reg mode;
-sd_card_bmp #(.CLK_FREQ_HZ(1000), .ENABLE_ZOOM(1),
+sd_card_bmp #(.CLK_FREQ_HZ(1000), .AUTO_INTERVAL_MS(1000), .ENABLE_ZOOM(1),
     .FRAME_WIDTH(8), .FRAME_HEIGHT(8)) dut (
     .clk(clk), .rst(rst), .key_next(key_next), .key_auto(key_auto),
     .key_zoom(key_zoom), .write_ready(write_ready), .state_code(state_code),
@@ -166,7 +166,10 @@ always @(posedge clk) begin
 end
 endmodule
 
-module sd_card_top (
+module sd_card_top #(
+    parameter SPI_LOW_SPEED_DIV=248,
+    parameter SPI_HIGH_SPEED_DIV=0
+) (
     input clk, rst, output SD_nCS, SD_DCLK, SD_MOSI, input SD_MISO,
     output sd_init_done, input sd_sec_read, input [31:0] sd_sec_read_addr,
     output [7:0] sd_sec_read_data, output sd_sec_read_data_valid, sd_sec_read_end,

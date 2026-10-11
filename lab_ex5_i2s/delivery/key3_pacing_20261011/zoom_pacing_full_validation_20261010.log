@@ -1,0 +1,299 @@
+# do run_board_zoom_tests.do
+# C:/Users/j1573/Documents/ChatGPT/PLD/repo-zoom-fix/lab_ex5_i2s
+# C:/Users/j1573/Documents/ChatGPT/PLD/repo-zoom-fix/lab_ex5_i2s/scaler_sim_build
+# Model Technology ModelSim - Intel FPGA Edition vmap 2020.1 Lib Mapping Utility 2020.02 Feb 28 2020
+# vmap work work 
+# Copying D:/j1573/modelsim/modelsim_ase/win32aloem/../modelsim.ini to modelsim.ini
+# Modifying modelsim.ini
+# C:/Users/j1573/Documents/ChatGPT/PLD/repo-zoom-fix/lab_ex5_i2s/src/user_source/hdl_source/team
+# Model Technology ModelSim - Intel FPGA Edition vlog 2020.1 Compiler 2020.02 Feb 28 2020
+# Start time: 23:43:19 on Oct 10,2026
+# vlog C:/Users/j1573/Documents/ChatGPT/PLD/repo-zoom-fix/lab_ex5_i2s/src/user_source/hdl_source/team/image_scaler_2x_pingpong.v C:/Users/j1573/Documents/ChatGPT/PLD/repo-zoom-fix/lab_ex5_i2s/src/user_source/hdl_source/team/bmp_center_zoom_2x.v C:/Users/j1573/Documents/ChatGPT/PLD/repo-zoom-fix/lab_ex5_i2s/src/user_source/hdl_source/team/tb_bmp_center_zoom_2x.v 
+# -- Compiling module image_scaler_2x_pingpong
+# -- Compiling module bmp_center_zoom_2x
+# -- Compiling module tb_bmp_center_zoom_2x
+# 
+# Top level modules:
+# 	tb_bmp_center_zoom_2x
+# End time: 23:43:19 on Oct 10,2026, Elapsed time: 0:00:00
+# Errors: 0, Warnings: 0
+# vsim -c -onfinish stop work.tb_bmp_center_zoom_2x 
+# Start time: 23:43:19 on Oct 10,2026
+# Loading work.tb_bmp_center_zoom_2x
+# Loading work.bmp_center_zoom_2x
+# Loading work.image_scaler_2x_pingpong
+# [PASS] 8x8 mode=0 pixels=64, border/last/handshake correct
+# [PASS] 8x8 mode=1 pixels=64, border/last/handshake correct
+# [PASS] 8x8 mode=0 pixels=64, border/last/handshake correct
+# [PASS] Unpausable input overflow detected; frame not marked complete
+# [PASS] 8x8 mode=1 pixels=64, border/last/handshake correct
+# [PASS] Pass-through overflow detected
+# [PASS] 8x8 mode=0 pixels=64, border/last/handshake correct
+# [TEST PASS] BMP center zoom and 1x/2x/1x frame switching are correct.
+# ** Note: $finish    : C:/Users/j1573/Documents/ChatGPT/PLD/repo-zoom-fix/lab_ex5_i2s/src/user_source/hdl_source/team/tb_bmp_center_zoom_2x.v(102)
+#    Time: 36210 ns  Iteration: 1  Instance: /tb_bmp_center_zoom_2x
+# Break in Module tb_bmp_center_zoom_2x at C:/Users/j1573/Documents/ChatGPT/PLD/repo-zoom-fix/lab_ex5_i2s/src/user_source/hdl_source/team/tb_bmp_center_zoom_2x.v line 102
+# Stopped at C:/Users/j1573/Documents/ChatGPT/PLD/repo-zoom-fix/lab_ex5_i2s/src/user_source/hdl_source/team/tb_bmp_center_zoom_2x.v line 102
+# End time: 23:43:20 on Oct 10,2026, Elapsed time: 0:00:01
+# Errors: 0, Warnings: 0
+# vsim -c -onfinish stop work.tb_bmp_center_zoom_2x -gH=480 -gW=640 
+# Start time: 23:43:20 on Oct 10,2026
+# Loading work.tb_bmp_center_zoom_2x
+# Loading work.bmp_center_zoom_2x
+# Loading work.image_scaler_2x_pingpong
+# [PASS] 640x480 mode=0 pixels=307200, border/last/handshake correct
+# [PASS] 640x480 mode=1 pixels=307200, border/last/handshake correct
+# [PASS] 640x480 mode=0 pixels=307200, border/last/handshake correct
+# [TEST PASS] BMP center zoom and 1x/2x/1x frame switching are correct.
+# ** Note: $finish    : C:/Users/j1573/Documents/ChatGPT/PLD/repo-zoom-fix/lab_ex5_i2s/src/user_source/hdl_source/team/tb_bmp_center_zoom_2x.v(102)
+#    Time: 73728190 ns  Iteration: 1  Instance: /tb_bmp_center_zoom_2x
+# Break in Module tb_bmp_center_zoom_2x at C:/Users/j1573/Documents/ChatGPT/PLD/repo-zoom-fix/lab_ex5_i2s/src/user_source/hdl_source/team/tb_bmp_center_zoom_2x.v line 102
+# Stopped at C:/Users/j1573/Documents/ChatGPT/PLD/repo-zoom-fix/lab_ex5_i2s/src/user_source/hdl_source/team/tb_bmp_center_zoom_2x.v line 102
+# End time: 23:43:32 on Oct 10,2026, Elapsed time: 0:00:12
+# Errors: 0, Warnings: 0
+# reading D:/j1573/modelsim/modelsim_ase/win32aloem/../modelsim.ini
+#  do run_board_zoom_control_tests.do
+# C:/Users/j1573/Documents/ChatGPT/PLD/repo-zoom-fix/lab_ex5_i2s
+# C:/Users/j1573/Documents/ChatGPT/PLD/repo-zoom-fix/lab_ex5_i2s/scaler_sim_build/board_control
+# Model Technology ModelSim - Intel FPGA Edition vmap 2020.1 Lib Mapping Utility 2020.02 Feb 28 2020
+# vmap board_control C:/Users/j1573/Documents/ChatGPT/PLD/repo-zoom-fix/lab_ex5_i2s/scaler_sim_build/board_control/work 
+# Copying D:/j1573/modelsim/modelsim_ase/win32aloem/../modelsim.ini to modelsim.ini
+# Modifying modelsim.ini
+# C:/Users/j1573/Documents/ChatGPT/PLD/repo-zoom-fix/lab_ex5_i2s/src/user_source/hdl_source
+# Model Technology ModelSim - Intel FPGA Edition vlog 2020.1 Compiler 2020.02 Feb 28 2020
+# Start time: 23:43:33 on Oct 10,2026
+# vlog -work board_control C:/Users/j1573/Documents/ChatGPT/PLD/repo-zoom-fix/lab_ex5_i2s/src/user_source/hdl_source/team/image_scaler_2x_pingpong.v C:/Users/j1573/Documents/ChatGPT/PLD/repo-zoom-fix/lab_ex5_i2s/src/user_source/hdl_source/team/bmp_center_zoom_2x.v C:/Users/j1573/Documents/ChatGPT/PLD/repo-zoom-fix/lab_ex5_i2s/src/user_source/hdl_source/SD/sd_card_bmp.v C:/Users/j1573/Documents/ChatGPT/PLD/repo-zoom-fix/lab_ex5_i2s/tb_board_zoom_control.v 
+# -- Compiling module image_scaler_2x_pingpong
+# -- Compiling module bmp_center_zoom_2x
+# -- Compiling module sd_card_bmp
+# -- Compiling module key_press_debounce
+# -- Compiling module tb_board_zoom_control
+# -- Compiling module bmp_read
+# -- Compiling module sd_card_top
+# 
+# Top level modules:
+# 	tb_board_zoom_control
+# End time: 23:43:33 on Oct 10,2026, Elapsed time: 0:00:00
+# Errors: 0, Warnings: 0
+# vsim -onfinish stop board_control.tb_board_zoom_control 
+# Start time: 23:43:33 on Oct 10,2026
+# Loading board_control.tb_board_zoom_control
+# Loading board_control.sd_card_bmp
+# Loading board_control.key_press_debounce
+# Loading board_control.bmp_read
+# Loading board_control.sd_card_top
+# Loading board_control.bmp_center_zoom_2x
+# Loading board_control.image_scaler_2x_pingpong
+# ** Warning: (vsim-2685) [TFMPC] - Too few port connections for 'dut'.  Expected 25, found 23.
+#    Time: 0 ps  Iteration: 0  Instance: /tb_board_zoom_control/dut File: C:/Users/j1573/Documents/ChatGPT/PLD/repo-zoom-fix/lab_ex5_i2s/tb_board_zoom_control.v Line: 19
+# ** Warning: (vsim-3722) C:/Users/j1573/Documents/ChatGPT/PLD/repo-zoom-fix/lab_ex5_i2s/tb_board_zoom_control.v(19): [TFMPC] - Missing connection for port 'audio_track_idx'.
+# ** Warning: (vsim-3722) C:/Users/j1573/Documents/ChatGPT/PLD/repo-zoom-fix/lab_ex5_i2s/tb_board_zoom_control.v(19): [TFMPC] - Missing connection for port 'audio_track_toggle'.
+# [INFO] load=1 mode=0 sector=11 buffer=0
+# [PASS] Initial normal frame committed
+# [INFO] load=2 mode=1 sector=11 buffer=1
+# [PASS] Write completion arrives before source file end
+# [PASS] KEY3 debounce/hold and center 2x reload
+# [INFO] load=3 mode=0 sector=11 buffer=0
+# [PASS] KEY3 returns to normal
+# [INFO] load=4 mode=1 sector=11 buffer=1
+# [PASS] Write completion arrives before source file end
+# [INFO] load=5 mode=0 sector=11 buffer=0
+# [PASS] Second press while loading retained and applied
+# [INFO] load=6 mode=0 sector=13 buffer=1
+# [PASS] Original next-picture key preserved
+# [INFO] load=7 mode=0 sector=11 buffer=0
+# [PASS] Original auto-play key preserved
+# [INFO] load=8 mode=1 sector=11 buffer=1
+# [PASS] Overflow keeps old frame and reports F (reset required)
+# [INFO] load=9 mode=0 sector=11 buffer=0
+# [PASS] Board reset restores normal initial load
+# [TEST PASS] Board zoom controller integration is correct.
+# ** Note: $finish    : C:/Users/j1573/Documents/ChatGPT/PLD/repo-zoom-fix/lab_ex5_i2s/tb_board_zoom_control.v(120)
+#    Time: 63200 ns  Iteration: 1  Instance: /tb_board_zoom_control
+# Break in Module tb_board_zoom_control at C:/Users/j1573/Documents/ChatGPT/PLD/repo-zoom-fix/lab_ex5_i2s/tb_board_zoom_control.v line 120
+# Stopped at C:/Users/j1573/Documents/ChatGPT/PLD/repo-zoom-fix/lab_ex5_i2s/tb_board_zoom_control.v line 120
+# End time: 23:43:33 on Oct 10,2026, Elapsed time: 0:00:00
+# Errors: 0, Warnings: 3
+#  do run_board_zoom_fifo_tests.do
+# C:/Users/j1573/Documents/ChatGPT/PLD/repo-zoom-fix/lab_ex5_i2s
+# C:/Users/j1573/Documents/ChatGPT/PLD/repo-zoom-fix/lab_ex5_i2s/scaler_sim_build/board_fifo
+# Model Technology ModelSim - Intel FPGA Edition vmap 2020.1 Lib Mapping Utility 2020.02 Feb 28 2020
+# vmap board_fifo C:/Users/j1573/Documents/ChatGPT/PLD/repo-zoom-fix/lab_ex5_i2s/scaler_sim_build/board_fifo/work 
+# Modifying modelsim.ini
+# C:/Users/j1573/Documents/ChatGPT/PLD/repo-zoom-fix/lab_ex5_i2s/src/user_source/hdl_source
+# Model Technology ModelSim - Intel FPGA Edition vlog 2020.1 Compiler 2020.02 Feb 28 2020
+# Start time: 23:43:33 on Oct 10,2026
+# vlog -work board_fifo C:/Users/j1573/Documents/ChatGPT/PLD/repo-zoom-fix/lab_ex5_i2s/src/user_source/hdl_source/IP/afifo_16_32_256.v C:/Users/j1573/Documents/ChatGPT/PLD/repo-zoom-fix/lab_ex5_i2s/src/user_source/hdl_source/IP/afifo_32_16_256.v C:/Users/j1573/Documents/ChatGPT/PLD/repo-zoom-fix/lab_ex5_i2s/src/user_source/hdl_source/SD/frame_fifo_write.v C:/Users/j1573/Documents/ChatGPT/PLD/repo-zoom-fix/lab_ex5_i2s/src/user_source/hdl_source/SD/frame_fifo_read.v C:/Users/j1573/Documents/ChatGPT/PLD/repo-zoom-fix/lab_ex5_i2s/src/user_source/hdl_source/SD/frame_read_write.v C:/Users/j1573/Documents/ChatGPT/PLD/repo-zoom-fix/lab_ex5_i2s/src/user_source/hdl_source/team/image_scaler_2x_pingpong.v C:/Users/j1573/Documents/ChatGPT/PLD/repo-zoom-fix/lab_ex5_i2s/src/user_source/hdl_source/team/bmp_center_zoom_2x.v C:/Users/j1573/Documents/ChatGPT/PLD/repo-zoom-fix/lab_ex5_i2s/tb_board_zoom_fifo.v 
+# -- Compiling module wfifo_32_32_512
+# -- Compiling module fifo_cross_domain_addr_process_al_wfifo_32_32_512
+# -- Compiling module ram_infer_wfifo_32_32_512
+# -- Compiling module rfifo_32_32_512
+# -- Compiling module fifo_cross_domain_addr_process_al_rfifo_32_32_512
+# -- Compiling module ram_infer_rfifo_32_32_512
+# -- Compiling module frame_fifo_write
+# -- Compiling module frame_fifo_read
+# -- Compiling module frame_read_write
+# -- Compiling module image_scaler_2x_pingpong
+# -- Compiling module bmp_center_zoom_2x
+# -- Compiling module tb_board_zoom_fifo
+# 
+# Top level modules:
+# 	tb_board_zoom_fifo
+# End time: 23:43:33 on Oct 10,2026, Elapsed time: 0:00:00
+# Errors: 0, Warnings: 0
+# vsim -onfinish stop board_fifo.tb_board_zoom_fifo 
+# Start time: 23:43:33 on Oct 10,2026
+# Loading board_fifo.tb_board_zoom_fifo
+# Loading board_fifo.bmp_center_zoom_2x
+# Loading board_fifo.image_scaler_2x_pingpong
+# Loading board_fifo.frame_read_write
+# Loading board_fifo.wfifo_32_32_512
+# Loading board_fifo.fifo_cross_domain_addr_process_al_wfifo_32_32_512
+# Loading board_fifo.ram_infer_wfifo_32_32_512
+# Loading board_fifo.frame_fifo_write
+# Loading board_fifo.rfifo_32_32_512
+# Loading board_fifo.fifo_cross_domain_addr_process_al_rfifo_32_32_512
+# Loading board_fifo.ram_infer_rfifo_32_32_512
+# Loading board_fifo.frame_fifo_read
+# ** Warning: (vsim-2685) [TFMPC] - Too few port connections for 'write_buf'.  Expected 14, found 11.
+#    Time: 0 ps  Iteration: 0  Instance: /tb_board_zoom_fifo/store/write_buf File: C:/Users/j1573/Documents/ChatGPT/PLD/repo-zoom-fix/lab_ex5_i2s/src/user_source/hdl_source/SD/frame_read_write.v Line: 102
+# ** Warning: (vsim-3722) C:/Users/j1573/Documents/ChatGPT/PLD/repo-zoom-fix/lab_ex5_i2s/src/user_source/hdl_source/SD/frame_read_write.v(102): [TFMPC] - Missing connection for port 'valid'.
+# ** Warning: (vsim-3722) C:/Users/j1573/Documents/ChatGPT/PLD/repo-zoom-fix/lab_ex5_i2s/src/user_source/hdl_source/SD/frame_read_write.v(102): [TFMPC] - Missing connection for port 'afull'.
+# ** Warning: (vsim-3722) C:/Users/j1573/Documents/ChatGPT/PLD/repo-zoom-fix/lab_ex5_i2s/src/user_source/hdl_source/SD/frame_read_write.v(102): [TFMPC] - Missing connection for port 'aempty'.
+# ** Warning: (vsim-2685) [TFMPC] - Too few port connections for 'ram_inst'.  Expected 16, found 14.
+#    Time: 0 ps  Iteration: 0  Instance: /tb_board_zoom_fifo/store/write_buf/ram_inst File: C:/Users/j1573/Documents/ChatGPT/PLD/repo-zoom-fix/lab_ex5_i2s/src/user_source/hdl_source/IP/afifo_16_32_256.v Line: 231
+# ** Warning: (vsim-3722) C:/Users/j1573/Documents/ChatGPT/PLD/repo-zoom-fix/lab_ex5_i2s/src/user_source/hdl_source/IP/afifo_16_32_256.v(231): [TFMPC] - Missing connection for port 'doa'.
+# ** Warning: (vsim-3722) C:/Users/j1573/Documents/ChatGPT/PLD/repo-zoom-fix/lab_ex5_i2s/src/user_source/hdl_source/IP/afifo_16_32_256.v(231): [TFMPC] - Missing connection for port 'dib'.
+# ** Warning: (vsim-2685) [TFMPC] - Too few port connections for 'read_buf'.  Expected 14, found 11.
+#    Time: 0 ps  Iteration: 0  Instance: /tb_board_zoom_fifo/store/read_buf File: C:/Users/j1573/Documents/ChatGPT/PLD/repo-zoom-fix/lab_ex5_i2s/src/user_source/hdl_source/SD/frame_read_write.v Line: 154
+# ** Warning: (vsim-3722) C:/Users/j1573/Documents/ChatGPT/PLD/repo-zoom-fix/lab_ex5_i2s/src/user_source/hdl_source/SD/frame_read_write.v(154): [TFMPC] - Missing connection for port 'valid'.
+# ** Warning: (vsim-3722) C:/Users/j1573/Documents/ChatGPT/PLD/repo-zoom-fix/lab_ex5_i2s/src/user_source/hdl_source/SD/frame_read_write.v(154): [TFMPC] - Missing connection for port 'afull'.
+# ** Warning: (vsim-3722) C:/Users/j1573/Documents/ChatGPT/PLD/repo-zoom-fix/lab_ex5_i2s/src/user_source/hdl_source/SD/frame_read_write.v(154): [TFMPC] - Missing connection for port 'aempty'.
+# ** Warning: (vsim-2685) [TFMPC] - Too few port connections for 'ram_inst'.  Expected 16, found 14.
+#    Time: 0 ps  Iteration: 0  Instance: /tb_board_zoom_fifo/store/read_buf/ram_inst File: C:/Users/j1573/Documents/ChatGPT/PLD/repo-zoom-fix/lab_ex5_i2s/src/user_source/hdl_source/IP/afifo_32_16_256.v Line: 231
+# ** Warning: (vsim-3722) C:/Users/j1573/Documents/ChatGPT/PLD/repo-zoom-fix/lab_ex5_i2s/src/user_source/hdl_source/IP/afifo_32_16_256.v(231): [TFMPC] - Missing connection for port 'doa'.
+# ** Warning: (vsim-3722) C:/Users/j1573/Documents/ChatGPT/PLD/repo-zoom-fix/lab_ex5_i2s/src/user_source/hdl_source/IP/afifo_32_16_256.v(231): [TFMPC] - Missing connection for port 'dib'.
+# [PASS] Real async FIFO / vertical address flip mode=0 buffer=0 words=768
+# [PASS] Real FIFO full pauses scaled output
+# [PASS] Real async FIFO / vertical address flip mode=1 buffer=1 words=768
+# [PASS] Real async FIFO / vertical address flip mode=0 buffer=0 words=768
+# [TEST PASS] Center zoom to original FIFO/address scheduler is correct.
+# ** Note: $finish    : C:/Users/j1573/Documents/ChatGPT/PLD/repo-zoom-fix/lab_ex5_i2s/tb_board_zoom_fifo.v(89)
+#    Time: 186930 ns  Iteration: 1  Instance: /tb_board_zoom_fifo
+# Break in Module tb_board_zoom_fifo at C:/Users/j1573/Documents/ChatGPT/PLD/repo-zoom-fix/lab_ex5_i2s/tb_board_zoom_fifo.v line 89
+# Stopped at C:/Users/j1573/Documents/ChatGPT/PLD/repo-zoom-fix/lab_ex5_i2s/tb_board_zoom_fifo.v line 89
+# End time: 23:43:34 on Oct 10,2026, Elapsed time: 0:00:01
+# Errors: 0, Warnings: 14
+#  set diag_height 480
+# 480
+#  set forced_refresh 0
+# 0
+#  set output_div 1
+# 1
+#  set pace_zoom 1
+# 1
+#  do run_zoom_real_sdram.do
+# C:/Users/j1573/Documents/ChatGPT/PLD/repo-zoom-fix/lab_ex5_i2s
+# C:/Users/j1573/Documents/ChatGPT/PLD/repo-zoom-fix/lab_ex5_i2s/scaler_sim_build/real_sdram_diag
+# Model Technology ModelSim - Intel FPGA Edition vmap 2020.1 Lib Mapping Utility 2020.02 Feb 28 2020
+# vmap real_sdram_diag C:/Users/j1573/Documents/ChatGPT/PLD/repo-zoom-fix/lab_ex5_i2s/scaler_sim_build/real_sdram_diag/work 
+# Modifying modelsim.ini
+# C:/Users/j1573/Documents/ChatGPT/PLD/repo-zoom-fix/lab_ex5_i2s/src/user_source/hdl_source
+# Model Technology ModelSim - Intel FPGA Edition vlog 2020.1 Compiler 2020.02 Feb 28 2020
+# Start time: 23:43:34 on Oct 10,2026
+# vlog -work real_sdram_diag "+incdir+src/td_project" "+incdir+src/user_source/hdl_source/include" src/user_source/hdl_source/include/sdr_as_ram.enc.v src/user_source/hdl_source/include/sdr_init_ref.enc.v src/user_source/hdl_source/include/sdr_wrrd.enc.v 
+# -- Compiling module sdr_as_ram
+# -- Compiling module sdr_init_ref
+# ** Warning: src/user_source/hdl_source/include/sdr_init_ref.enc.v(207): (vlog-2121) Illegal concatenation of an unsized constant. Will treat it as a 32-bit value.
+# ** Warning: src/user_source/hdl_source/include/sdr_wrrd.enc.v(77): (vlog-2121) Illegal concatenation of an unsized constant. Will treat it as a 32-bit value.
+# 
+# Top level modules:
+# 	sdr_as_ram
+# End time: 23:43:35 on Oct 10,2026, Elapsed time: 0:00:01
+# Errors: 0, Warnings: 2
+# Model Technology ModelSim - Intel FPGA Edition vlog 2020.1 Compiler 2020.02 Feb 28 2020
+# Start time: 23:43:35 on Oct 10,2026
+# vlog -work real_sdram_diag C:/Users/j1573/Documents/ChatGPT/PLD/repo-zoom-fix/lab_ex5_i2s/src/user_source/hdl_source/IP/afifo_16_32_256.v C:/Users/j1573/Documents/ChatGPT/PLD/repo-zoom-fix/lab_ex5_i2s/src/user_source/hdl_source/IP/afifo_32_16_256.v C:/Users/j1573/Documents/ChatGPT/PLD/repo-zoom-fix/lab_ex5_i2s/src/user_source/hdl_source/SD/frame_fifo_write.v C:/Users/j1573/Documents/ChatGPT/PLD/repo-zoom-fix/lab_ex5_i2s/src/user_source/hdl_source/SD/frame_fifo_read.v C:/Users/j1573/Documents/ChatGPT/PLD/repo-zoom-fix/lab_ex5_i2s/src/user_source/hdl_source/SD/frame_read_write.v C:/Users/j1573/Documents/ChatGPT/PLD/repo-zoom-fix/lab_ex5_i2s/src/user_source/hdl_source/team/image_scaler_2x_pingpong.v C:/Users/j1573/Documents/ChatGPT/PLD/repo-zoom-fix/lab_ex5_i2s/src/user_source/hdl_source/team/bmp_center_zoom_2x.v C:/Users/j1573/Documents/ChatGPT/PLD/repo-zoom-fix/lab_ex5_i2s/diagnostic_sdram_pin_model.v C:/Users/j1573/Documents/ChatGPT/PLD/repo-zoom-fix/lab_ex5_i2s/tb_zoom_real_sdram.v 
+# -- Compiling module wfifo_32_32_512
+# -- Compiling module fifo_cross_domain_addr_process_al_wfifo_32_32_512
+# -- Compiling module ram_infer_wfifo_32_32_512
+# -- Compiling module rfifo_32_32_512
+# -- Compiling module fifo_cross_domain_addr_process_al_rfifo_32_32_512
+# -- Compiling module ram_infer_rfifo_32_32_512
+# -- Compiling module frame_fifo_write
+# -- Compiling module frame_fifo_read
+# -- Compiling module frame_read_write
+# -- Compiling module image_scaler_2x_pingpong
+# -- Compiling module bmp_center_zoom_2x
+# -- Compiling module sdram_pin_model
+# -- Compiling module tb_zoom_real_sdram
+# 
+# Top level modules:
+# 	tb_zoom_real_sdram
+# End time: 23:43:35 on Oct 10,2026, Elapsed time: 0:00:00
+# Errors: 0, Warnings: 0
+# vsim -onfinish stop real_sdram_diag.tb_zoom_real_sdram -gH=480 -gFORCED_REFRESH=0 -gPACE_ZOOM=1 -gOUTPUT_DIV=1 
+# Start time: 23:43:35 on Oct 10,2026
+# Loading real_sdram_diag.tb_zoom_real_sdram
+# Loading real_sdram_diag.sdr_as_ram
+# Loading real_sdram_diag.sdr_init_ref
+# Loading real_sdram_diag.sdram_pin_model
+# Loading real_sdram_diag.bmp_center_zoom_2x
+# Loading real_sdram_diag.image_scaler_2x_pingpong
+# Loading real_sdram_diag.frame_read_write
+# Loading real_sdram_diag.wfifo_32_32_512
+# Loading real_sdram_diag.fifo_cross_domain_addr_process_al_wfifo_32_32_512
+# Loading real_sdram_diag.ram_infer_wfifo_32_32_512
+# Loading real_sdram_diag.frame_fifo_write
+# Loading real_sdram_diag.rfifo_32_32_512
+# Loading real_sdram_diag.fifo_cross_domain_addr_process_al_rfifo_32_32_512
+# Loading real_sdram_diag.ram_infer_rfifo_32_32_512
+# Loading real_sdram_diag.frame_fifo_read
+# ** Warning: (vsim-3015) [PCDPC] - Port size (21) does not match connection size (32) for port 'read_addr_1'. The port definition is at: C:/Users/j1573/Documents/ChatGPT/PLD/repo-zoom-fix/lab_ex5_i2s/src/user_source/hdl_source/SD/frame_read_write.v(40).
+#    Time: 0 ps  Iteration: 0  Instance: /tb_zoom_real_sdram/store File: C:/Users/j1573/Documents/ChatGPT/PLD/repo-zoom-fix/lab_ex5_i2s/tb_zoom_real_sdram.v Line: 107
+# ** Warning: (vsim-3015) [PCDPC] - Port size (21) does not match connection size (32) for port 'read_len'. The port definition is at: C:/Users/j1573/Documents/ChatGPT/PLD/repo-zoom-fix/lab_ex5_i2s/src/user_source/hdl_source/SD/frame_read_write.v(44).
+#    Time: 0 ps  Iteration: 0  Instance: /tb_zoom_real_sdram/store File: C:/Users/j1573/Documents/ChatGPT/PLD/repo-zoom-fix/lab_ex5_i2s/tb_zoom_real_sdram.v Line: 107
+# ** Warning: (vsim-3015) [PCDPC] - Port size (21) does not match connection size (32) for port 'write_addr_1'. The port definition is at: C:/Users/j1573/Documents/ChatGPT/PLD/repo-zoom-fix/lab_ex5_i2s/src/user_source/hdl_source/SD/frame_read_write.v(66).
+#    Time: 0 ps  Iteration: 0  Instance: /tb_zoom_real_sdram/store File: C:/Users/j1573/Documents/ChatGPT/PLD/repo-zoom-fix/lab_ex5_i2s/tb_zoom_real_sdram.v Line: 107
+# ** Warning: (vsim-3015) [PCDPC] - Port size (21) does not match connection size (32) for port 'write_len'. The port definition is at: C:/Users/j1573/Documents/ChatGPT/PLD/repo-zoom-fix/lab_ex5_i2s/src/user_source/hdl_source/SD/frame_read_write.v(70).
+#    Time: 0 ps  Iteration: 0  Instance: /tb_zoom_real_sdram/store File: C:/Users/j1573/Documents/ChatGPT/PLD/repo-zoom-fix/lab_ex5_i2s/tb_zoom_real_sdram.v Line: 107
+# ** Warning: (vsim-2685) [TFMPC] - Too few port connections for 'write_buf'.  Expected 14, found 11.
+#    Time: 0 ps  Iteration: 0  Instance: /tb_zoom_real_sdram/store/write_buf File: C:/Users/j1573/Documents/ChatGPT/PLD/repo-zoom-fix/lab_ex5_i2s/src/user_source/hdl_source/SD/frame_read_write.v Line: 102
+# ** Warning: (vsim-3722) C:/Users/j1573/Documents/ChatGPT/PLD/repo-zoom-fix/lab_ex5_i2s/src/user_source/hdl_source/SD/frame_read_write.v(102): [TFMPC] - Missing connection for port 'valid'.
+# ** Warning: (vsim-3722) C:/Users/j1573/Documents/ChatGPT/PLD/repo-zoom-fix/lab_ex5_i2s/src/user_source/hdl_source/SD/frame_read_write.v(102): [TFMPC] - Missing connection for port 'afull'.
+# ** Warning: (vsim-3722) C:/Users/j1573/Documents/ChatGPT/PLD/repo-zoom-fix/lab_ex5_i2s/src/user_source/hdl_source/SD/frame_read_write.v(102): [TFMPC] - Missing connection for port 'aempty'.
+# ** Warning: (vsim-2685) [TFMPC] - Too few port connections for 'ram_inst'.  Expected 16, found 14.
+#    Time: 0 ps  Iteration: 0  Instance: /tb_zoom_real_sdram/store/write_buf/ram_inst File: C:/Users/j1573/Documents/ChatGPT/PLD/repo-zoom-fix/lab_ex5_i2s/src/user_source/hdl_source/IP/afifo_16_32_256.v Line: 231
+# ** Warning: (vsim-3722) C:/Users/j1573/Documents/ChatGPT/PLD/repo-zoom-fix/lab_ex5_i2s/src/user_source/hdl_source/IP/afifo_16_32_256.v(231): [TFMPC] - Missing connection for port 'doa'.
+# ** Warning: (vsim-3722) C:/Users/j1573/Documents/ChatGPT/PLD/repo-zoom-fix/lab_ex5_i2s/src/user_source/hdl_source/IP/afifo_16_32_256.v(231): [TFMPC] - Missing connection for port 'dib'.
+# ** Warning: (vsim-2685) [TFMPC] - Too few port connections for 'read_buf'.  Expected 14, found 11.
+#    Time: 0 ps  Iteration: 0  Instance: /tb_zoom_real_sdram/store/read_buf File: C:/Users/j1573/Documents/ChatGPT/PLD/repo-zoom-fix/lab_ex5_i2s/src/user_source/hdl_source/SD/frame_read_write.v Line: 154
+# ** Warning: (vsim-3722) C:/Users/j1573/Documents/ChatGPT/PLD/repo-zoom-fix/lab_ex5_i2s/src/user_source/hdl_source/SD/frame_read_write.v(154): [TFMPC] - Missing connection for port 'valid'.
+# ** Warning: (vsim-3722) C:/Users/j1573/Documents/ChatGPT/PLD/repo-zoom-fix/lab_ex5_i2s/src/user_source/hdl_source/SD/frame_read_write.v(154): [TFMPC] - Missing connection for port 'afull'.
+# ** Warning: (vsim-3722) C:/Users/j1573/Documents/ChatGPT/PLD/repo-zoom-fix/lab_ex5_i2s/src/user_source/hdl_source/SD/frame_read_write.v(154): [TFMPC] - Missing connection for port 'aempty'.
+# ** Warning: (vsim-2685) [TFMPC] - Too few port connections for 'ram_inst'.  Expected 16, found 14.
+#    Time: 0 ps  Iteration: 0  Instance: /tb_zoom_real_sdram/store/read_buf/ram_inst File: C:/Users/j1573/Documents/ChatGPT/PLD/repo-zoom-fix/lab_ex5_i2s/src/user_source/hdl_source/IP/afifo_32_16_256.v Line: 231
+# ** Warning: (vsim-3722) C:/Users/j1573/Documents/ChatGPT/PLD/repo-zoom-fix/lab_ex5_i2s/src/user_source/hdl_source/IP/afifo_32_16_256.v(231): [TFMPC] - Missing connection for port 'doa'.
+# ** Warning: (vsim-3722) C:/Users/j1573/Documents/ChatGPT/PLD/repo-zoom-fix/lab_ex5_i2s/src/user_source/hdl_source/IP/afifo_32_16_256.v(231): [TFMPC] - Missing connection for port 'dib'.
+# [WRITE BUS] mode=0 words=230400 unknown=0
+# [PASS] Real async FIFO / vertical address flip mode=0 buffer=0 words=307200
+# [DIAGNOSTIC] mode=0 consumed=307200 underflows=0 write_overlap=30750
+# [WRITE BUS] mode=0 words=230400 unknown=0
+# [PASS] Real async FIFO / vertical address flip mode=0 buffer=1 words=307200
+# [CORE] mode=0 requests=307200 returns=307200 bad=0 refresh=0 trailing_writes=1 protocol=0
+# [PHYSICAL] mode=0 refresh_cmds=0 last_cmd_after_finish_ns=4 last_write_after_finish_ns=20
+# [NEW FRAME] mode=0 base=307200 requests=307200 returns=307200 bad=0 underflows=0
+# [DIAGNOSTIC] mode=1 consumed=307200 underflows=0 write_overlap=37284
+# [WRITE BUS] mode=1 words=230400 unknown=0
+# [PASS] Real async FIFO / vertical address flip mode=1 buffer=1 words=307200
+# [CORE] mode=1 requests=307200 returns=307200 bad=0 refresh=0 trailing_writes=1 protocol=0
+# [PHYSICAL] mode=1 refresh_cmds=0 last_cmd_after_finish_ns=4 last_write_after_finish_ns=20
+# [NEW FRAME] mode=1 base=307200 requests=307200 returns=307200 bad=0 underflows=0
+# [TEST PASS] Center zoom to original FIFO/address scheduler is correct.
+# ** Note: $finish    : C:/Users/j1573/Documents/ChatGPT/PLD/repo-zoom-fix/lab_ex5_i2s/tb_zoom_real_sdram.v(221)
+#    Time: 105511800 ns  Iteration: 1  Instance: /tb_zoom_real_sdram
+# Break in Module tb_zoom_real_sdram at C:/Users/j1573/Documents/ChatGPT/PLD/repo-zoom-fix/lab_ex5_i2s/tb_zoom_real_sdram.v line 221
+# Stopped at C:/Users/j1573/Documents/ChatGPT/PLD/repo-zoom-fix/lab_ex5_i2s/tb_zoom_real_sdram.v line 221
+# End time: 23:48:25 on Oct 10,2026, Elapsed time: 0:04:50
+# Errors: 0, Warnings: 18
+#  quit -f
