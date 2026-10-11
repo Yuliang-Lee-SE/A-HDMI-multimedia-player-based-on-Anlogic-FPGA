@@ -1,0 +1,32 @@
+{
+  "Run": "osd_punctuation_20261011",
+  "Bit": "osd_captions_punctuation.bit",
+  "SHA256": "38A721A66D8706A33E38E1C097798551D4904F01FF7278F5076AF3B426CA3A62",
+  "SetupWNS": 0.136,
+  "SetupTNS": 0,
+  "HoldWNS": 0.003,
+  "HoldTNS": 0,
+  "Status": "Local candidate only; inspect warnings/coverage; board unverified",
+  "SourceCommit": "8e5ca5adc2911386ac8d3e77156080b9866506a3",
+  "PreviousBoardTested": "4d4830f",
+  "Board": "UNVERIFIED punctuation revision",
+  "StorageEvidence": "../osd_three_zoom_20261011/osd_three_storage_20261011.log",
+  "Scope": "Font placement only; storage/control RTL unchanged from board-tested version; storage regression not repeated",
+  "MappedRomInitCheck": {
+    "status": "PASS",
+    "text_entries": 512,
+    "glyph_rows": 2048,
+    "bram_cells": [
+      "u_osd_text/resources/ramread0_syn_6",
+      "u_osd_text/resources/ramread1_syn_5",
+      "u_osd_text/resources/ramread1_syn_10",
+      "u_osd_text/resources/ramread1_syn_15",
+      "u_osd_text/resources/ramread1_syn_20"
+    ],
+    "source_sha256": "ec8e225c5475845bd865fb6386a5602cda17821a6d8c6d2cf17bb5256292de10",
+    "audit_sha256": "3decc38a1b7abdcb0e9b1774fd681d42b0d39c4a274e07217e9919581a94bafc",
+    "note": "Mapped gate database ROM INIT words match generated text/glyph data; frontend HDL-5314 does not imply lost ROM initialization in this build",
+    "gate_db_sha256": "4c79692e31c87564a89af6335a81dfad969bcc66c3661f2ea4c14decdf54074c",
+    "mapped_netlist_sha256": "27b9f1da0b5939cb10da458505787141c4b3073267e306807941f9c10abfa372"
+  }
+}
