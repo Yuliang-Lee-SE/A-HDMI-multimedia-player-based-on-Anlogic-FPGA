@@ -1,0 +1,624 @@
+# do run_osd_validation.do
+# C:/Users/j1573/Documents/ChatGPT/PLD/repo-osd-scroll/lab_ex5_i2s
+# Model Technology ModelSim - Intel FPGA Edition vmap 2020.1 Lib Mapping Utility 2020.02 Feb 28 2020
+# vmap osd_work osd_sim_build/work 
+# Modifying modelsim.ini
+# src/user_source/hdl_source
+# Model Technology ModelSim - Intel FPGA Edition vlog 2020.1 Compiler 2020.02 Feb 28 2020
+# Start time: 22:24:13 on Oct 11,2026
+# vlog -work osd_work src/user_source/hdl_source/team/osd_resources.v src/user_source/hdl_source/team/osd_text_renderer.v tb_osd_pixels.v 
+# -- Compiling module osd_resources
+# -- Compiling module osd_text_lengths
+# -- Compiling module osd_text_renderer
+# -- Compiling module osd_scroll_ctrl
+# -- Compiling module tb_osd_pixels
+# 
+# Top level modules:
+# 	tb_osd_pixels
+# End time: 22:24:13 on Oct 11,2026, Elapsed time: 0:00:00
+# Errors: 0, Warnings: 0
+# vsim -onfinish stop osd_work.tb_osd_pixels 
+# Start time: 22:24:13 on Oct 11,2026
+# Loading osd_work.tb_osd_pixels
+# Loading osd_work.osd_text_renderer
+# Loading osd_work.osd_text_lengths
+# Loading osd_work.osd_scroll_ctrl
+# Loading osd_work.osd_resources
+# FRAME 0 checked pixels=307200 errors=0
+# FRAME 1 checked pixels=614400 errors=0
+# FRAME 2 checked pixels=921600 errors=0
+# FRAME 3 checked pixels=1228800 errors=0
+# FRAME 4 checked pixels=1536000 errors=0
+# FRAME 5 checked pixels=1843200 errors=0
+# FRAME 6 checked pixels=2150400 errors=0
+# OSD PIXELS COMPLETE checked=2150400 errors=0
+# ** Note: $finish    : tb_osd_pixels.v(60)
+#    Time: 21773890 ns  Iteration: 1  Instance: /tb_osd_pixels
+# Break in Module tb_osd_pixels at tb_osd_pixels.v line 60
+# Stopped at tb_osd_pixels.v line 60
+# End time: 22:24:44 on Oct 11,2026, Elapsed time: 0:00:31
+# Errors: 0, Warnings: 0
+# Model Technology ModelSim - Intel FPGA Edition vlog 2020.1 Compiler 2020.02 Feb 28 2020
+# Start time: 22:24:44 on Oct 11,2026
+# vlog -work osd_work src/user_source/hdl_source/osd_overlay.v src/user_source/hdl_source/team/waveform_overlay.v tb_osd_rom.v tb_osd_pipeline.v 
+# -- Compiling module osd_overlay
+# -- Compiling module waveform_overlay
+# -- Compiling module tb_osd_rom
+# -- Compiling module tb_osd_pipeline
+# 
+# Top level modules:
+# 	tb_osd_rom
+# 	tb_osd_pipeline
+# End time: 22:24:45 on Oct 11,2026, Elapsed time: 0:00:01
+# Errors: 0, Warnings: 0
+# vsim -onfinish stop osd_work.tb_osd_rom 
+# Start time: 22:24:45 on Oct 11,2026
+# Loading osd_work.tb_osd_rom
+# Loading osd_work.osd_resources
+# OSD ROM COMPLETE errors=0
+# ** Note: $finish    : tb_osd_rom.v(18)
+#    Time: 20486 ns  Iteration: 0  Instance: /tb_osd_rom
+# Break in Module tb_osd_rom at tb_osd_rom.v line 18
+# Stopped at tb_osd_rom.v line 18
+# End time: 22:24:46 on Oct 11,2026, Elapsed time: 0:00:01
+# Errors: 0, Warnings: 0
+# vsim -onfinish stop osd_work.tb_osd_pipeline 
+# Start time: 22:24:46 on Oct 11,2026
+# Loading osd_work.tb_osd_pipeline
+# Loading osd_work.osd_overlay
+# Loading osd_work.osd_text_renderer
+# Loading osd_work.osd_text_lengths
+# Loading osd_work.osd_scroll_ctrl
+# Loading osd_work.osd_resources
+# Loading osd_work.waveform_overlay
+# OSD STATUS/WAVEFORM PIPELINE COMPLETE checked=294144 errors=0
+# ** Note: $finish    : tb_osd_pipeline.v(50)
+#    Time: 3126750 ns  Iteration: 1  Instance: /tb_osd_pipeline
+# Break in Module tb_osd_pipeline at tb_osd_pipeline.v line 50
+# Stopped at tb_osd_pipeline.v line 50
+# End time: 22:24:59 on Oct 11,2026, Elapsed time: 0:00:13
+# Errors: 0, Warnings: 0
+#  do run_osd_video_commit.do
+# Model Technology ModelSim - Intel FPGA Edition vmap 2020.1 Lib Mapping Utility 2020.02 Feb 28 2020
+# vmap osd_video osd_video_sim_build/work 
+# Modifying modelsim.ini
+# src/user_source/hdl_source
+# Model Technology ModelSim - Intel FPGA Edition vlog 2020.1 Compiler 2020.02 Feb 28 2020
+# Start time: 22:24:59 on Oct 11,2026
+# vlog -work osd_video "+incdir+src/td_project" src/user_source/hdl_source/SD/color_bar.v src/user_source/hdl_source/SD/video_timing_data.v src/user_source/hdl_source/SD/frame_fifo_read.v src/user_source/hdl_source/team/osd_display_commit.v tb_osd_video_commit.v 
+# -- Compiling module color_bar
+# -- Compiling module video_timing_data
+# -- Compiling module frame_fifo_read
+# -- Compiling module osd_display_commit
+# -- Compiling module tb_osd_video_commit
+# 
+# Top level modules:
+# 	tb_osd_video_commit
+# End time: 22:24:59 on Oct 11,2026, Elapsed time: 0:00:00
+# Errors: 0, Warnings: 0
+# vsim -onfinish stop osd_video.tb_osd_video_commit 
+# Start time: 22:25:00 on Oct 11,2026
+# Loading osd_video.tb_osd_video_commit
+# Loading osd_video.video_timing_data
+# Loading osd_video.color_bar
+# Loading osd_video.osd_display_commit
+# Loading osd_video.frame_fifo_read
+# REAL VIDEO/READ SCHEDULER COMMIT COMPLETE frames=4 commits=4 errors=0
+# ** Note: $finish    : tb_osd_video_commit.v(63)
+#    Time: 67489400 ns  Iteration: 1  Instance: /tb_osd_video_commit
+# Break in Module tb_osd_video_commit at tb_osd_video_commit.v line 63
+# Stopped at tb_osd_video_commit.v line 63
+# End time: 22:27:17 on Oct 11,2026, Elapsed time: 0:02:17
+# Errors: 0, Warnings: 0
+#  do run_half_canvas.do
+# Model Technology ModelSim - Intel FPGA Edition vmap 2020.1 Lib Mapping Utility 2020.02 Feb 28 2020
+# vmap half_canvas scaler_sim_build/half_canvas/work 
+# Modifying modelsim.ini
+# Model Technology ModelSim - Intel FPGA Edition vlog 2020.1 Compiler 2020.02 Feb 28 2020
+# Start time: 22:27:18 on Oct 11,2026
+# vlog -work half_canvas src/user_source/hdl_source/team/image_scaler_2x_pingpong.v src/user_source/hdl_source/team/bmp_center_zoom_2x.v tb_half_canvas.v 
+# -- Compiling module image_scaler_2x_pingpong
+# -- Compiling module bmp_center_zoom_2x
+# -- Compiling module bmp_half_canvas
+# -- Compiling module tb_half_canvas
+# 
+# Top level modules:
+# 	tb_half_canvas
+# End time: 22:27:18 on Oct 11,2026, Elapsed time: 0:00:00
+# Errors: 0, Warnings: 0
+# vsim -onfinish stop half_canvas.tb_half_canvas 
+# Start time: 22:27:18 on Oct 11,2026
+# Loading half_canvas.tb_half_canvas
+# Loading half_canvas.bmp_center_zoom_2x
+# Loading half_canvas.bmp_half_canvas
+# Loading half_canvas.image_scaler_2x_pingpong
+# [FRAME] mode=0 count=307200 black=0 image=307200 overflow=0
+# [FRAME] mode=1 count=307200 black=0 image=307200 overflow=0
+# [FRAME] mode=2 count=307200 black=230400 image=76800 overflow=0
+# [FRAME] mode=0 count=307200 black=0 image=307200 overflow=0
+# [FRAME] mode=2 count=307200 black=230400 image=76800 overflow=0
+# [TEST PASS] full-size three-mode canvas and stalls
+# ** Note: $finish    : tb_half_canvas.v(61)
+#    Time: 131363330 ns  Iteration: 1  Instance: /tb_half_canvas
+# Break in Module tb_half_canvas at tb_half_canvas.v line 61
+# Stopped at tb_half_canvas.v line 61
+# End time: 22:29:56 on Oct 11,2026, Elapsed time: 0:02:38
+# Errors: 0, Warnings: 0
+#  do run_board_zoom_control_tests.do
+# C:/Users/j1573/Documents/ChatGPT/PLD/repo-osd-scroll/lab_ex5_i2s
+# C:/Users/j1573/Documents/ChatGPT/PLD/repo-osd-scroll/lab_ex5_i2s/scaler_sim_build/board_control
+# Model Technology ModelSim - Intel FPGA Edition vmap 2020.1 Lib Mapping Utility 2020.02 Feb 28 2020
+# vmap board_control C:/Users/j1573/Documents/ChatGPT/PLD/repo-osd-scroll/lab_ex5_i2s/scaler_sim_build/board_control/work 
+# Modifying modelsim.ini
+# C:/Users/j1573/Documents/ChatGPT/PLD/repo-osd-scroll/lab_ex5_i2s/src/user_source/hdl_source
+# Model Technology ModelSim - Intel FPGA Edition vlog 2020.1 Compiler 2020.02 Feb 28 2020
+# Start time: 22:29:57 on Oct 11,2026
+# vlog -work board_control C:/Users/j1573/Documents/ChatGPT/PLD/repo-osd-scroll/lab_ex5_i2s/src/user_source/hdl_source/team/osd_display_commit.v C:/Users/j1573/Documents/ChatGPT/PLD/repo-osd-scroll/lab_ex5_i2s/src/user_source/hdl_source/team/image_scaler_2x_pingpong.v C:/Users/j1573/Documents/ChatGPT/PLD/repo-osd-scroll/lab_ex5_i2s/src/user_source/hdl_source/team/bmp_center_zoom_2x.v C:/Users/j1573/Documents/ChatGPT/PLD/repo-osd-scroll/lab_ex5_i2s/src/user_source/hdl_source/SD/sd_card_bmp.v C:/Users/j1573/Documents/ChatGPT/PLD/repo-osd-scroll/lab_ex5_i2s/tb_board_zoom_control.v 
+# -- Compiling module osd_display_commit
+# -- Compiling module image_scaler_2x_pingpong
+# -- Compiling module bmp_center_zoom_2x
+# -- Compiling module bmp_half_canvas
+# -- Compiling module sd_card_bmp
+# -- Compiling module key_press_debounce
+# -- Compiling module tb_board_zoom_control
+# -- Compiling module bmp_read
+# -- Compiling module sd_card_top
+# 
+# Top level modules:
+# 	tb_board_zoom_control
+# End time: 22:29:57 on Oct 11,2026, Elapsed time: 0:00:00
+# Errors: 0, Warnings: 0
+# 0
+# vsim -onfinish stop board_control.tb_board_zoom_control -gDISPLAY_COMMIT=0 
+# Start time: 22:29:57 on Oct 11,2026
+# Loading board_control.tb_board_zoom_control
+# Loading board_control.osd_display_commit
+# Loading board_control.sd_card_bmp
+# Loading board_control.key_press_debounce
+# Loading board_control.bmp_read
+# Loading board_control.sd_card_top
+# Loading board_control.bmp_center_zoom_2x
+# Loading board_control.bmp_half_canvas
+# Loading board_control.image_scaler_2x_pingpong
+# [INFO] load=1 mode=00 sector=11 buffer=0
+# [PASS] Initial normal frame committed
+# [INFO] load=2 mode=01 sector=11 buffer=1
+# [PASS] Write completion arrives before source file end
+# [PASS] KEY3 debounce/hold and center 2x reload
+# [INFO] load=3 mode=10 sector=11 buffer=0
+# [PASS] Half canvas
+# [INFO] load=4 mode=00 sector=11 buffer=1
+# [PASS] KEY3 returns to normal
+# [INFO] load=5 mode=01 sector=11 buffer=0
+# [PASS] Write completion arrives before source file end
+# [INFO] load=6 mode=10 sector=11 buffer=1
+# [PASS] Second press while loading retained and applied
+# [INFO] load=7 mode=00 sector=11 buffer=0
+# [INFO] load=8 mode=00 sector=13 buffer=1
+# [PASS] Original next-picture key preserved
+# [INFO] load=9 mode=00 sector=11 buffer=0
+# [PASS] Original auto-play key preserved
+# [INFO] load=10 mode=01 sector=11 buffer=1
+# [PASS] Write completion arrives before source file end
+# [PASS] Three busy presses preserve latched frame and latest target
+# [INFO] load=11 mode=10 sector=11 buffer=0
+# [INFO] load=12 mode=00 sector=11 buffer=1
+# [INFO] load=13 mode=01 sector=11 buffer=0
+# [PASS] Overflow keeps old frame and reports F (reset required)
+# [INFO] load=14 mode=00 sector=11 buffer=0
+# [PASS] Board reset restores normal initial load
+# [TEST PASS] Board zoom controller integration is correct.
+# ** Note: $finish    : C:/Users/j1573/Documents/ChatGPT/PLD/repo-osd-scroll/lab_ex5_i2s/tb_board_zoom_control.v(219)
+#    Time: 100600 ns  Iteration: 1  Instance: /tb_board_zoom_control
+# Break in Module tb_board_zoom_control at C:/Users/j1573/Documents/ChatGPT/PLD/repo-osd-scroll/lab_ex5_i2s/tb_board_zoom_control.v line 219
+# Stopped at C:/Users/j1573/Documents/ChatGPT/PLD/repo-osd-scroll/lab_ex5_i2s/tb_board_zoom_control.v line 219
+# End time: 22:29:58 on Oct 11,2026, Elapsed time: 0:00:01
+# Errors: 0, Warnings: 0
+#  set display_commit 1
+# 1
+#  do run_board_zoom_control_tests.do
+# C:/Users/j1573/Documents/ChatGPT/PLD/repo-osd-scroll/lab_ex5_i2s
+# C:/Users/j1573/Documents/ChatGPT/PLD/repo-osd-scroll/lab_ex5_i2s/scaler_sim_build/board_control
+# Model Technology ModelSim - Intel FPGA Edition vmap 2020.1 Lib Mapping Utility 2020.02 Feb 28 2020
+# vmap board_control C:/Users/j1573/Documents/ChatGPT/PLD/repo-osd-scroll/lab_ex5_i2s/scaler_sim_build/board_control/work 
+# Modifying modelsim.ini
+# C:/Users/j1573/Documents/ChatGPT/PLD/repo-osd-scroll/lab_ex5_i2s/src/user_source/hdl_source
+# Model Technology ModelSim - Intel FPGA Edition vlog 2020.1 Compiler 2020.02 Feb 28 2020
+# Start time: 22:29:59 on Oct 11,2026
+# vlog -work board_control C:/Users/j1573/Documents/ChatGPT/PLD/repo-osd-scroll/lab_ex5_i2s/src/user_source/hdl_source/team/osd_display_commit.v C:/Users/j1573/Documents/ChatGPT/PLD/repo-osd-scroll/lab_ex5_i2s/src/user_source/hdl_source/team/image_scaler_2x_pingpong.v C:/Users/j1573/Documents/ChatGPT/PLD/repo-osd-scroll/lab_ex5_i2s/src/user_source/hdl_source/team/bmp_center_zoom_2x.v C:/Users/j1573/Documents/ChatGPT/PLD/repo-osd-scroll/lab_ex5_i2s/src/user_source/hdl_source/SD/sd_card_bmp.v C:/Users/j1573/Documents/ChatGPT/PLD/repo-osd-scroll/lab_ex5_i2s/tb_board_zoom_control.v 
+# -- Compiling module osd_display_commit
+# -- Compiling module image_scaler_2x_pingpong
+# -- Compiling module bmp_center_zoom_2x
+# -- Compiling module bmp_half_canvas
+# -- Compiling module sd_card_bmp
+# -- Compiling module key_press_debounce
+# -- Compiling module tb_board_zoom_control
+# -- Compiling module bmp_read
+# -- Compiling module sd_card_top
+# 
+# Top level modules:
+# 	tb_board_zoom_control
+# End time: 22:29:59 on Oct 11,2026, Elapsed time: 0:00:00
+# Errors: 0, Warnings: 0
+# vsim -onfinish stop board_control.tb_board_zoom_control -gDISPLAY_COMMIT=1 
+# Start time: 22:29:59 on Oct 11,2026
+# Loading board_control.tb_board_zoom_control
+# Loading board_control.osd_display_commit
+# Loading board_control.sd_card_bmp
+# Loading board_control.key_press_debounce
+# Loading board_control.bmp_read
+# Loading board_control.sd_card_top
+# Loading board_control.bmp_center_zoom_2x
+# Loading board_control.bmp_half_canvas
+# Loading board_control.image_scaler_2x_pingpong
+# [INFO] load=1 mode=00 sector=11 buffer=0
+# [PASS] Initial normal frame committed
+# [INFO] load=2 mode=01 sector=11 buffer=1
+# [PASS] Write completion arrives before source file end
+# [PASS] KEY3 debounce/hold and center 2x reload
+# [INFO] load=3 mode=10 sector=11 buffer=0
+# [PASS] Half canvas
+# [INFO] load=4 mode=00 sector=11 buffer=1
+# [PASS] KEY3 returns to normal
+# [INFO] load=5 mode=01 sector=11 buffer=0
+# [PASS] Write completion arrives before source file end
+# [INFO] load=6 mode=10 sector=11 buffer=1
+# [PASS] Second press while loading retained and applied
+# [INFO] load=7 mode=00 sector=11 buffer=0
+# [INFO] load=8 mode=00 sector=13 buffer=1
+# [PASS] Original next-picture key preserved
+# [INFO] load=9 mode=00 sector=11 buffer=0
+# [PASS] Original auto-play key preserved
+# [INFO] load=10 mode=01 sector=11 buffer=1
+# [PASS] Write completion arrives before source file end
+# [PASS] Three busy presses preserve latched frame and latest target
+# [INFO] load=11 mode=10 sector=11 buffer=0
+# [INFO] load=12 mode=00 sector=11 buffer=1
+# [INFO] load=13 mode=01 sector=11 buffer=0
+# [PASS] Overflow keeps old frame and reports F (reset required)
+# [INFO] load=14 mode=00 sector=11 buffer=0
+# [PASS] Board reset restores normal initial load
+# [TEST PASS] Board zoom controller integration is correct.
+# ** Note: $finish    : C:/Users/j1573/Documents/ChatGPT/PLD/repo-osd-scroll/lab_ex5_i2s/tb_board_zoom_control.v(219)
+#    Time: 223840 ns  Iteration: 1  Instance: /tb_board_zoom_control
+# Break in Module tb_board_zoom_control at C:/Users/j1573/Documents/ChatGPT/PLD/repo-osd-scroll/lab_ex5_i2s/tb_board_zoom_control.v line 219
+# Stopped at C:/Users/j1573/Documents/ChatGPT/PLD/repo-osd-scroll/lab_ex5_i2s/tb_board_zoom_control.v line 219
+# End time: 22:30:00 on Oct 11,2026, Elapsed time: 0:00:01
+# Errors: 0, Warnings: 0
+#  do run_half_bmp_control.do
+# Model Technology ModelSim - Intel FPGA Edition vmap 2020.1 Lib Mapping Utility 2020.02 Feb 28 2020
+# vmap half_bmp_control scaler_sim_build/half_bmp_control/work 
+# Modifying modelsim.ini
+# Model Technology ModelSim - Intel FPGA Edition vlog 2020.1 Compiler 2020.02 Feb 28 2020
+# Start time: 22:30:00 on Oct 11,2026
+# vlog -work half_bmp_control src/user_source/hdl_source/team/osd_display_commit.v src/user_source/hdl_source/team/image_scaler_2x_pingpong.v src/user_source/hdl_source/team/bmp_center_zoom_2x.v src/user_source/hdl_source/SD/bmp_read.v src/user_source/hdl_source/SD/sd_card_bmp.v tb_half_bmp_control.v 
+# -- Compiling module osd_display_commit
+# -- Compiling module image_scaler_2x_pingpong
+# -- Compiling module bmp_center_zoom_2x
+# -- Compiling module bmp_half_canvas
+# -- Compiling module bmp_read
+# -- Compiling module sd_card_bmp
+# -- Compiling module key_press_debounce
+# -- Compiling module tb_half_bmp_control
+# -- Compiling module sd_card_top
+# 
+# Top level modules:
+# 	tb_half_bmp_control
+# End time: 22:30:00 on Oct 11,2026, Elapsed time: 0:00:00
+# Errors: 0, Warnings: 0
+# 0
+# vsim -onfinish stop half_bmp_control.tb_half_bmp_control -gDISPLAY_COMMIT=0 
+# Start time: 22:30:00 on Oct 11,2026
+# Loading half_bmp_control.tb_half_bmp_control
+# Loading half_bmp_control.osd_display_commit
+# Loading half_bmp_control.sd_card_bmp
+# Loading half_bmp_control.key_press_debounce
+# Loading half_bmp_control.bmp_read
+# Loading half_bmp_control.sd_card_top
+# Loading half_bmp_control.bmp_center_zoom_2x
+# Loading half_bmp_control.bmp_half_canvas
+# Loading half_bmp_control.image_scaler_2x_pingpong
+# [INFO] load=1 mode=00 sector=11 buffer=0
+# [PASS] Initial normal frame committed
+# [INFO] load=2 mode=01 sector=11 buffer=1
+# [PASS] Write completion arrives before source file end
+# [PASS] KEY3 debounce/hold and center 2x reload
+# [INFO] load=3 mode=10 sector=11 buffer=0
+# [PASS] Half canvas
+# [INFO] load=4 mode=00 sector=11 buffer=1
+# [PASS] KEY3 returns to normal
+# [INFO] load=5 mode=01 sector=11 buffer=0
+# [PASS] Write completion arrives before source file end
+# [INFO] load=6 mode=10 sector=11 buffer=1
+# [PASS] Second press while loading retained and applied
+# [INFO] load=7 mode=00 sector=11 buffer=0
+# [INFO] load=8 mode=00 sector=13 buffer=1
+# [PASS] Original next-picture key preserved
+# [INFO] load=9 mode=00 sector=11 buffer=0
+# [PASS] Original auto-play key preserved
+# [INFO] load=10 mode=01 sector=11 buffer=1
+# [PASS] Write completion arrives before source file end
+# [PASS] Three busy presses preserve latched frame and latest target
+# [INFO] load=11 mode=10 sector=11 buffer=0
+# [INFO] load=12 mode=00 sector=11 buffer=1
+# [INFO] load=13 mode=01 sector=11 buffer=0
+# [PASS] Write completion arrives before source file end
+# [INFO] load=14 mode=10 sector=11 buffer=1
+# [PASS] Half padding stall retains old image; release completes
+# [INFO] load=15 mode=00 sector=11 buffer=0
+# [INFO] load=16 mode=01 sector=11 buffer=1
+# [PASS] Overflow keeps old frame and reports F (reset required)
+# [INFO] load=17 mode=00 sector=11 buffer=0
+# [PASS] Board reset restores normal initial load
+# [INFO] load=18 mode=01 sector=11 buffer=1
+# [PASS] Write completion arrives before source file end
+# [INFO] load=19 mode=10 sector=11 buffer=0
+# [PASS] Half short source rejected; displayed frame retained
+# [TEST PASS] Board zoom controller integration is correct.
+# ** Note: $finish    : tb_half_bmp_control.v(187)
+#    Time: 698530 ns  Iteration: 1  Instance: /tb_half_bmp_control
+# Break in Module tb_half_bmp_control at tb_half_bmp_control.v line 187
+# Stopped at tb_half_bmp_control.v line 187
+# End time: 22:30:02 on Oct 11,2026, Elapsed time: 0:00:02
+# Errors: 0, Warnings: 0
+#  set bmp_display_commit 1
+# 1
+#  do run_half_bmp_control.do
+# ** Warning: (vlib-34) Library already exists at "scaler_sim_build/half_bmp_control/work".
+# Model Technology ModelSim - Intel FPGA Edition vmap 2020.1 Lib Mapping Utility 2020.02 Feb 28 2020
+# vmap half_bmp_control scaler_sim_build/half_bmp_control/work 
+# Modifying modelsim.ini
+# Model Technology ModelSim - Intel FPGA Edition vlog 2020.1 Compiler 2020.02 Feb 28 2020
+# Start time: 22:30:02 on Oct 11,2026
+# vlog -work half_bmp_control src/user_source/hdl_source/team/osd_display_commit.v src/user_source/hdl_source/team/image_scaler_2x_pingpong.v src/user_source/hdl_source/team/bmp_center_zoom_2x.v src/user_source/hdl_source/SD/bmp_read.v src/user_source/hdl_source/SD/sd_card_bmp.v tb_half_bmp_control.v 
+# -- Compiling module osd_display_commit
+# -- Compiling module image_scaler_2x_pingpong
+# -- Compiling module bmp_center_zoom_2x
+# -- Compiling module bmp_half_canvas
+# -- Compiling module bmp_read
+# -- Compiling module sd_card_bmp
+# -- Compiling module key_press_debounce
+# -- Compiling module tb_half_bmp_control
+# -- Compiling module sd_card_top
+# 
+# Top level modules:
+# 	tb_half_bmp_control
+# End time: 22:30:02 on Oct 11,2026, Elapsed time: 0:00:00
+# Errors: 0, Warnings: 0
+# vsim -onfinish stop half_bmp_control.tb_half_bmp_control -gDISPLAY_COMMIT=1 
+# Start time: 22:30:02 on Oct 11,2026
+# Loading half_bmp_control.tb_half_bmp_control
+# Loading half_bmp_control.osd_display_commit
+# Loading half_bmp_control.sd_card_bmp
+# Loading half_bmp_control.key_press_debounce
+# Loading half_bmp_control.bmp_read
+# Loading half_bmp_control.sd_card_top
+# Loading half_bmp_control.bmp_center_zoom_2x
+# Loading half_bmp_control.bmp_half_canvas
+# Loading half_bmp_control.image_scaler_2x_pingpong
+# [INFO] load=1 mode=00 sector=11 buffer=0
+# [PASS] Initial normal frame committed
+# [INFO] load=2 mode=01 sector=11 buffer=1
+# [PASS] Write completion arrives before source file end
+# [PASS] KEY3 debounce/hold and center 2x reload
+# [INFO] load=3 mode=10 sector=11 buffer=0
+# [PASS] Half canvas
+# [INFO] load=4 mode=00 sector=11 buffer=1
+# [PASS] KEY3 returns to normal
+# [INFO] load=5 mode=01 sector=11 buffer=0
+# [PASS] Write completion arrives before source file end
+# [INFO] load=6 mode=10 sector=11 buffer=1
+# [PASS] Second press while loading retained and applied
+# [INFO] load=7 mode=00 sector=11 buffer=0
+# [INFO] load=8 mode=00 sector=13 buffer=1
+# [PASS] Original next-picture key preserved
+# [INFO] load=9 mode=00 sector=11 buffer=0
+# [PASS] Original auto-play key preserved
+# [INFO] load=10 mode=01 sector=11 buffer=1
+# [PASS] Write completion arrives before source file end
+# [PASS] Three busy presses preserve latched frame and latest target
+# [INFO] load=11 mode=10 sector=11 buffer=0
+# [INFO] load=12 mode=00 sector=11 buffer=1
+# [INFO] load=13 mode=01 sector=11 buffer=0
+# [PASS] Write completion arrives before source file end
+# [INFO] load=14 mode=10 sector=11 buffer=1
+# [PASS] Half padding stall retains old image; release completes
+# [INFO] load=15 mode=00 sector=11 buffer=0
+# [INFO] load=16 mode=01 sector=11 buffer=1
+# [PASS] Overflow keeps old frame and reports F (reset required)
+# [INFO] load=17 mode=00 sector=11 buffer=0
+# [PASS] Board reset restores normal initial load
+# [INFO] load=18 mode=01 sector=11 buffer=1
+# [PASS] Write completion arrives before source file end
+# [INFO] load=19 mode=10 sector=11 buffer=0
+# [PASS] Half short source rejected; displayed frame retained
+# [TEST PASS] Board zoom controller integration is correct.
+# ** Note: $finish    : tb_half_bmp_control.v(187)
+#    Time: 850500 ns  Iteration: 1  Instance: /tb_half_bmp_control
+# Break in Module tb_half_bmp_control at tb_half_bmp_control.v line 187
+# Stopped at tb_half_bmp_control.v line 187
+# End time: 22:30:04 on Oct 11,2026, Elapsed time: 0:00:02
+# Errors: 0, Warnings: 0
+#  do run_bmp_prime.do
+# Model Technology ModelSim - Intel FPGA Edition vmap 2020.1 Lib Mapping Utility 2020.02 Feb 28 2020
+# vmap bmp_prime scaler_sim_build/bmp_prime/work 
+# Modifying modelsim.ini
+# Model Technology ModelSim - Intel FPGA Edition vlog 2020.1 Compiler 2020.02 Feb 28 2020
+# Start time: 22:30:04 on Oct 11,2026
+# vlog -work bmp_prime src/user_source/hdl_source/SD/bmp_read.v tb_bmp_prime.v 
+# -- Compiling module bmp_read
+# -- Compiling module tb_bmp_prime
+# 
+# Top level modules:
+# 	tb_bmp_prime
+# End time: 22:30:04 on Oct 11,2026, Elapsed time: 0:00:00
+# Errors: 0, Warnings: 0
+# vsim -onfinish stop bmp_prime.tb_bmp_prime 
+# Start time: 22:30:04 on Oct 11,2026
+# Loading bmp_prime.tb_bmp_prime
+# Loading bmp_prime.bmp_read
+# === S1: bmp_read 子系统仿真 ===
+#    [dbg] t=5285000 第 1 个扇区读完，addr=0 header_0=5a header_1=5a width=23130 height=23130 bitcnt=23130 comp=1515870810 filelen=1515870810
+#    [dbg] t=10445000 第 2 个扇区读完，addr=1 header_0=5a header_1=5a width=23130 height=23130 bitcnt=23130 comp=1515870810 filelen=1515870810
+#    [dbg] t=15605000 第 3 个扇区读完，addr=2 header_0=5a header_1=5a width=23130 height=23130 bitcnt=23130 comp=1515870810 filelen=1515870810
+#    [dbg] t=20765000 第 4 个扇区读完，addr=3 header_0=42 header_1=4d width=640 height=480 bitcnt=24 comp=0 filelen=60
+#    [dbg] t=20775000 scan_found_valid: sector=3 total=1
+# ✓ 扫描命中扇区 = 3
+# ✓ 命中张数 = 1
+#    [dbg] t=25955000 第 5 个扇区读完，addr=3 header_0=42 header_1=4d width=640 height=480 bitcnt=24 comp=0 filelen=60
+# ✓ 像素 0 = 332211（3 字节按 [7:0]->[15:8]->[23:16] 拼接）
+# ✓ 像素 1 = 665544
+# ✓ 一共输出 2 个像素（= file_len 60 - 54 偏移，/3）
+#    [dbg] t=41135000 第 6 个扇区读完，addr=3 header_0=42 header_1=4d width=640 height=480 bitcnt=24 comp=0 filelen=60
+# ✓ 整帧读完后 state_code 回到 1 (IDLE)
+# === S1 全部通过 ===
+# ** Note: $finish    : tb_bmp_prime.v(203)
+#    Time: 41155 ns  Iteration: 1  Instance: /tb_bmp_prime
+# Break in Module tb_bmp_prime at tb_bmp_prime.v line 203
+# Stopped at tb_bmp_prime.v line 203
+# End time: 22:30:05 on Oct 11,2026, Elapsed time: 0:00:01
+# Errors: 0, Warnings: 0
+#  do run_board_zoom_tests.do
+# C:/Users/j1573/Documents/ChatGPT/PLD/repo-osd-scroll/lab_ex5_i2s
+# C:/Users/j1573/Documents/ChatGPT/PLD/repo-osd-scroll/lab_ex5_i2s/scaler_sim_build
+# reading D:/j1573/modelsim/modelsim_ase/win32aloem/../modelsim.ini
+# Model Technology ModelSim - Intel FPGA Edition vmap 2020.1 Lib Mapping Utility 2020.02 Feb 28 2020
+# vmap work work 
+# Copying D:/j1573/modelsim/modelsim_ase/win32aloem/../modelsim.ini to modelsim.ini
+# Modifying modelsim.ini
+# C:/Users/j1573/Documents/ChatGPT/PLD/repo-osd-scroll/lab_ex5_i2s/src/user_source/hdl_source/team
+# Model Technology ModelSim - Intel FPGA Edition vlog 2020.1 Compiler 2020.02 Feb 28 2020
+# Start time: 22:30:06 on Oct 11,2026
+# vlog C:/Users/j1573/Documents/ChatGPT/PLD/repo-osd-scroll/lab_ex5_i2s/src/user_source/hdl_source/team/image_scaler_2x_pingpong.v C:/Users/j1573/Documents/ChatGPT/PLD/repo-osd-scroll/lab_ex5_i2s/src/user_source/hdl_source/team/bmp_center_zoom_2x.v C:/Users/j1573/Documents/ChatGPT/PLD/repo-osd-scroll/lab_ex5_i2s/src/user_source/hdl_source/team/tb_bmp_center_zoom_2x.v 
+# -- Compiling module image_scaler_2x_pingpong
+# -- Compiling module bmp_center_zoom_2x
+# -- Compiling module bmp_half_canvas
+# -- Compiling module tb_bmp_center_zoom_2x
+# 
+# Top level modules:
+# 	tb_bmp_center_zoom_2x
+# End time: 22:30:06 on Oct 11,2026, Elapsed time: 0:00:00
+# Errors: 0, Warnings: 0
+# vsim -c -onfinish stop work.tb_bmp_center_zoom_2x 
+# Start time: 22:30:06 on Oct 11,2026
+# Loading work.tb_bmp_center_zoom_2x
+# Loading work.bmp_center_zoom_2x
+# Loading work.bmp_half_canvas
+# Loading work.image_scaler_2x_pingpong
+# ** Warning: (vsim-2685) [TFMPC] - Too few port connections for 'dut'.  Expected 16, found 14.
+#    Time: 0 ps  Iteration: 0  Instance: /tb_bmp_center_zoom_2x/dut File: C:/Users/j1573/Documents/ChatGPT/PLD/repo-osd-scroll/lab_ex5_i2s/src/user_source/hdl_source/team/tb_bmp_center_zoom_2x.v Line: 18
+# ** Warning: (vsim-3722) C:/Users/j1573/Documents/ChatGPT/PLD/repo-osd-scroll/lab_ex5_i2s/src/user_source/hdl_source/team/tb_bmp_center_zoom_2x.v(18): [TFMPC] - Missing connection for port 'half_enable'.
+# ** Warning: (vsim-3722) C:/Users/j1573/Documents/ChatGPT/PLD/repo-osd-scroll/lab_ex5_i2s/src/user_source/hdl_source/team/tb_bmp_center_zoom_2x.v(18): [TFMPC] - Missing connection for port 'source_permit'.
+# [PASS] 8x8 mode=0 pixels=64, border/last/handshake correct
+# [PASS] 8x8 mode=1 pixels=64, border/last/handshake correct
+# [PASS] 8x8 mode=0 pixels=64, border/last/handshake correct
+# [PASS] Unpausable input overflow detected; frame not marked complete
+# [PASS] 8x8 mode=1 pixels=64, border/last/handshake correct
+# [PASS] Pass-through overflow detected
+# [PASS] 8x8 mode=0 pixels=64, border/last/handshake correct
+# [TEST PASS] BMP center zoom and 1x/2x/1x frame switching are correct.
+# ** Note: $finish    : C:/Users/j1573/Documents/ChatGPT/PLD/repo-osd-scroll/lab_ex5_i2s/src/user_source/hdl_source/team/tb_bmp_center_zoom_2x.v(102)
+#    Time: 36210 ns  Iteration: 1  Instance: /tb_bmp_center_zoom_2x
+# Break in Module tb_bmp_center_zoom_2x at C:/Users/j1573/Documents/ChatGPT/PLD/repo-osd-scroll/lab_ex5_i2s/src/user_source/hdl_source/team/tb_bmp_center_zoom_2x.v line 102
+# Stopped at C:/Users/j1573/Documents/ChatGPT/PLD/repo-osd-scroll/lab_ex5_i2s/src/user_source/hdl_source/team/tb_bmp_center_zoom_2x.v line 102
+# End time: 22:30:07 on Oct 11,2026, Elapsed time: 0:00:01
+# Errors: 0, Warnings: 3
+# vsim -c -onfinish stop work.tb_bmp_center_zoom_2x -gH=480 -gW=640 
+# Start time: 22:30:07 on Oct 11,2026
+# Loading work.tb_bmp_center_zoom_2x
+# Loading work.bmp_center_zoom_2x
+# Loading work.bmp_half_canvas
+# Loading work.image_scaler_2x_pingpong
+# ** Warning: (vsim-2685) [TFMPC] - Too few port connections for 'dut'.  Expected 16, found 14.
+#    Time: 0 ps  Iteration: 0  Instance: /tb_bmp_center_zoom_2x/dut File: C:/Users/j1573/Documents/ChatGPT/PLD/repo-osd-scroll/lab_ex5_i2s/src/user_source/hdl_source/team/tb_bmp_center_zoom_2x.v Line: 18
+# ** Warning: (vsim-3722) C:/Users/j1573/Documents/ChatGPT/PLD/repo-osd-scroll/lab_ex5_i2s/src/user_source/hdl_source/team/tb_bmp_center_zoom_2x.v(18): [TFMPC] - Missing connection for port 'half_enable'.
+# ** Warning: (vsim-3722) C:/Users/j1573/Documents/ChatGPT/PLD/repo-osd-scroll/lab_ex5_i2s/src/user_source/hdl_source/team/tb_bmp_center_zoom_2x.v(18): [TFMPC] - Missing connection for port 'source_permit'.
+# [PASS] 640x480 mode=0 pixels=307200, border/last/handshake correct
+# [PASS] 640x480 mode=1 pixels=307200, border/last/handshake correct
+# [PASS] 640x480 mode=0 pixels=307200, border/last/handshake correct
+# [TEST PASS] BMP center zoom and 1x/2x/1x frame switching are correct.
+# ** Note: $finish    : C:/Users/j1573/Documents/ChatGPT/PLD/repo-osd-scroll/lab_ex5_i2s/src/user_source/hdl_source/team/tb_bmp_center_zoom_2x.v(102)
+#    Time: 73728190 ns  Iteration: 1  Instance: /tb_bmp_center_zoom_2x
+# Break in Module tb_bmp_center_zoom_2x at C:/Users/j1573/Documents/ChatGPT/PLD/repo-osd-scroll/lab_ex5_i2s/src/user_source/hdl_source/team/tb_bmp_center_zoom_2x.v line 102
+# Stopped at C:/Users/j1573/Documents/ChatGPT/PLD/repo-osd-scroll/lab_ex5_i2s/src/user_source/hdl_source/team/tb_bmp_center_zoom_2x.v line 102
+# End time: 22:31:32 on Oct 11,2026, Elapsed time: 0:01:25
+# Errors: 0, Warnings: 3
+# reading modelsim.ini
+#  do run_board_zoom_fifo_tests.do
+# C:/Users/j1573/Documents/ChatGPT/PLD/repo-osd-scroll/lab_ex5_i2s
+# C:/Users/j1573/Documents/ChatGPT/PLD/repo-osd-scroll/lab_ex5_i2s/scaler_sim_build/board_fifo
+# Model Technology ModelSim - Intel FPGA Edition vmap 2020.1 Lib Mapping Utility 2020.02 Feb 28 2020
+# vmap board_fifo C:/Users/j1573/Documents/ChatGPT/PLD/repo-osd-scroll/lab_ex5_i2s/scaler_sim_build/board_fifo/work 
+# Modifying modelsim.ini
+# C:/Users/j1573/Documents/ChatGPT/PLD/repo-osd-scroll/lab_ex5_i2s/src/user_source/hdl_source
+# Model Technology ModelSim - Intel FPGA Edition vlog 2020.1 Compiler 2020.02 Feb 28 2020
+# Start time: 22:31:33 on Oct 11,2026
+# vlog -work board_fifo C:/Users/j1573/Documents/ChatGPT/PLD/repo-osd-scroll/lab_ex5_i2s/src/user_source/hdl_source/IP/afifo_16_32_256.v C:/Users/j1573/Documents/ChatGPT/PLD/repo-osd-scroll/lab_ex5_i2s/src/user_source/hdl_source/IP/afifo_32_16_256.v C:/Users/j1573/Documents/ChatGPT/PLD/repo-osd-scroll/lab_ex5_i2s/src/user_source/hdl_source/SD/frame_fifo_write.v C:/Users/j1573/Documents/ChatGPT/PLD/repo-osd-scroll/lab_ex5_i2s/src/user_source/hdl_source/SD/frame_fifo_read.v C:/Users/j1573/Documents/ChatGPT/PLD/repo-osd-scroll/lab_ex5_i2s/src/user_source/hdl_source/SD/frame_read_write.v C:/Users/j1573/Documents/ChatGPT/PLD/repo-osd-scroll/lab_ex5_i2s/src/user_source/hdl_source/team/image_scaler_2x_pingpong.v C:/Users/j1573/Documents/ChatGPT/PLD/repo-osd-scroll/lab_ex5_i2s/src/user_source/hdl_source/team/bmp_center_zoom_2x.v C:/Users/j1573/Documents/ChatGPT/PLD/repo-osd-scroll/lab_ex5_i2s/tb_board_zoom_fifo.v 
+# -- Compiling module wfifo_32_32_512
+# -- Compiling module fifo_cross_domain_addr_process_al_wfifo_32_32_512
+# -- Compiling module ram_infer_wfifo_32_32_512
+# -- Compiling module rfifo_32_32_512
+# -- Compiling module fifo_cross_domain_addr_process_al_rfifo_32_32_512
+# -- Compiling module ram_infer_rfifo_32_32_512
+# -- Compiling module frame_fifo_write
+# -- Compiling module frame_fifo_read
+# -- Compiling module frame_read_write
+# -- Compiling module image_scaler_2x_pingpong
+# -- Compiling module bmp_center_zoom_2x
+# -- Compiling module bmp_half_canvas
+# -- Compiling module tb_board_zoom_fifo
+# 
+# Top level modules:
+# 	tb_board_zoom_fifo
+# End time: 22:31:33 on Oct 11,2026, Elapsed time: 0:00:00
+# Errors: 0, Warnings: 0
+# vsim -onfinish stop board_fifo.tb_board_zoom_fifo 
+# Start time: 22:31:33 on Oct 11,2026
+# Loading board_fifo.tb_board_zoom_fifo
+# Loading board_fifo.bmp_center_zoom_2x
+# Loading board_fifo.bmp_half_canvas
+# Loading board_fifo.image_scaler_2x_pingpong
+# Loading board_fifo.frame_read_write
+# Loading board_fifo.wfifo_32_32_512
+# Loading board_fifo.fifo_cross_domain_addr_process_al_wfifo_32_32_512
+# Loading board_fifo.ram_infer_wfifo_32_32_512
+# Loading board_fifo.frame_fifo_write
+# Loading board_fifo.rfifo_32_32_512
+# Loading board_fifo.fifo_cross_domain_addr_process_al_rfifo_32_32_512
+# Loading board_fifo.ram_infer_rfifo_32_32_512
+# Loading board_fifo.frame_fifo_read
+# ** Warning: (vsim-2685) [TFMPC] - Too few port connections for 'scaler'.  Expected 16, found 14.
+#    Time: 0 ps  Iteration: 0  Instance: /tb_board_zoom_fifo/scaler File: C:/Users/j1573/Documents/ChatGPT/PLD/repo-osd-scroll/lab_ex5_i2s/tb_board_zoom_fifo.v Line: 18
+# ** Warning: (vsim-3722) C:/Users/j1573/Documents/ChatGPT/PLD/repo-osd-scroll/lab_ex5_i2s/tb_board_zoom_fifo.v(18): [TFMPC] - Missing connection for port 'half_enable'.
+# ** Warning: (vsim-3722) C:/Users/j1573/Documents/ChatGPT/PLD/repo-osd-scroll/lab_ex5_i2s/tb_board_zoom_fifo.v(18): [TFMPC] - Missing connection for port 'source_permit'.
+# ** Warning: (vsim-2685) [TFMPC] - Too few port connections for 'write_buf'.  Expected 14, found 11.
+#    Time: 0 ps  Iteration: 0  Instance: /tb_board_zoom_fifo/store/write_buf File: C:/Users/j1573/Documents/ChatGPT/PLD/repo-osd-scroll/lab_ex5_i2s/src/user_source/hdl_source/SD/frame_read_write.v Line: 114
+# ** Warning: (vsim-3722) C:/Users/j1573/Documents/ChatGPT/PLD/repo-osd-scroll/lab_ex5_i2s/src/user_source/hdl_source/SD/frame_read_write.v(114): [TFMPC] - Missing connection for port 'valid'.
+# ** Warning: (vsim-3722) C:/Users/j1573/Documents/ChatGPT/PLD/repo-osd-scroll/lab_ex5_i2s/src/user_source/hdl_source/SD/frame_read_write.v(114): [TFMPC] - Missing connection for port 'afull'.
+# ** Warning: (vsim-3722) C:/Users/j1573/Documents/ChatGPT/PLD/repo-osd-scroll/lab_ex5_i2s/src/user_source/hdl_source/SD/frame_read_write.v(114): [TFMPC] - Missing connection for port 'aempty'.
+# ** Warning: (vsim-2685) [TFMPC] - Too few port connections for 'ram_inst'.  Expected 16, found 14.
+#    Time: 0 ps  Iteration: 0  Instance: /tb_board_zoom_fifo/store/write_buf/ram_inst File: C:/Users/j1573/Documents/ChatGPT/PLD/repo-osd-scroll/lab_ex5_i2s/src/user_source/hdl_source/IP/afifo_16_32_256.v Line: 231
+# ** Warning: (vsim-3722) C:/Users/j1573/Documents/ChatGPT/PLD/repo-osd-scroll/lab_ex5_i2s/src/user_source/hdl_source/IP/afifo_16_32_256.v(231): [TFMPC] - Missing connection for port 'doa'.
+# ** Warning: (vsim-3722) C:/Users/j1573/Documents/ChatGPT/PLD/repo-osd-scroll/lab_ex5_i2s/src/user_source/hdl_source/IP/afifo_16_32_256.v(231): [TFMPC] - Missing connection for port 'dib'.
+# ** Warning: (vsim-2685) [TFMPC] - Too few port connections for 'read_buf'.  Expected 14, found 11.
+#    Time: 0 ps  Iteration: 0  Instance: /tb_board_zoom_fifo/store/read_buf File: C:/Users/j1573/Documents/ChatGPT/PLD/repo-osd-scroll/lab_ex5_i2s/src/user_source/hdl_source/SD/frame_read_write.v Line: 166
+# ** Warning: (vsim-3722) C:/Users/j1573/Documents/ChatGPT/PLD/repo-osd-scroll/lab_ex5_i2s/src/user_source/hdl_source/SD/frame_read_write.v(166): [TFMPC] - Missing connection for port 'valid'.
+# ** Warning: (vsim-3722) C:/Users/j1573/Documents/ChatGPT/PLD/repo-osd-scroll/lab_ex5_i2s/src/user_source/hdl_source/SD/frame_read_write.v(166): [TFMPC] - Missing connection for port 'afull'.
+# ** Warning: (vsim-3722) C:/Users/j1573/Documents/ChatGPT/PLD/repo-osd-scroll/lab_ex5_i2s/src/user_source/hdl_source/SD/frame_read_write.v(166): [TFMPC] - Missing connection for port 'aempty'.
+# ** Warning: (vsim-2685) [TFMPC] - Too few port connections for 'ram_inst'.  Expected 16, found 14.
+#    Time: 0 ps  Iteration: 0  Instance: /tb_board_zoom_fifo/store/read_buf/ram_inst File: C:/Users/j1573/Documents/ChatGPT/PLD/repo-osd-scroll/lab_ex5_i2s/src/user_source/hdl_source/IP/afifo_32_16_256.v Line: 231
+# ** Warning: (vsim-3722) C:/Users/j1573/Documents/ChatGPT/PLD/repo-osd-scroll/lab_ex5_i2s/src/user_source/hdl_source/IP/afifo_32_16_256.v(231): [TFMPC] - Missing connection for port 'doa'.
+# ** Warning: (vsim-3722) C:/Users/j1573/Documents/ChatGPT/PLD/repo-osd-scroll/lab_ex5_i2s/src/user_source/hdl_source/IP/afifo_32_16_256.v(231): [TFMPC] - Missing connection for port 'dib'.
+# [PASS] Async reset assertion and three-clock synchronous release checked
+# [PASS] Real async FIFO / vertical address flip mode=0 buffer=0 words=768
+# [PASS] Real FIFO full pauses scaled output
+# [PASS] Real async FIFO / vertical address flip mode=1 buffer=1 words=768
+# [PASS] Real async FIFO / vertical address flip mode=0 buffer=0 words=768
+# [TEST PASS] Center zoom to original FIFO/address scheduler is correct.
+# ** Note: $finish    : C:/Users/j1573/Documents/ChatGPT/PLD/repo-osd-scroll/lab_ex5_i2s/tb_board_zoom_fifo.v(106)
+#    Time: 187150 ns  Iteration: 1  Instance: /tb_board_zoom_fifo
+# Break in Module tb_board_zoom_fifo at C:/Users/j1573/Documents/ChatGPT/PLD/repo-osd-scroll/lab_ex5_i2s/tb_board_zoom_fifo.v line 106
+# Stopped at C:/Users/j1573/Documents/ChatGPT/PLD/repo-osd-scroll/lab_ex5_i2s/tb_board_zoom_fifo.v line 106
+# End time: 22:31:35 on Oct 11,2026, Elapsed time: 0:00:02
+# Errors: 0, Warnings: 17
+#  quit -f

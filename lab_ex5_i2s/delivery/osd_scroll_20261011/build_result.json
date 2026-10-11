@@ -1,0 +1,10 @@
+{
+    "Run":  "osd_scroll_20261011",
+    "Bit":  "C:\\Users\\j1573\\Documents\\ChatGPT\\PLD\\repo-osd-scroll\\lab_ex5_i2s\\src\\td_project\\osd_scroll_20261011_Runs\\phy_1\\HDMI1.4b_Transmitter_v1.0.bit",
+    "SHA256":  "01E56C3F9C88CEE49202390A09AF25C4061757EF6D42760D6C2C11D325801E40",
+    "SetupWNS":  0.156,
+    "SetupTNS":  0,
+    "HoldWNS":  0.003,
+    "HoldTNS":  0,
+    "Status":  "Local candidate only; inspect warnings/coverage; board unverified"
+}

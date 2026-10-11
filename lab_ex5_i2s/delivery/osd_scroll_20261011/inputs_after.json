@@ -1,0 +1,1138 @@
+{
+    "Label":  "osd_scroll_20261011",
+    "CapturedUTC":  "2026-10-11T14:26:13.6008235Z",
+    "Project":  "C:\\Users\\j1573\\Documents\\ChatGPT\\PLD\\repo-osd-scroll\\lab_ex5_i2s\\src\\td_project\\HDMI1.4b_Transmitter_v1.0.al",
+    "Scope":  "Current disk snapshot; no build, download, IP generation or historical equivalence implied",
+    "Tool":  {
+                 "Path":  "D:\\FPGA-learning\\Anlogic\\TD5.6.2\\bin\\td_commands_prompt.exe",
+                 "Version":  null,
+                 "SHA256":  "E2E04ADA5E256DCCD017240C0F4DCFACE7F96DCA67CDE0E56E606AC0E02F827A"
+             },
+    "ProjectEntries":  [
+                           {
+                               "RelativePath":  "../user_source/hdl_source/video_source_test.v",
+                               "Exists":  true,
+                               "Attributes":  {
+                                                  "UsedInP\u0026R":  "true",
+                                                  "UsedInSyn":  "true",
+                                                  "CompileOrder":  "1",
+                                                  "AutoExcluded":  "true",
+                                                  "BelongTo":  "design_1"
+                                              }
+                           },
+                           {
+                               "RelativePath":  "../user_source/hdl_source/key_remove_shakes.v",
+                               "Exists":  true,
+                               "Attributes":  {
+                                                  "UsedInP\u0026R":  "true",
+                                                  "UsedInSyn":  "true",
+                                                  "CompileOrder":  "2",
+                                                  "AutoExcluded":  "true",
+                                                  "BelongTo":  "design_1"
+                                              }
+                           },
+                           {
+                               "RelativePath":  "../user_source/hdl_source/I2S_receiver.v",
+                               "Exists":  true,
+                               "Attributes":  {
+                                                  "CompileOrder":  "3",
+                                                  "UsedInSyn":  "true",
+                                                  "UsedInP\u0026R":  "true",
+                                                  "BelongTo":  "design_1"
+                                              }
+                           },
+                           {
+                               "RelativePath":  "../user_source/hdl_source/audio_arc_calculate.v",
+                               "Exists":  true,
+                               "Attributes":  {
+                                                  "CompileOrder":  "4",
+                                                  "UsedInSyn":  "true",
+                                                  "UsedInP\u0026R":  "true",
+                                                  "BelongTo":  "design_1"
+                                              }
+                           },
+                           {
+                               "RelativePath":  "../user_source/hdl_source/hdmi_phy_warpper.v",
+                               "Exists":  true,
+                               "Attributes":  {
+                                                  "CompileOrder":  "5",
+                                                  "UsedInSyn":  "true",
+                                                  "UsedInP\u0026R":  "true",
+                                                  "BelongTo":  "design_1"
+                                              }
+                           },
+                           {
+                               "RelativePath":  "../user_source/hdl_source/lane_lvds_10_1.v",
+                               "Exists":  true,
+                               "Attributes":  {
+                                                  "CompileOrder":  "6",
+                                                  "UsedInSyn":  "true",
+                                                  "UsedInP\u0026R":  "true",
+                                                  "BelongTo":  "design_1"
+                                              }
+                           },
+                           {
+                               "RelativePath":  "../user_source/hdl_source/hdmi1.4b_transmitter_core/hdmi_1_4b_transmitter_core_wrapper.enc.v",
+                               "Exists":  true,
+                               "Attributes":  {
+                                                  "CompileOrder":  "8",
+                                                  "UsedInSyn":  "true",
+                                                  "UsedInP\u0026R":  "true",
+                                                  "BelongTo":  "design_1"
+                                              }
+                           },
+                           {
+                               "RelativePath":  "../user_source/hdl_source/test/i2s_test_tone_gen_pll.v",
+                               "Exists":  true,
+                               "Attributes":  {
+                                                  "UsedInP\u0026R":  "true",
+                                                  "UsedInSyn":  "true",
+                                                  "CompileOrder":  "9",
+                                                  "AutoExcluded":  "true",
+                                                  "BelongTo":  "design_1"
+                                              }
+                           },
+                           {
+                               "RelativePath":  "../user_source/hdl_source/rom/i2s_rom_player_single_pll_fix64_rom_ip.v",
+                               "Exists":  true,
+                               "Attributes":  {
+                                                  "UsedInP\u0026R":  "true",
+                                                  "UsedInSyn":  "true",
+                                                  "CompileOrder":  "12",
+                                                  "AutoExcluded":  "true",
+                                                  "BelongTo":  "design_1"
+                                              }
+                           },
+                           {
+                               "RelativePath":  "../user_source/hdl_source/top_tf_hdmi_audio.v",
+                               "Exists":  true,
+                               "Attributes":  {
+                                                  "CompileOrder":  "14",
+                                                  "UsedInSyn":  "true",
+                                                  "UsedInP\u0026R":  "true",
+                                                  "BelongTo":  "design_1"
+                                              }
+                           },
+                           {
+                               "RelativePath":  "../user_source/hdl_source/SD/ax_debounce.v",
+                               "Exists":  true,
+                               "Attributes":  {
+                                                  "UsedInP\u0026R":  "true",
+                                                  "UsedInSyn":  "true",
+                                                  "CompileOrder":  "20",
+                                                  "AutoExcluded":  "true",
+                                                  "BelongTo":  "design_1"
+                                              }
+                           },
+                           {
+                               "RelativePath":  "../user_source/hdl_source/SD/bmp_read.v",
+                               "Exists":  true,
+                               "Attributes":  {
+                                                  "CompileOrder":  "21",
+                                                  "UsedInSyn":  "true",
+                                                  "UsedInP\u0026R":  "true",
+                                                  "BelongTo":  "design_1"
+                                              }
+                           },
+                           {
+                               "RelativePath":  "../user_source/hdl_source/SD/color_bar.v",
+                               "Exists":  true,
+                               "Attributes":  {
+                                                  "CompileOrder":  "22",
+                                                  "UsedInSyn":  "true",
+                                                  "UsedInP\u0026R":  "true",
+                                                  "BelongTo":  "design_1"
+                                              }
+                           },
+                           {
+                               "RelativePath":  "../user_source/hdl_source/SD/frame_fifo_read.v",
+                               "Exists":  true,
+                               "Attributes":  {
+                                                  "CompileOrder":  "23",
+                                                  "UsedInSyn":  "true",
+                                                  "UsedInP\u0026R":  "true",
+                                                  "BelongTo":  "design_1"
+                                              }
+                           },
+                           {
+                               "RelativePath":  "../user_source/hdl_source/SD/frame_fifo_write.v",
+                               "Exists":  true,
+                               "Attributes":  {
+                                                  "CompileOrder":  "24",
+                                                  "UsedInSyn":  "true",
+                                                  "UsedInP\u0026R":  "true",
+                                                  "BelongTo":  "design_1"
+                                              }
+                           },
+                           {
+                               "RelativePath":  "../user_source/hdl_source/SD/frame_read_write.v",
+                               "Exists":  true,
+                               "Attributes":  {
+                                                  "CompileOrder":  "25",
+                                                  "UsedInSyn":  "true",
+                                                  "UsedInP\u0026R":  "true",
+                                                  "BelongTo":  "design_1"
+                                              }
+                           },
+                           {
+                               "RelativePath":  "../user_source/hdl_source/SD/sd_card_bmp.v",
+                               "Exists":  true,
+                               "Attributes":  {
+                                                  "CompileOrder":  "26",
+                                                  "UsedInSyn":  "true",
+                                                  "UsedInP\u0026R":  "true",
+                                                  "BelongTo":  "design_1"
+                                              }
+                           },
+                           {
+                               "RelativePath":  "../user_source/hdl_source/SD/seg_decoder.v",
+                               "Exists":  true,
+                               "Attributes":  {
+                                                  "CompileOrder":  "27",
+                                                  "UsedInSyn":  "true",
+                                                  "UsedInP\u0026R":  "true",
+                                                  "BelongTo":  "design_1"
+                                              }
+                           },
+                           {
+                               "RelativePath":  "../user_source/hdl_source/SD/seg_scan.v",
+                               "Exists":  true,
+                               "Attributes":  {
+                                                  "CompileOrder":  "28",
+                                                  "UsedInSyn":  "true",
+                                                  "UsedInP\u0026R":  "true",
+                                                  "BelongTo":  "design_1"
+                                              }
+                           },
+                           {
+                               "RelativePath":  "../user_source/hdl_source/SD/video_define.v",
+                               "Exists":  true,
+                               "Attributes":  {
+                                                  "UsedInP\u0026R":  "true",
+                                                  "UsedInSyn":  "true",
+                                                  "CompileOrder":  "29",
+                                                  "AutoExcluded":  "true",
+                                                  "BelongTo":  "design_1"
+                                              }
+                           },
+                           {
+                               "RelativePath":  "../user_source/hdl_source/SD/video_delay.v",
+                               "Exists":  true,
+                               "Attributes":  {
+                                                  "CompileOrder":  "30",
+                                                  "UsedInSyn":  "true",
+                                                  "UsedInP\u0026R":  "true",
+                                                  "BelongTo":  "design_1"
+                                              }
+                           },
+                           {
+                               "RelativePath":  "../user_source/hdl_source/SD/video_timing_data.v",
+                               "Exists":  true,
+                               "Attributes":  {
+                                                  "CompileOrder":  "31",
+                                                  "UsedInSyn":  "true",
+                                                  "UsedInP\u0026R":  "true",
+                                                  "BelongTo":  "design_1"
+                                              }
+                           },
+                           {
+                               "RelativePath":  "../user_source/hdl_source/hdmi_audio_tone_i2s_64fs.v",
+                               "Exists":  true,
+                               "Attributes":  {
+                                                  "UsedInP\u0026R":  "true",
+                                                  "UsedInSyn":  "true",
+                                                  "CompileOrder":  "32",
+                                                  "AutoExcluded":  "true",
+                                                  "BelongTo":  "design_1"
+                                              }
+                           },
+                           {
+                               "RelativePath":  "../user_source/hdl_source/startup_pulse.v",
+                               "Exists":  true,
+                               "Attributes":  {
+                                                  "CompileOrder":  "33",
+                                                  "UsedInSyn":  "true",
+                                                  "UsedInP\u0026R":  "true",
+                                                  "BelongTo":  "design_1"
+                                              }
+                           },
+                           {
+                               "RelativePath":  "../user_source/hdl_source/video_rgb_to_axis_640x480.v",
+                               "Exists":  true,
+                               "Attributes":  {
+                                                  "CompileOrder":  "34",
+                                                  "UsedInSyn":  "true",
+                                                  "UsedInP\u0026R":  "true",
+                                                  "BelongTo":  "design_1"
+                                              }
+                           },
+                           {
+                               "RelativePath":  "../user_source/hdl_source/SD/sd_card_cmd.v",
+                               "Exists":  true,
+                               "Attributes":  {
+                                                  "CompileOrder":  "35",
+                                                  "UsedInSyn":  "true",
+                                                  "UsedInP\u0026R":  "true",
+                                                  "BelongTo":  "design_1"
+                                              }
+                           },
+                           {
+                               "RelativePath":  "../user_source/hdl_source/SD/sd_card_sec_read_write.v",
+                               "Exists":  true,
+                               "Attributes":  {
+                                                  "CompileOrder":  "36",
+                                                  "UsedInSyn":  "true",
+                                                  "UsedInP\u0026R":  "true",
+                                                  "BelongTo":  "design_1"
+                                              }
+                           },
+                           {
+                               "RelativePath":  "../user_source/hdl_source/SD/sd_card_top.v",
+                               "Exists":  true,
+                               "Attributes":  {
+                                                  "CompileOrder":  "37",
+                                                  "UsedInSyn":  "true",
+                                                  "UsedInP\u0026R":  "true",
+                                                  "BelongTo":  "design_1"
+                                              }
+                           },
+                           {
+                               "RelativePath":  "../user_source/hdl_source/SD/spi_master.v",
+                               "Exists":  true,
+                               "Attributes":  {
+                                                  "CompileOrder":  "38",
+                                                  "UsedInSyn":  "true",
+                                                  "UsedInP\u0026R":  "true",
+                                                  "BelongTo":  "design_1"
+                                              }
+                           },
+                           {
+                               "RelativePath":  "../user_source/hdl_source/SD/sdram.v",
+                               "Exists":  true,
+                               "Attributes":  {
+                                                  "CompileOrder":  "39",
+                                                  "UsedInSyn":  "true",
+                                                  "UsedInP\u0026R":  "true",
+                                                  "BelongTo":  "design_1"
+                                              }
+                           },
+                           {
+                               "RelativePath":  "../user_source/hdl_source/include/global_def.v",
+                               "Exists":  true,
+                               "Attributes":  {
+                                                  "UsedInP\u0026R":  "true",
+                                                  "UsedInSyn":  "true",
+                                                  "CompileOrder":  "40",
+                                                  "AutoExcluded":  "true",
+                                                  "BelongTo":  "design_1"
+                                              }
+                           },
+                           {
+                               "RelativePath":  "../user_source/hdl_source/include/sdr_as_ram.enc.v",
+                               "Exists":  true,
+                               "Attributes":  {
+                                                  "CompileOrder":  "41",
+                                                  "UsedInSyn":  "true",
+                                                  "UsedInP\u0026R":  "true",
+                                                  "BelongTo":  "design_1"
+                                              }
+                           },
+                           {
+                               "RelativePath":  "../user_source/hdl_source/include/sdr_init_ref.enc.v",
+                               "Exists":  true,
+                               "Attributes":  {
+                                                  "CompileOrder":  "42",
+                                                  "UsedInSyn":  "true",
+                                                  "UsedInP\u0026R":  "true",
+                                                  "BelongTo":  "design_1"
+                                              }
+                           },
+                           {
+                               "RelativePath":  "../user_source/hdl_source/include/sdr_wrrd.enc.v",
+                               "Exists":  true,
+                               "Attributes":  {
+                                                  "CompileOrder":  "43",
+                                                  "UsedInSyn":  "true",
+                                                  "UsedInP\u0026R":  "true",
+                                                  "BelongTo":  "design_1"
+                                              }
+                           },
+                           {
+                               "RelativePath":  "../user_source/hdl_source/hdmi_audio_tone_pcm_scale.v",
+                               "Exists":  true,
+                               "Attributes":  {
+                                                  "UsedInP\u0026R":  "true",
+                                                  "UsedInSyn":  "true",
+                                                  "CompileOrder":  "44",
+                                                  "AutoExcluded":  "true",
+                                                  "BelongTo":  "design_1"
+                                              }
+                           },
+                           {
+                               "RelativePath":  "../user_source/hdl_source/osd_overlay.v",
+                               "Exists":  true,
+                               "Attributes":  {
+                                                  "CompileOrder":  "45",
+                                                  "UsedInSyn":  "true",
+                                                  "UsedInP\u0026R":  "true",
+                                                  "BelongTo":  "design_1"
+                                              }
+                           },
+                           {
+                               "RelativePath":  "../user_source/hdl_source/team/audio_rom_player.v",
+                               "Exists":  true,
+                               "Attributes":  {
+                                                  "CompileOrder":  "46",
+                                                  "UsedInSyn":  "true",
+                                                  "UsedInP\u0026R":  "true",
+                                                  "BelongTo":  "design_1"
+                                              }
+                           },
+                           {
+                               "RelativePath":  "../user_source/hdl_source/team/waveform_overlay.v",
+                               "Exists":  true,
+                               "Attributes":  {
+                                                  "CompileOrder":  "47",
+                                                  "UsedInSyn":  "true",
+                                                  "UsedInP\u0026R":  "true",
+                                                  "BelongTo":  "design_1"
+                                              }
+                           },
+                           {
+                               "RelativePath":  "../user_source/hdl_source/team/bmp_center_zoom_2x.v",
+                               "Exists":  true,
+                               "Attributes":  {
+                                                  "CompileOrder":  "48",
+                                                  "UsedInSyn":  "true",
+                                                  "UsedInP\u0026R":  "true",
+                                                  "BelongTo":  "design_1"
+                                              }
+                           },
+                           {
+                               "RelativePath":  "../user_source/hdl_source/team/image_scaler_2x_pingpong.v",
+                               "Exists":  true,
+                               "Attributes":  {
+                                                  "CompileOrder":  "49",
+                                                  "UsedInSyn":  "true",
+                                                  "UsedInP\u0026R":  "true",
+                                                  "BelongTo":  "design_1"
+                                              }
+                           },
+                           {
+                               "RelativePath":  "../user_source/hdl_source/team/osd_resources.v",
+                               "Exists":  true,
+                               "Attributes":  {
+                                                  "CompileOrder":  "80",
+                                                  "UsedInSyn":  "true",
+                                                  "UsedInP\u0026R":  "true",
+                                                  "BelongTo":  "design_1"
+                                              }
+                           },
+                           {
+                               "RelativePath":  "../user_source/hdl_source/team/osd_text_renderer.v",
+                               "Exists":  true,
+                               "Attributes":  {
+                                                  "CompileOrder":  "81",
+                                                  "UsedInSyn":  "true",
+                                                  "UsedInP\u0026R":  "true",
+                                                  "BelongTo":  "design_1"
+                                              }
+                           },
+                           {
+                               "RelativePath":  "../user_source/hdl_source/team/osd_display_commit.v",
+                               "Exists":  true,
+                               "Attributes":  {
+                                                  "CompileOrder":  "82",
+                                                  "UsedInSyn":  "true",
+                                                  "UsedInP\u0026R":  "true",
+                                                  "BelongTo":  "design_1"
+                                              }
+                           },
+                           {
+                               "RelativePath":  "../user_source/constraints_source/pin.adc",
+                               "Exists":  true,
+                               "Attributes":  {
+                                                  "CompileOrder":  "2",
+                                                  "UsedInSyn":  "true",
+                                                  "UsedInP\u0026R":  "true",
+                                                  "BelongTo":  "constraint_1"
+                                              }
+                           },
+                           {
+                               "RelativePath":  "../user_source/constraints_source/timing.sdc",
+                               "Exists":  true,
+                               "Attributes":  {
+                                                  "CompileOrder":  "1",
+                                                  "UsedInSyn":  "true",
+                                                  "UsedInP\u0026R":  "true",
+                                                  "BelongTo":  "constraint_1"
+                                              }
+                           },
+                           {
+                               "RelativePath":  "../user_source/constraints_source/edid_debug.cwc",
+                               "Exists":  true,
+                               "Attributes":  {
+                                                  "CompileOrder":  "7",
+                                                  "UsedInSyn":  "true",
+                                                  "UsedInP\u0026R":  "true",
+                                                  "BelongTo":  "design_1"
+                                              }
+                           },
+                           {
+                               "RelativePath":  "al_ip/PLL_HDMI_AUDIO.ipc",
+                               "Exists":  true,
+                               "Attributes":  {
+                                                  "CompileOrder":  "10",
+                                                  "UsedInSyn":  "true",
+                                                  "UsedInP\u0026R":  "true",
+                                                  "BelongTo":  "design_1"
+                                              }
+                           },
+                           {
+                               "RelativePath":  "al_ip/PLL.ipc",
+                               "Exists":  true,
+                               "Attributes":  {
+                                                  "UsedInP\u0026R":  "true",
+                                                  "UsedInSyn":  "true",
+                                                  "CompileOrder":  "11",
+                                                  "AutoExcluded":  "true",
+                                                  "BelongTo":  "design_1"
+                                              }
+                           },
+                           {
+                               "RelativePath":  "al_ip/AUDIO_SAMPLE_ROM.ipc",
+                               "Exists":  true,
+                               "Attributes":  {
+                                                  "UsedInP\u0026R":  "true",
+                                                  "UsedInSyn":  "true",
+                                                  "CompileOrder":  "13",
+                                                  "AutoExcluded":  "true",
+                                                  "BelongTo":  "design_1"
+                                              }
+                           },
+                           {
+                               "RelativePath":  "../user_source/hdl_source/ip/afifo_16_32_256.ipc",
+                               "Exists":  true,
+                               "Attributes":  {
+                                                  "CompileOrder":  "15",
+                                                  "UsedInSyn":  "true",
+                                                  "UsedInP\u0026R":  "true",
+                                                  "BelongTo":  "design_1"
+                                              }
+                           },
+                           {
+                               "RelativePath":  "../user_source/hdl_source/ip/afifo_32_16_256.ipc",
+                               "Exists":  true,
+                               "Attributes":  {
+                                                  "CompileOrder":  "16",
+                                                  "UsedInSyn":  "true",
+                                                  "UsedInP\u0026R":  "true",
+                                                  "BelongTo":  "design_1"
+                                              }
+                           },
+                           {
+                               "RelativePath":  "../user_source/hdl_source/ip/sys_pll.ipc",
+                               "Exists":  true,
+                               "Attributes":  {
+                                                  "CompileOrder":  "17",
+                                                  "UsedInSyn":  "true",
+                                                  "UsedInP\u0026R":  "true",
+                                                  "BelongTo":  "design_1"
+                                              }
+                           },
+                           {
+                               "RelativePath":  "../user_source/hdl_source/ip/video_pll.ipc",
+                               "Exists":  true,
+                               "Attributes":  {
+                                                  "CompileOrder":  "18",
+                                                  "UsedInSyn":  "true",
+                                                  "UsedInP\u0026R":  "true",
+                                                  "BelongTo":  "design_1"
+                                              }
+                           },
+                           {
+                               "RelativePath":  "al_ip/AUDIO_SPEECH_ROM.ipc",
+                               "Exists":  true,
+                               "Attributes":  {
+                                                  "CompileOrder":  "19",
+                                                  "UsedInSyn":  "true",
+                                                  "UsedInP\u0026R":  "true",
+                                                  "BelongTo":  "design_1"
+                                              }
+                           }
+                       ],
+    "InputHashes":  [
+                        {
+                            "Path":  "C:\\Users\\j1573\\Documents\\ChatGPT\\PLD\\repo-osd-scroll\\lab_ex5_i2s\\capture_build_inputs.ps1",
+                            "Bytes":  3759,
+                            "SHA256":  "8E3A5AF94961D5B9F07224495F3AB806757FD9CCE4E820D75FBE87363A64019B"
+                        },
+                        {
+                            "Path":  "C:\\Users\\j1573\\Documents\\ChatGPT\\PLD\\repo-osd-scroll\\lab_ex5_i2s\\osd_assets\\captions_test.json",
+                            "Bytes":  900,
+                            "SHA256":  "5ABBA2C287F958D0A4813892C63B701F7975B18B4718077094192D1FD617BB5C"
+                        },
+                        {
+                            "Path":  "C:\\Users\\j1573\\Documents\\ChatGPT\\PLD\\repo-osd-scroll\\lab_ex5_i2s\\osd_assets\\manifest.json",
+                            "Bytes":  1104,
+                            "SHA256":  "C212FF2104D9E3084471A51DAF6B4265A892D849A6E504B7AE312B667B78C828"
+                        },
+                        {
+                            "Path":  "C:\\Users\\j1573\\Documents\\ChatGPT\\PLD\\repo-osd-scroll\\lab_ex5_i2s\\osd_assets\\preview_1.png",
+                            "Bytes":  4149,
+                            "SHA256":  "D9DC90A5991105E733839D28468BA48F13ABDEFD166AA565D4C6F93668D014FE"
+                        },
+                        {
+                            "Path":  "C:\\Users\\j1573\\Documents\\ChatGPT\\PLD\\repo-osd-scroll\\lab_ex5_i2s\\osd_assets\\preview_2.png",
+                            "Bytes":  3557,
+                            "SHA256":  "C2CDEC9BD95C76BEF3755DF2DA937428A9686FD3FB5C227C3CE93261D4F56037"
+                        },
+                        {
+                            "Path":  "C:\\Users\\j1573\\Documents\\ChatGPT\\PLD\\repo-osd-scroll\\lab_ex5_i2s\\osd_assets\\preview_3.png",
+                            "Bytes":  4174,
+                            "SHA256":  "801AD8FA4D8A0CD47D9B2CDFFF19011F42C3EFDBB3A99F7BC68FF4D70F51388F"
+                        },
+                        {
+                            "Path":  "C:\\Users\\j1573\\Documents\\ChatGPT\\PLD\\repo-osd-scroll\\lab_ex5_i2s\\osd_assets\\preview_4.png",
+                            "Bytes":  3736,
+                            "SHA256":  "DEE8A3F919DAD5BC73004F2B7609CAEDEBAA9C65F9286F180608D5F10474083A"
+                        },
+                        {
+                            "Path":  "C:\\Users\\j1573\\Documents\\ChatGPT\\PLD\\repo-osd-scroll\\lab_ex5_i2s\\osd_assets\\scroll_preview.gif",
+                            "Bytes":  704888,
+                            "SHA256":  "F43DC5B4131747F88E142D50E6DAB41807DC4F26681B04140EF10E52DACAE158"
+                        },
+                        {
+                            "Path":  "C:\\Users\\j1573\\Documents\\ChatGPT\\PLD\\repo-osd-scroll\\lab_ex5_i2s\\osd_assets\\text_ids.json",
+                            "Bytes":  22559,
+                            "SHA256":  "A9E3A1CD1DB69B1A3A4E11314C7DB85113A42E1074B1FD97A93B67B90417E390"
+                        },
+                        {
+                            "Path":  "C:\\Users\\j1573\\Documents\\ChatGPT\\PLD\\repo-osd-scroll\\lab_ex5_i2s\\run_verified_project_build.ps1",
+                            "Bytes":  6219,
+                            "SHA256":  "DFBD13F6CA0830E470094DDFB7D293A1CF49D781DFDD1CD630C0664E55386B76"
+                        },
+                        {
+                            "Path":  "C:\\Users\\j1573\\Documents\\ChatGPT\\PLD\\repo-osd-scroll\\lab_ex5_i2s\\src\\td_project\\al_ip\\AUDIO_SAMPLE_ROM.ipc",
+                            "Bytes":  1203,
+                            "SHA256":  "6CABDDCF137FC2F2844F4A1126BD58C9CB65E861B9A4CEE6F8DA55F38391CBD5"
+                        },
+                        {
+                            "Path":  "C:\\Users\\j1573\\Documents\\ChatGPT\\PLD\\repo-osd-scroll\\lab_ex5_i2s\\src\\td_project\\al_ip\\AUDIO_SAMPLE_ROM.v",
+                            "Bytes":  1455,
+                            "SHA256":  "0BC4A18DFD8D598103FAEA82E9F02A85BEABA5A3E21047A4E6BAAB063CA005BD"
+                        },
+                        {
+                            "Path":  "C:\\Users\\j1573\\Documents\\ChatGPT\\PLD\\repo-osd-scroll\\lab_ex5_i2s\\src\\td_project\\al_ip\\AUDIO_SAMPLE_ROM.vhd",
+                            "Bytes":  1621,
+                            "SHA256":  "4C3D4EA17939B4D07A8D95C006174F94CED027B91DAAE5FD065E094D1E8071AF"
+                        },
+                        {
+                            "Path":  "C:\\Users\\j1573\\Documents\\ChatGPT\\PLD\\repo-osd-scroll\\lab_ex5_i2s\\src\\td_project\\al_ip\\AUDIO_SPEECH_ROM.ipc",
+                            "Bytes":  1190,
+                            "SHA256":  "904F7E3FE1341C88EC2FDC4AFB7BEB7015E854B6A97B79357987E658DEA9EA47"
+                        },
+                        {
+                            "Path":  "C:\\Users\\j1573\\Documents\\ChatGPT\\PLD\\repo-osd-scroll\\lab_ex5_i2s\\src\\td_project\\al_ip\\AUDIO_SPEECH_ROM.v",
+                            "Bytes":  1529,
+                            "SHA256":  "496BD596D629EC8255502676451CD376732BA8CB8322F960A9A08A896C276BB1"
+                        },
+                        {
+                            "Path":  "C:\\Users\\j1573\\Documents\\ChatGPT\\PLD\\repo-osd-scroll\\lab_ex5_i2s\\src\\td_project\\al_ip\\AUDIO_SPEECH_ROM.vhd",
+                            "Bytes":  1869,
+                            "SHA256":  "06A3AE7B865F5D2B576830F6B09D95CD19E603201734973DEFFC49775D4DD76F"
+                        },
+                        {
+                            "Path":  "C:\\Users\\j1573\\Documents\\ChatGPT\\PLD\\repo-osd-scroll\\lab_ex5_i2s\\src\\td_project\\al_ip\\PLL.ipc",
+                            "Bytes":  1555,
+                            "SHA256":  "6E443706C9F2A6AFB894675FD9F5C5968D2C75B67B203AAE0713F4286ACEBA92"
+                        },
+                        {
+                            "Path":  "C:\\Users\\j1573\\Documents\\ChatGPT\\PLD\\repo-osd-scroll\\lab_ex5_i2s\\src\\td_project\\al_ip\\PLL.v",
+                            "Bytes":  2438,
+                            "SHA256":  "4E873EEF9499FA93508D8CF2CAC90EEA0E16C6F649AE29502CDC4C5886CD32AA"
+                        },
+                        {
+                            "Path":  "C:\\Users\\j1573\\Documents\\ChatGPT\\PLD\\repo-osd-scroll\\lab_ex5_i2s\\src\\td_project\\al_ip\\PLL.vhd",
+                            "Bytes":  2688,
+                            "SHA256":  "E46792BB3D2B72621B18B323C472213FD5880EB29E5E85F0B7D50E5117E47494"
+                        },
+                        {
+                            "Path":  "C:\\Users\\j1573\\Documents\\ChatGPT\\PLD\\repo-osd-scroll\\lab_ex5_i2s\\src\\td_project\\al_ip\\PLL_HDMI_AUDIO.ipc",
+                            "Bytes":  1893,
+                            "SHA256":  "4E023B3FB35AF9E8D5D8E672BF302F3C56F51F4B2C31C876A2543FBABBBFE8C2"
+                        },
+                        {
+                            "Path":  "C:\\Users\\j1573\\Documents\\ChatGPT\\PLD\\repo-osd-scroll\\lab_ex5_i2s\\src\\td_project\\al_ip\\PLL_HDMI_AUDIO.v",
+                            "Bytes":  2757,
+                            "SHA256":  "1E174C1DC4EDBCE9C61D6B390ACA3B7B94022B60995A92981D5278247B7F5867"
+                        },
+                        {
+                            "Path":  "C:\\Users\\j1573\\Documents\\ChatGPT\\PLD\\repo-osd-scroll\\lab_ex5_i2s\\src\\td_project\\al_ip\\PLL_HDMI_AUDIO.vhd",
+                            "Bytes":  2941,
+                            "SHA256":  "1B5025B3FE29D4428C6AA58EF99E7C5D7C5D697E74DACD8AC8F2D068290E0E2F"
+                        },
+                        {
+                            "Path":  "C:\\Users\\j1573\\Documents\\ChatGPT\\PLD\\repo-osd-scroll\\lab_ex5_i2s\\src\\td_project\\HDMI1.4b_Transmitter_v1.0.al",
+                            "Bytes":  23055,
+                            "SHA256":  "1C0ACA397E07B94782D7DDFB78D81239583F557126FCB34010A2F7E5F334FDCD"
+                        },
+                        {
+                            "Path":  "C:\\Users\\j1573\\Documents\\ChatGPT\\PLD\\repo-osd-scroll\\lab_ex5_i2s\\src\\user_source\\constraints_source\\.edid_debug_bak.cwc",
+                            "Bytes":  0,
+                            "SHA256":  "E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855"
+                        },
+                        {
+                            "Path":  "C:\\Users\\j1573\\Documents\\ChatGPT\\PLD\\repo-osd-scroll\\lab_ex5_i2s\\src\\user_source\\constraints_source\\edid_debug.cwc",
+                            "Bytes":  59256,
+                            "SHA256":  "6716411E2346DE08976E0AD8ED2E09EB93BDC0F60EFC31BF75BA70E6CEBE1F95"
+                        },
+                        {
+                            "Path":  "C:\\Users\\j1573\\Documents\\ChatGPT\\PLD\\repo-osd-scroll\\lab_ex5_i2s\\src\\user_source\\constraints_source\\pin.adc",
+                            "Bytes":  5595,
+                            "SHA256":  "7B6A5DAE8E4173AB9F654D072FD0A1C2F4CAD5FDCCDF5DCE5A18393C175C4071"
+                        },
+                        {
+                            "Path":  "C:\\Users\\j1573\\Documents\\ChatGPT\\PLD\\repo-osd-scroll\\lab_ex5_i2s\\src\\user_source\\constraints_source\\timing.sdc",
+                            "Bytes":  9417,
+                            "SHA256":  "F0589522CA582445C10BDFFE0BE75EE249417032DA7C946843F300C13D4B73F1"
+                        },
+                        {
+                            "Path":  "C:\\Users\\j1573\\Documents\\ChatGPT\\PLD\\repo-osd-scroll\\lab_ex5_i2s\\src\\user_source\\hdl_source\\audio_arc_calculate.v",
+                            "Bytes":  1702,
+                            "SHA256":  "552D8D86AFD237666B30AE08F31247808E89EB024EFDE5EFC670B82EB617A7DC"
+                        },
+                        {
+                            "Path":  "C:\\Users\\j1573\\Documents\\ChatGPT\\PLD\\repo-osd-scroll\\lab_ex5_i2s\\src\\user_source\\hdl_source\\hdmi_audio_tone_i2s_64fs.v",
+                            "Bytes":  3589,
+                            "SHA256":  "729CB1635091B7630E5B68306E9F51FFF4E3E06BAE8CE08CC3D7323B3FB9D5CF"
+                        },
+                        {
+                            "Path":  "C:\\Users\\j1573\\Documents\\ChatGPT\\PLD\\repo-osd-scroll\\lab_ex5_i2s\\src\\user_source\\hdl_source\\hdmi_audio_tone_pcm_scale.v",
+                            "Bytes":  2988,
+                            "SHA256":  "38A58D55836467C4C449F195F4235D57DA9CB02B2D0EA27171871E65398DF1DA"
+                        },
+                        {
+                            "Path":  "C:\\Users\\j1573\\Documents\\ChatGPT\\PLD\\repo-osd-scroll\\lab_ex5_i2s\\src\\user_source\\hdl_source\\hdmi_phy_warpper.v",
+                            "Bytes":  4017,
+                            "SHA256":  "416B082B0987001BDBC0A7E20A557CB8FB1DCA34E25DC881E6D28A8CB3CF4300"
+                        },
+                        {
+                            "Path":  "C:\\Users\\j1573\\Documents\\ChatGPT\\PLD\\repo-osd-scroll\\lab_ex5_i2s\\src\\user_source\\hdl_source\\hdmi1.4b_transmitter_core\\hdmi_1_4b_transmitter_core_wrapper.enc.v",
+                            "Bytes":  328975,
+                            "SHA256":  "867E0B0BDD874BC383D00918C9E1BE3FE01EDF41F343B6A0D73E262776596A63"
+                        },
+                        {
+                            "Path":  "C:\\Users\\j1573\\Documents\\ChatGPT\\PLD\\repo-osd-scroll\\lab_ex5_i2s\\src\\user_source\\hdl_source\\I2S_receiver.v",
+                            "Bytes":  4205,
+                            "SHA256":  "08904598B42C2E1A4836CD9FB3293BC6C791EA2F79E35C7663A33127DC97F47B"
+                        },
+                        {
+                            "Path":  "C:\\Users\\j1573\\Documents\\ChatGPT\\PLD\\repo-osd-scroll\\lab_ex5_i2s\\src\\user_source\\hdl_source\\include\\global_def.v",
+                            "Bytes":  373,
+                            "SHA256":  "04F854D7FE2F7816705B988EC59822FC258E4ED3A13529E36D0B9E6233A2682F"
+                        },
+                        {
+                            "Path":  "C:\\Users\\j1573\\Documents\\ChatGPT\\PLD\\repo-osd-scroll\\lab_ex5_i2s\\src\\user_source\\hdl_source\\include\\sdr_as_ram.enc.v",
+                            "Bytes":  7538,
+                            "SHA256":  "767DBDFBD83D42223B77DFA7DEAB42CE8216A8FD6F6CB41B7E7593D9A345BA57"
+                        },
+                        {
+                            "Path":  "C:\\Users\\j1573\\Documents\\ChatGPT\\PLD\\repo-osd-scroll\\lab_ex5_i2s\\src\\user_source\\hdl_source\\include\\sdr_init_ref.enc.v",
+                            "Bytes":  9059,
+                            "SHA256":  "6DA5945F4AF793610D0D64C65C7E5D2D1C86ED4C11BC5FDEACD27EB03178B9F6"
+                        },
+                        {
+                            "Path":  "C:\\Users\\j1573\\Documents\\ChatGPT\\PLD\\repo-osd-scroll\\lab_ex5_i2s\\src\\user_source\\hdl_source\\include\\sdr_wrrd.enc.v",
+                            "Bytes":  15637,
+                            "SHA256":  "C7D7FE07D75F66AA88D9F986B3006319C995162434F104F9990664B374CDFDD2"
+                        },
+                        {
+                            "Path":  "C:\\Users\\j1573\\Documents\\ChatGPT\\PLD\\repo-osd-scroll\\lab_ex5_i2s\\src\\user_source\\hdl_source\\IP\\afifo_16_256.tcl",
+                            "Bytes":  554,
+                            "SHA256":  "5807155B00F2F749328339E01A85B4BB836F91598286DD167513836B60AF33DB"
+                        },
+                        {
+                            "Path":  "C:\\Users\\j1573\\Documents\\ChatGPT\\PLD\\repo-osd-scroll\\lab_ex5_i2s\\src\\user_source\\hdl_source\\IP\\afifo_16_256.v",
+                            "Bytes":  34857,
+                            "SHA256":  "C489408D2748D99C00A2E408BA8E1DEFF6F1FD8C43AA70A889466D57A20B0F70"
+                        },
+                        {
+                            "Path":  "C:\\Users\\j1573\\Documents\\ChatGPT\\PLD\\repo-osd-scroll\\lab_ex5_i2s\\src\\user_source\\hdl_source\\IP\\afifo_16_256.vhd",
+                            "Bytes":  1405,
+                            "SHA256":  "50D6D10017B63E1CE5A77BAD4A80E9A3DE81402909D30CA0818674A1887EB46D"
+                        },
+                        {
+                            "Path":  "C:\\Users\\j1573\\Documents\\ChatGPT\\PLD\\repo-osd-scroll\\lab_ex5_i2s\\src\\user_source\\hdl_source\\IP\\afifo_16_256_sim.v",
+                            "Bytes":  64027,
+                            "SHA256":  "55B81AB3AA699902B6F11FE766658B852E0740844879A942DCA81CD57B40F729"
+                        },
+                        {
+                            "Path":  "C:\\Users\\j1573\\Documents\\ChatGPT\\PLD\\repo-osd-scroll\\lab_ex5_i2s\\src\\user_source\\hdl_source\\IP\\afifo_16_32_256.ipc",
+                            "Bytes":  883,
+                            "SHA256":  "171B1A75793A800FBF25AF75DF300AD3AA53D923FE5B04FC91C266E0748D82DC"
+                        },
+                        {
+                            "Path":  "C:\\Users\\j1573\\Documents\\ChatGPT\\PLD\\repo-osd-scroll\\lab_ex5_i2s\\src\\user_source\\hdl_source\\IP\\afifo_16_32_256.tcl",
+                            "Bytes":  554,
+                            "SHA256":  "5807155B00F2F749328339E01A85B4BB836F91598286DD167513836B60AF33DB"
+                        },
+                        {
+                            "Path":  "C:\\Users\\j1573\\Documents\\ChatGPT\\PLD\\repo-osd-scroll\\lab_ex5_i2s\\src\\user_source\\hdl_source\\IP\\afifo_16_32_256.v",
+                            "Bytes":  34859,
+                            "SHA256":  "32C86A05D74F05C19E38AD87D73040530F6430FEE6ACBF9B4D4DF8900152B4ED"
+                        },
+                        {
+                            "Path":  "C:\\Users\\j1573\\Documents\\ChatGPT\\PLD\\repo-osd-scroll\\lab_ex5_i2s\\src\\user_source\\hdl_source\\IP\\afifo_32_16_256.ipc",
+                            "Bytes":  884,
+                            "SHA256":  "30FCB348FD88914538E7398979DABEB0C9F5D2D950AFDD298C73D95FBEE3CC28"
+                        },
+                        {
+                            "Path":  "C:\\Users\\j1573\\Documents\\ChatGPT\\PLD\\repo-osd-scroll\\lab_ex5_i2s\\src\\user_source\\hdl_source\\IP\\afifo_32_16_256.tcl",
+                            "Bytes":  554,
+                            "SHA256":  "5807155B00F2F749328339E01A85B4BB836F91598286DD167513836B60AF33DB"
+                        },
+                        {
+                            "Path":  "C:\\Users\\j1573\\Documents\\ChatGPT\\PLD\\repo-osd-scroll\\lab_ex5_i2s\\src\\user_source\\hdl_source\\IP\\afifo_32_16_256.v",
+                            "Bytes":  34859,
+                            "SHA256":  "3F0119E1B1BCECD5AF05CDFDB3A56DC336EFCBC2EEA9F9DD3AF8B98A205DED75"
+                        },
+                        {
+                            "Path":  "C:\\Users\\j1573\\Documents\\ChatGPT\\PLD\\repo-osd-scroll\\lab_ex5_i2s\\src\\user_source\\hdl_source\\IP\\sdram.ipc",
+                            "Bytes":  398,
+                            "SHA256":  "B2156DB94AB4B9DC81CED661B99544F2A2192C1F510C380D3AE201F9BBD1AD1A"
+                        },
+                        {
+                            "Path":  "C:\\Users\\j1573\\Documents\\ChatGPT\\PLD\\repo-osd-scroll\\lab_ex5_i2s\\src\\user_source\\hdl_source\\IP\\sdram.v",
+                            "Bytes":  1108,
+                            "SHA256":  "1487E8583BBF52FE6D079A2854C10EBFF2E569A3872A9088C1C9717BA14D17FE"
+                        },
+                        {
+                            "Path":  "C:\\Users\\j1573\\Documents\\ChatGPT\\PLD\\repo-osd-scroll\\lab_ex5_i2s\\src\\user_source\\hdl_source\\IP\\sdram.vhd",
+                            "Bytes":  1336,
+                            "SHA256":  "853170E99291FB6B2B1BF3F5F20CD1DD0CC723052864147810B674E18CD70705"
+                        },
+                        {
+                            "Path":  "C:\\Users\\j1573\\Documents\\ChatGPT\\PLD\\repo-osd-scroll\\lab_ex5_i2s\\src\\user_source\\hdl_source\\IP\\sys_pll.ipc",
+                            "Bytes":  1879,
+                            "SHA256":  "F5D57389D781AA92CF60563EDD4629FCA40C4FFBFBB8A56465A2278264CA5075"
+                        },
+                        {
+                            "Path":  "C:\\Users\\j1573\\Documents\\ChatGPT\\PLD\\repo-osd-scroll\\lab_ex5_i2s\\src\\user_source\\hdl_source\\IP\\sys_pll.v",
+                            "Bytes":  2653,
+                            "SHA256":  "D36C07A208FAE0EE5E2727891BB14A1662CED57CB87DA8A328A4E6E8FD9928B5"
+                        },
+                        {
+                            "Path":  "C:\\Users\\j1573\\Documents\\ChatGPT\\PLD\\repo-osd-scroll\\lab_ex5_i2s\\src\\user_source\\hdl_source\\IP\\sys_pll.vhd",
+                            "Bytes":  2900,
+                            "SHA256":  "3C5105A4E8AECEE0AB700821225284FB50532365F93507A2721D250D0897AA8C"
+                        },
+                        {
+                            "Path":  "C:\\Users\\j1573\\Documents\\ChatGPT\\PLD\\repo-osd-scroll\\lab_ex5_i2s\\src\\user_source\\hdl_source\\IP\\video_pll.ipc",
+                            "Bytes":  1566,
+                            "SHA256":  "9D63DF911076E9E21BF7BA3FD88C606437E928E08864A6CB4399FD3221F2A18B"
+                        },
+                        {
+                            "Path":  "C:\\Users\\j1573\\Documents\\ChatGPT\\PLD\\repo-osd-scroll\\lab_ex5_i2s\\src\\user_source\\hdl_source\\IP\\video_pll.v",
+                            "Bytes":  2509,
+                            "SHA256":  "F05284E4AB34B8B5FE09151433843050F771E9189BE1C7C68658CC9F67E749B2"
+                        },
+                        {
+                            "Path":  "C:\\Users\\j1573\\Documents\\ChatGPT\\PLD\\repo-osd-scroll\\lab_ex5_i2s\\src\\user_source\\hdl_source\\IP\\video_pll.vhd",
+                            "Bytes":  2699,
+                            "SHA256":  "00871EA7FECF053F7AE275BD2701DBFF1669861B98EFA3ECEA5F18D64A07AEC1"
+                        },
+                        {
+                            "Path":  "C:\\Users\\j1573\\Documents\\ChatGPT\\PLD\\repo-osd-scroll\\lab_ex5_i2s\\src\\user_source\\hdl_source\\key_remove_shakes.v",
+                            "Bytes":  1762,
+                            "SHA256":  "8832F59E7BA94BFB8CF31E4F5A772EF7177D5257A5A2532D53CBFA1D9B7F5CD9"
+                        },
+                        {
+                            "Path":  "C:\\Users\\j1573\\Documents\\ChatGPT\\PLD\\repo-osd-scroll\\lab_ex5_i2s\\src\\user_source\\hdl_source\\lane_lvds_10_1.v",
+                            "Bytes":  4421,
+                            "SHA256":  "DE9529321354F04837E051D0EC1681CF44783D4BE3284703A788E081147500BC"
+                        },
+                        {
+                            "Path":  "C:\\Users\\j1573\\Documents\\ChatGPT\\PLD\\repo-osd-scroll\\lab_ex5_i2s\\src\\user_source\\hdl_source\\osd_overlay.v",
+                            "Bytes":  8315,
+                            "SHA256":  "16BCE819E767A50FF1BED6DC5C6A937F8C44A0AA8B54460B3F35AE34CA4248AF"
+                        },
+                        {
+                            "Path":  "C:\\Users\\j1573\\Documents\\ChatGPT\\PLD\\repo-osd-scroll\\lab_ex5_i2s\\src\\user_source\\hdl_source\\python\\1.wav",
+                            "Bytes":  3096678,
+                            "SHA256":  "0E6F8F626A0215A85DFCC94E431ABAB32E6828DBCB64249B7D4FF47721E7B2FD"
+                        },
+                        {
+                            "Path":  "C:\\Users\\j1573\\Documents\\ChatGPT\\PLD\\repo-osd-scroll\\lab_ex5_i2s\\src\\user_source\\hdl_source\\python\\audio_1khz_24bit_48deep.mif",
+                            "Bytes":  746,
+                            "SHA256":  "693AC02526DD2D2ABE9ED04B7E0076551694E63D213D6AA509F530247C374C76"
+                        },
+                        {
+                            "Path":  "C:\\Users\\j1573\\Documents\\ChatGPT\\PLD\\repo-osd-scroll\\lab_ex5_i2s\\src\\user_source\\hdl_source\\python\\audio_1khz_24bit_48deep.mif.dath",
+                            "Bytes":  384,
+                            "SHA256":  "E0F242A837B58F810813E1D6DA5495473C4FA16DD6B283C30EC91B608B05AB85"
+                        },
+                        {
+                            "Path":  "C:\\Users\\j1573\\Documents\\ChatGPT\\PLD\\repo-osd-scroll\\lab_ex5_i2s\\src\\user_source\\hdl_source\\python\\audio_sine_24bit_48deep_scale8.mif",
+                            "Bytes":  756,
+                            "SHA256":  "8582752F38C4727A46D9F70CA2F730F4F1210A7529646726B9710FBA51D957AF"
+                        },
+                        {
+                            "Path":  "C:\\Users\\j1573\\Documents\\ChatGPT\\PLD\\repo-osd-scroll\\lab_ex5_i2s\\src\\user_source\\hdl_source\\python\\audio_sine_24bit_48deep_scale8.mif.dath",
+                            "Bytes":  384,
+                            "SHA256":  "04A6EA5A31BE7FFEBFDEF11A6AFB06DE17EF367B4B6600EC29C248246D639F02"
+                        },
+                        {
+                            "Path":  "C:\\Users\\j1573\\Documents\\ChatGPT\\PLD\\repo-osd-scroll\\lab_ex5_i2s\\src\\user_source\\hdl_source\\python\\song_48k.mif",
+                            "Bytes":  12275282,
+                            "SHA256":  "27A4B3B80627EC650D3B6F01B82A21BADF7A8508D7A5E75827ABF6B2DE3579B9"
+                        },
+                        {
+                            "Path":  "C:\\Users\\j1573\\Documents\\ChatGPT\\PLD\\repo-osd-scroll\\lab_ex5_i2s\\src\\user_source\\hdl_source\\python\\song_48k.mif.dath",
+                            "Bytes":  7225344,
+                            "SHA256":  "34D7DB62BC4E6B794F1970BEC7EBF2FF504763069437445A095B8CF5DA3CFF58"
+                        },
+                        {
+                            "Path":  "C:\\Users\\j1573\\Documents\\ChatGPT\\PLD\\repo-osd-scroll\\lab_ex5_i2s\\src\\user_source\\hdl_source\\python\\wav_to_mif.py",
+                            "Bytes":  2327,
+                            "SHA256":  "70C06AE300BDAAA840F009AF002805558FC4F309136DB1D46E68285D2BCBD750"
+                        },
+                        {
+                            "Path":  "C:\\Users\\j1573\\Documents\\ChatGPT\\PLD\\repo-osd-scroll\\lab_ex5_i2s\\src\\user_source\\hdl_source\\rom\\i2s_rom_player_single_pll_fix64_rom_ip.v",
+                            "Bytes":  8375,
+                            "SHA256":  "F8E7C9C56C6A21154580E030DADA604572D89A1E75E8945125B2EA0DD4B3094B"
+                        },
+                        {
+                            "Path":  "C:\\Users\\j1573\\Documents\\ChatGPT\\PLD\\repo-osd-scroll\\lab_ex5_i2s\\src\\user_source\\hdl_source\\SD\\ax_debounce.v",
+                            "Bytes":  2201,
+                            "SHA256":  "93AA6DD38051250CC7F777C88466AC180AFE9BCDCE7838B9EA506455D8CBC9B8"
+                        },
+                        {
+                            "Path":  "C:\\Users\\j1573\\Documents\\ChatGPT\\PLD\\repo-osd-scroll\\lab_ex5_i2s\\src\\user_source\\hdl_source\\SD\\bmp_read.v",
+                            "Bytes":  11727,
+                            "SHA256":  "BAFC43DD79BD3619ADB3D3C3602B1DC4DD0507162FC8E5190A9DD739F339922A"
+                        },
+                        {
+                            "Path":  "C:\\Users\\j1573\\Documents\\ChatGPT\\PLD\\repo-osd-scroll\\lab_ex5_i2s\\src\\user_source\\hdl_source\\SD\\color_bar.v",
+                            "Bytes":  9467,
+                            "SHA256":  "3E488B2EDC8CF12C75968D5C4D0A2FB53F186A4DA06C501148DD32C68EF446B6"
+                        },
+                        {
+                            "Path":  "C:\\Users\\j1573\\Documents\\ChatGPT\\PLD\\repo-osd-scroll\\lab_ex5_i2s\\src\\user_source\\hdl_source\\SD\\frame_fifo_read.v",
+                            "Bytes":  10172,
+                            "SHA256":  "CEAD463330ADBE23E10DF7BB03E389A223F90FA6773636BE3CA4FB02E7350EEB"
+                        },
+                        {
+                            "Path":  "C:\\Users\\j1573\\Documents\\ChatGPT\\PLD\\repo-osd-scroll\\lab_ex5_i2s\\src\\user_source\\hdl_source\\SD\\frame_fifo_write.v",
+                            "Bytes":  11725,
+                            "SHA256":  "48B8D92A433E39AB89E8B42EFF15D88AF62210349C9CAEE4114FD2C831609C38"
+                        },
+                        {
+                            "Path":  "C:\\Users\\j1573\\Documents\\ChatGPT\\PLD\\repo-osd-scroll\\lab_ex5_i2s\\src\\user_source\\hdl_source\\SD\\frame_read_write.v",
+                            "Bytes":  12321,
+                            "SHA256":  "3F6E5C9216927D110A8FC08246DEA01D52BD65CEF9D1F6F568C59D7AFA9597BE"
+                        },
+                        {
+                            "Path":  "C:\\Users\\j1573\\Documents\\ChatGPT\\PLD\\repo-osd-scroll\\lab_ex5_i2s\\src\\user_source\\hdl_source\\SD\\sd_card_bmp.v",
+                            "Bytes":  23192,
+                            "SHA256":  "971921D70B08551A03D816BF9BB8EBCCC66DB14A4E70C98EDB19D6FE788B88D0"
+                        },
+                        {
+                            "Path":  "C:\\Users\\j1573\\Documents\\ChatGPT\\PLD\\repo-osd-scroll\\lab_ex5_i2s\\src\\user_source\\hdl_source\\SD\\sd_card_cmd.v",
+                            "Bytes":  8902,
+                            "SHA256":  "0220AF147042E24F2DA4A56DD8C22909D1FF5B3FA2B86ACA86B3C52291ADE7C3"
+                        },
+                        {
+                            "Path":  "C:\\Users\\j1573\\Documents\\ChatGPT\\PLD\\repo-osd-scroll\\lab_ex5_i2s\\src\\user_source\\hdl_source\\SD\\sd_card_sec_read_write.v",
+                            "Bytes":  5874,
+                            "SHA256":  "562FF43E6544728D09143FED377DFC67AF37ACE1CE3351FDCC56306B3B8A00EC"
+                        },
+                        {
+                            "Path":  "C:\\Users\\j1573\\Documents\\ChatGPT\\PLD\\repo-osd-scroll\\lab_ex5_i2s\\src\\user_source\\hdl_source\\SD\\sd_card_top.v",
+                            "Bytes":  7404,
+                            "SHA256":  "9875D2603C55DBD66C961CB26D23834F525242BA6E5209ABF5BDEEE44E8A4426"
+                        },
+                        {
+                            "Path":  "C:\\Users\\j1573\\Documents\\ChatGPT\\PLD\\repo-osd-scroll\\lab_ex5_i2s\\src\\user_source\\hdl_source\\SD\\sdram.v",
+                            "Bytes":  2412,
+                            "SHA256":  "2D985C2477384E677C25714241E1A50206DEF8916AA03189A5B313B2D22DFC99"
+                        },
+                        {
+                            "Path":  "C:\\Users\\j1573\\Documents\\ChatGPT\\PLD\\repo-osd-scroll\\lab_ex5_i2s\\src\\user_source\\hdl_source\\SD\\seg_decoder.v",
+                            "Bytes":  766,
+                            "SHA256":  "4592B6E4D2E9E8B7E4AB5266D850D30E43537AB9C4157D4221E3F8DFD342DECD"
+                        },
+                        {
+                            "Path":  "C:\\Users\\j1573\\Documents\\ChatGPT\\PLD\\repo-osd-scroll\\lab_ex5_i2s\\src\\user_source\\hdl_source\\SD\\seg_scan.v",
+                            "Bytes":  1847,
+                            "SHA256":  "08759C329C33CDB7A6070E0B46773F0A6C9C8052B51652DEC29406B9A9DAC1E3"
+                        },
+                        {
+                            "Path":  "C:\\Users\\j1573\\Documents\\ChatGPT\\PLD\\repo-osd-scroll\\lab_ex5_i2s\\src\\user_source\\hdl_source\\SD\\spi_master.v",
+                            "Bytes":  3791,
+                            "SHA256":  "A8C1CCE7D22A6BD32D2CF08D441723858085EB05424E462487844C571EC102F2"
+                        },
+                        {
+                            "Path":  "C:\\Users\\j1573\\Documents\\ChatGPT\\PLD\\repo-osd-scroll\\lab_ex5_i2s\\src\\user_source\\hdl_source\\SD\\video_define.v",
+                            "Bytes":  21,
+                            "SHA256":  "77748966850A8F5AF0D77F2CDB08006088BA5E1A31B98391FBA6CC61C5247DA2"
+                        },
+                        {
+                            "Path":  "C:\\Users\\j1573\\Documents\\ChatGPT\\PLD\\repo-osd-scroll\\lab_ex5_i2s\\src\\user_source\\hdl_source\\SD\\video_delay.v",
+                            "Bytes":  1595,
+                            "SHA256":  "F47C4B63F8BAA6D8874C87DCA5B72DFDADD19F4A107403DA98752BCE98936433"
+                        },
+                        {
+                            "Path":  "C:\\Users\\j1573\\Documents\\ChatGPT\\PLD\\repo-osd-scroll\\lab_ex5_i2s\\src\\user_source\\hdl_source\\SD\\video_timing_data.v",
+                            "Bytes":  2432,
+                            "SHA256":  "C6F75501E98DD5995F687AAFB40455BEFFE45B426137B5089A73AC3A036F7282"
+                        },
+                        {
+                            "Path":  "C:\\Users\\j1573\\Documents\\ChatGPT\\PLD\\repo-osd-scroll\\lab_ex5_i2s\\src\\user_source\\hdl_source\\startup_pulse.v",
+                            "Bytes":  713,
+                            "SHA256":  "396E1E56FEBB8028339E646BC2F06B83E07AB11EF840E447422FB941956741C9"
+                        },
+                        {
+                            "Path":  "C:\\Users\\j1573\\Documents\\ChatGPT\\PLD\\repo-osd-scroll\\lab_ex5_i2s\\src\\user_source\\hdl_source\\team\\audio_rom_player.v",
+                            "Bytes":  10710,
+                            "SHA256":  "F508FF2CADD99A61202D4174BB67D990C119BD5B0510016669C4955820B6A779"
+                        },
+                        {
+                            "Path":  "C:\\Users\\j1573\\Documents\\ChatGPT\\PLD\\repo-osd-scroll\\lab_ex5_i2s\\src\\user_source\\hdl_source\\team\\audio_speech_rom.mif",
+                            "Bytes":  627952,
+                            "SHA256":  "E87FD09A2D3DFC3B53F1548BE341A6DB731F429085021416829C9EA937382A95"
+                        },
+                        {
+                            "Path":  "C:\\Users\\j1573\\Documents\\ChatGPT\\PLD\\repo-osd-scroll\\lab_ex5_i2s\\src\\user_source\\hdl_source\\team\\bmp_center_zoom_2x.v",
+                            "Bytes":  8173,
+                            "SHA256":  "D4DCEAC31103E8851E49CB8CFE818E434665A572F06704438C56BF56188373A1"
+                        },
+                        {
+                            "Path":  "C:\\Users\\j1573\\Documents\\ChatGPT\\PLD\\repo-osd-scroll\\lab_ex5_i2s\\src\\user_source\\hdl_source\\team\\image_scaler_2x_pingpong.v",
+                            "Bytes":  4228,
+                            "SHA256":  "BB1FF9D6C5A6E645649D711EB0A8213D1780E9C080EF2331364EBA0836AC2652"
+                        },
+                        {
+                            "Path":  "C:\\Users\\j1573\\Documents\\ChatGPT\\PLD\\repo-osd-scroll\\lab_ex5_i2s\\src\\user_source\\hdl_source\\team\\osd_display_commit.v",
+                            "Bytes":  1456,
+                            "SHA256":  "168488A6C0066177E67D92FD51A6C7A971531D443C5CC5DD95EBC046A6D48FBC"
+                        },
+                        {
+                            "Path":  "C:\\Users\\j1573\\Documents\\ChatGPT\\PLD\\repo-osd-scroll\\lab_ex5_i2s\\src\\user_source\\hdl_source\\team\\osd_resources.v",
+                            "Bytes":  71223,
+                            "SHA256":  "E8AD5D32318CBD8BD3862598565DD6923E312AA730DA014A4A361BCDAA698C1D"
+                        },
+                        {
+                            "Path":  "C:\\Users\\j1573\\Documents\\ChatGPT\\PLD\\repo-osd-scroll\\lab_ex5_i2s\\src\\user_source\\hdl_source\\team\\osd_text_renderer.v",
+                            "Bytes":  4654,
+                            "SHA256":  "0520992A777FA96112F4D87C611EEB73D1148A669AFB4670C3C666E3A7799889"
+                        },
+                        {
+                            "Path":  "C:\\Users\\j1573\\Documents\\ChatGPT\\PLD\\repo-osd-scroll\\lab_ex5_i2s\\src\\user_source\\hdl_source\\team\\README.md",
+                            "Bytes":  380,
+                            "SHA256":  "D87380638935911C393CF1DB6293D13A9A86D6EAB3CF7913F07DEB78AA9565C8"
+                        },
+                        {
+                            "Path":  "C:\\Users\\j1573\\Documents\\ChatGPT\\PLD\\repo-osd-scroll\\lab_ex5_i2s\\src\\user_source\\hdl_source\\team\\tb_bmp_center_zoom_2x.v",
+                            "Bytes":  4290,
+                            "SHA256":  "2203AF2AB51EEA8C162998354BB9D2A9AE2E0A0056FC038ABE1223144933A951"
+                        },
+                        {
+                            "Path":  "C:\\Users\\j1573\\Documents\\ChatGPT\\PLD\\repo-osd-scroll\\lab_ex5_i2s\\src\\user_source\\hdl_source\\team\\waveform_overlay.v",
+                            "Bytes":  7117,
+                            "SHA256":  "786FB6081D536AB37953D6E2F1949A67A9EC7ABD203B886483755A9415675C19"
+                        },
+                        {
+                            "Path":  "C:\\Users\\j1573\\Documents\\ChatGPT\\PLD\\repo-osd-scroll\\lab_ex5_i2s\\src\\user_source\\hdl_source\\test\\design_top_i2s_test_pll.v",
+                            "Bytes":  6443,
+                            "SHA256":  "B6396C3E90C67D7E8AAD8C83BFA8A1AA0B826DB8F74A26936549CAE57E86668C"
+                        },
+                        {
+                            "Path":  "C:\\Users\\j1573\\Documents\\ChatGPT\\PLD\\repo-osd-scroll\\lab_ex5_i2s\\src\\user_source\\hdl_source\\test\\i2s_test_tone_gen_pll.v",
+                            "Bytes":  3645,
+                            "SHA256":  "7614D4CA84C007A568E798B7C8CBC31EADD8A064BEE53101194DF13EDB71E02F"
+                        },
+                        {
+                            "Path":  "C:\\Users\\j1573\\Documents\\ChatGPT\\PLD\\repo-osd-scroll\\lab_ex5_i2s\\src\\user_source\\hdl_source\\top_tf_hdmi_audio.v",
+                            "Bytes":  17376,
+                            "SHA256":  "A9E403E6CBD072C34BE369107278B7B2D8016C7FC31BBC64C338B4F5FB0486A3"
+                        },
+                        {
+                            "Path":  "C:\\Users\\j1573\\Documents\\ChatGPT\\PLD\\repo-osd-scroll\\lab_ex5_i2s\\src\\user_source\\hdl_source\\video_rgb_to_axis_640x480.v",
+                            "Bytes":  1749,
+                            "SHA256":  "1C8FC26C789F87227036BEA034F1AB6FC5633F2AB2684BE422C54687A290FB96"
+                        },
+                        {
+                            "Path":  "C:\\Users\\j1573\\Documents\\ChatGPT\\PLD\\repo-osd-scroll\\lab_ex5_i2s\\src\\user_source\\hdl_source\\video_source_test.v",
+                            "Bytes":  2983,
+                            "SHA256":  "39CC05C9684A594D4254D11E66E97344053AB75BDB00F3F5A301643FD7AADBFC"
+                        },
+                        {
+                            "Path":  "C:\\Users\\j1573\\Documents\\ChatGPT\\PLD\\repo-osd-scroll\\lab_ex5_i2s\\src\\user_source\\ip_source\\pll.ipc",
+                            "Bytes":  2182,
+                            "SHA256":  "85BA92C312254BF19F5349E899D09DF04E76348CF0060A45589E829D57CC1ECB"
+                        },
+                        {
+                            "Path":  "C:\\Users\\j1573\\Documents\\ChatGPT\\PLD\\repo-osd-scroll\\lab_ex5_i2s\\src\\user_source\\ip_source\\pll.v",
+                            "Bytes":  3333,
+                            "SHA256":  "202799F886F12CFC1D837AFA932328B636C6C3DEE70167BE68C084133647B39C"
+                        },
+                        {
+                            "Path":  "C:\\Users\\j1573\\Documents\\ChatGPT\\PLD\\repo-osd-scroll\\lab_ex5_i2s\\src\\user_source\\ip_source\\pll.vhd",
+                            "Bytes":  3559,
+                            "SHA256":  "A8166865B5AEF9CAAEE525D4633AA1DEC4172244A7BBFF239E0D658C0CA775E4"
+                        },
+                        {
+                            "Path":  "C:\\Users\\j1573\\Documents\\ChatGPT\\PLD\\repo-osd-scroll\\lab_ex5_i2s\\tools\\generate_osd_resources.py",
+                            "Bytes":  7984,
+                            "SHA256":  "AE7A2408D267ED6309501D6E9BFF69FAA64A26087E279AA376B6484AFD2DD65C"
+                        },
+                        {
+                            "Path":  "C:\\Users\\j1573\\Documents\\ChatGPT\\PLD\\repo-osd-scroll\\lab_ex5_i2s\\tools\\prepare_osd_scroll.py",
+                            "Bytes":  2299,
+                            "SHA256":  "12F965510C9726C74992E50D9C36574279D09BA4C968971DD2C205E87B70D5DC"
+                        },
+                        {
+                            "Path":  "C:\\Users\\j1573\\Documents\\ChatGPT\\PLD\\repo-osd-scroll\\lab_ex5_i2s\\tools\\prepare_osd_validation.py",
+                            "Bytes":  2942,
+                            "SHA256":  "9AA85901456A6991F23A5929F900B40661AE7F8221DEF974A629D9B2AD6DA8CD"
+                        },
+                        {
+                            "Path":  "C:\\Users\\j1573\\Documents\\ChatGPT\\PLD\\repo-osd-scroll\\lab_ex5_i2s\\tools\\test_osd_resources.py",
+                            "Bytes":  1895,
+                            "SHA256":  "B723A1CC1160939ADC79A2CFBF56A759666B035B61FC83880A924F825115777F"
+                        }
+                    ],
+    "Artifacts":  [
+                      {
+                          "Path":  "C:\\Users\\j1573\\Documents\\ChatGPT\\PLD\\repo-osd-scroll\\lab_ex5_i2s\\build_flow_templates\\phy_1\\HDMI1.4b_Transmitter_v1.0.prj",
+                          "Bytes":  22755,
+                          "SHA256":  "2F38EB79DE909956C8DCD29E058688AAAF3EDD8D7E5771A8A4B8B0093DE39C2A"
+                      },
+                      {
+                          "Path":  "C:\\Users\\j1573\\Documents\\ChatGPT\\PLD\\repo-osd-scroll\\lab_ex5_i2s\\build_flow_templates\\phy_1\\HDMI1.4b_Transmitter_v1.0.tcl",
+                          "Bytes":  7809,
+                          "SHA256":  "D1A5D4291706DAC224CC33008D8945E79ED2EB1ADF8CE86CCA46BE564975BADE"
+                      },
+                      {
+                          "Path":  "C:\\Users\\j1573\\Documents\\ChatGPT\\PLD\\repo-osd-scroll\\lab_ex5_i2s\\build_flow_templates\\phy_1\\settings.cfg",
+                          "Bytes":  616,
+                          "SHA256":  "689868CF7FE85DF540AAE8628214AC7071D83DF8B5831F236A6BA6014D7339FA"
+                      },
+                      {
+                          "Path":  "C:\\Users\\j1573\\Documents\\ChatGPT\\PLD\\repo-osd-scroll\\lab_ex5_i2s\\build_flow_templates\\syn_1\\HDMI1.4b_Transmitter_v1.0.prj",
+                          "Bytes":  22755,
+                          "SHA256":  "2F38EB79DE909956C8DCD29E058688AAAF3EDD8D7E5771A8A4B8B0093DE39C2A"
+                      },
+                      {
+                          "Path":  "C:\\Users\\j1573\\Documents\\ChatGPT\\PLD\\repo-osd-scroll\\lab_ex5_i2s\\build_flow_templates\\syn_1\\HDMI1.4b_Transmitter_v1.0.tcl",
+                          "Bytes":  7809,
+                          "SHA256":  "D1A5D4291706DAC224CC33008D8945E79ED2EB1ADF8CE86CCA46BE564975BADE"
+                      },
+                      {
+                          "Path":  "C:\\Users\\j1573\\Documents\\ChatGPT\\PLD\\repo-osd-scroll\\lab_ex5_i2s\\build_flow_templates\\syn_1\\settings.cfg",
+                          "Bytes":  559,
+                          "SHA256":  "FD6E031F9BB9CCCA54B374DD7146B37C991AF826662573CE69E1DA555E486C48"
+                      }
+                  ]
+}

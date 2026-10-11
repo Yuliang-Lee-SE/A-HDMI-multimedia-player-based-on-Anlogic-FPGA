@@ -1,0 +1,50 @@
+{
+  "Run": "osd_scroll_20261011",
+  "Bit": "osd_scroll_candidate.bit",
+  "SHA256": "01E56C3F9C88CEE49202390A09AF25C4061757EF6D42760D6C2C11D325801E40",
+  "SetupWNS": 0.156,
+  "SetupTNS": 0,
+  "HoldWNS": 0.003,
+  "HoldTNS": 0,
+  "Status": "Local candidate only; inspect warnings/coverage; board unverified",
+  "SourceCommit": "0725c02c6f1b8c53cde231d25daeb31f7f1ad3e7",
+  "Baseline": "d5d3eed",
+  "Board": "UNVERIFIED P2 candidate",
+  "Coverage": "96.13%",
+  "Utilization": {
+    "lut": 5662,
+    "reg": 4350,
+    "bram9k": 33,
+    "bram32k": 12,
+    "dsp": 1
+  },
+  "ScrollControlFrames": 2228,
+  "ScrollPixelsCompared": 4300800,
+  "StaticPixelsCompared": 2150400,
+  "StatusWaveformPixelsCompared": 294144,
+  "MappedRomInitCheck": {
+    "status": "PASS",
+    "text_entries": 512,
+    "glyph_rows": 2048,
+    "bram_cells": [
+      "u_osd_text/resources/ramread0_syn_6",
+      "u_osd_text/resources/ramread1_syn_5",
+      "u_osd_text/resources/ramread1_syn_10",
+      "u_osd_text/resources/ramread1_syn_15",
+      "u_osd_text/resources/ramread1_syn_20"
+    ],
+    "source_sha256": "e8ad5d32318cbd8bd3862598565dd6923e312aa730da014a4a361bcdaa698c1d",
+    "audit_sha256": "be0663306332bf8aaba90e0df78b7f7ad5b43948166709e2a770998bb62df0cf",
+    "note": "Mapped gate database ROM INIT words match generated text/glyph data; frontend HDL-5314 does not imply lost ROM initialization in this build",
+    "gate_db_sha256": "d7e548b55b031a47ee70265ca174f788eabe4f7c701beea81d702f69f28df824",
+    "mapped_netlist_sha256": "d610fa8072d115fb7cadf527b47ccbc40d19c5960b3cbd315eab7e54eb0d493b"
+  },
+  "InputFileCount": 108,
+  "SourceSHA256": {
+    "top_tf_hdmi_audio.v": "A9E403E6CBD072C34BE369107278B7B2D8016C7FC31BBC64C338B4F5FB0486A3",
+    "team/osd_text_renderer.v": "0520992A777FA96112F4D87C611EEB73D1148A669AFB4670C3C666E3A7799889",
+    "team/osd_resources.v": "E8AD5D32318CBD8BD3862598565DD6923E312AA730DA014A4A361BCDAA698C1D"
+  },
+  "StorageEvidence": "../osd_three_zoom_20261011/osd_three_storage_20261011.log",
+  "Limits": "Storage/control/commit RTL unchanged; previous full SDRAM evidence retained, not rerun. No real SD/HDMI/audio physical validation. AUTO interval remains 3s, so use manual mode to view the whole long description. Copy/font still test resources."
+}
