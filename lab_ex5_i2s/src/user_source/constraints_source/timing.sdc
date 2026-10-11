@@ -65,6 +65,37 @@ set_clock_groups -asynchronous \
     -group [get_clocks {video_clk} hdmi_5x_clk sd_card_clk ext_mem_clk]
 
 # ------------------------------------------------------------
+# 5b. 音画联动 CDC：sd_card_clk -> audio_mclk（角色 C 补充）
+#
+#    【背景】
+#      2026-10-10 布局布线报告（_Runs/phy_1/HDMI1.4b_Transmitter_v1.0_pr.timing）里
+#      全局 SWNS -2.037ns / STNS -6.103ns 只有 3 条违例，全部落在
+#      Path Group "sd_card_clk -> audio_mclk"：
+#        Begin Point : sd_card_bmp_m0/audio_track_idx_reg[0]_syn_7.clk
+#        net         : audio_track_idx[1:0] / audio_track_toggle（sd_card_bmp.v）
+#      这几条路径的真实数据延迟只有约 0.5ns，工具却按 Fmax 3.05MHz 计
+#      （= 327.877ns 周期）—— 它是按两个相位不相关时钟的最坏对齐算的，
+#      属典型的跨时钟域伪违例，不是逻辑太慢。
+#      上面第 5 节那条 set_clock_groups -asynchronous 并没有拦住这一对时钟
+#      （报告里这 3 条仍被分析），所以这里再显式切一次。
+#
+#    【为什么可以这样切】
+#      从 sd_card_clk 跨到 audio_mclk 的信号只有这 3 根：
+#        audio_track_idx[1:0]   2bit 段号，准静态，每次切图才变一次
+#        audio_track_toggle     1bit 握手，换段那一拍翻转
+#      接收侧（team/audio_rom_player.v）已经做了同步：索引打两拍、
+#      toggle 打三拍后异或取边沿；而且播放器是收到 toggle 边沿后先淡出
+#      20ms 才去取段号，那时数据必然稳定。
+#      所以按这对时钟切掉时序分析，作用范围精确等于这 3 条 CDC 路径，
+#      不会掩盖任何用户逻辑路径。
+#
+#    【归属】本文件属 A 负责范围；此条由角色 C 为音画联动新增，
+#            已在提交信息与 PR 描述中注明，请 A 复核。
+#            上板仍需复测：连续切图 100 次 + 长时间轮播，确认音频与画面一一对应。
+# ------------------------------------------------------------
+set_false_path -from [get_clocks {sd_card_clk}] -to [get_clocks {audio_mclk}]
+
+# ------------------------------------------------------------
 # 6. 可选：如果你的 frame_read_write 内部异步 FIFO 已经完全处理好了跨域，
 #    且报告里总出现 video_clk / sd_card_clk / ext_mem_clk 之间的大量伪违例，
 #    可以打开下面这组异步分组。

@@ -9,10 +9,12 @@ call :copyone video_rgb_to_axis_640x480.v
 call :copyone hdmi_audio_tone_i2s_64fs.v
 call :copyone I2S_receiver.v
 call :copyone audio_arc_calculate.v
+call :copyone team\audio_rom_player.v
 call :copyone SD\bmp_read.v
 call :copyone SD\sd_card_top.v
 call :copyone SD\sd_card_sec_read_write.v
 call :copyone SD\sd_card_cmd.v
+call :copyone SD\sd_card_bmp.v
 call :copyone SD\spi_master.v
 call :copyone SD\frame_fifo_write.v
 call :copyone SD\frame_fifo_read.v

@@ -1,0 +1,8 @@
+/scaler_sim_build/
+/modelsim.ini
+/transcript
+/vsim.wlf
+
+# 构建产物与交付候选不入库（比特流/时序报告/日志/构建模板走 Release 或网盘归档）
+/delivery/
+/build_flow_templates/

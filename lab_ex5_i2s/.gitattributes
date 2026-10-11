@@ -1,0 +1,6 @@
+# Preserve exact delivered artifacts and captured vendor templates.
+/delivery/key3_pacing_20261011/*.bit -text
+/delivery/key3_pacing_20261011/*.rpt -text
+/delivery/key3_pacing_20261011/*.log -text
+/build_flow_templates/** -text
+/KEY3_2x_write_pacing_635888d.patch -text
