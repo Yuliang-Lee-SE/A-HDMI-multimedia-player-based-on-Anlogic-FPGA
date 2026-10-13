@@ -1,0 +1,223 @@
+# do run_osd_layers.do
+# Model Technology ModelSim - Intel FPGA Edition vmap 2020.1 Lib Mapping Utility 2020.02 Feb 28 2020
+# vmap osd_layers osd_layers_sim_build/work 
+# Modifying modelsim.ini
+# src/user_source/hdl_source
+# Model Technology ModelSim - Intel FPGA Edition vlog 2020.1 Compiler 2020.02 Feb 28 2020
+# Start time: 20:17:56 on Oct 13,2026
+# vlog -work osd_layers src/user_source/hdl_source/team/osd_resources.v src/user_source/hdl_source/team/osd_layer_renderer.v tb_osd_layers_config.v tb_osd_layers_pixels.v tb_osd_layers_scroll.v 
+# -- Compiling module osd_resources
+# -- Compiling module osd_text_lengths
+# -- Compiling module osd_layer_renderer
+# -- Compiling module osd_layer_scroll
+# -- Compiling module tb_osd_layers_config
+# -- Compiling module tb_osd_layers_pixels
+# -- Compiling module tb_osd_layers_scroll
+# 
+# Top level modules:
+# 	tb_osd_layers_config
+# 	tb_osd_layers_pixels
+# 	tb_osd_layers_scroll
+# End time: 20:17:56 on Oct 13,2026, Elapsed time: 0:00:00
+# Errors: 0, Warnings: 0
+# vsim -onfinish stop osd_layers.tb_osd_layers_config 
+# Start time: 20:17:56 on Oct 13,2026
+# Loading osd_layers.tb_osd_layers_config
+# Loading osd_layers.osd_layer_renderer
+# Loading osd_layers.osd_text_lengths
+# Loading osd_layers.osd_layer_scroll
+# Loading osd_layers.osd_resources
+# OSD P3 CONFIG COMPLETE errors=0
+# ** Note: $finish    : tb_osd_layers_config.v(52)
+#    Time: 4870 ns  Iteration: 1  Instance: /tb_osd_layers_config
+# Break in Module tb_osd_layers_config at tb_osd_layers_config.v line 52
+# Stopped at tb_osd_layers_config.v line 52
+# End time: 20:17:56 on Oct 13,2026, Elapsed time: 0:00:00
+# Errors: 0, Warnings: 0
+# vsim -onfinish stop osd_layers.tb_osd_layers_scroll 
+# Start time: 20:17:56 on Oct 13,2026
+# Loading osd_layers.tb_osd_layers_scroll
+# Loading osd_layers.osd_layer_scroll
+# OSD P3 SCROLL CONTROL COMPLETE frames=2243 errors=0
+# ** Note: $finish    : tb_osd_layers_scroll.v(65)
+#    Time: 201990 ns  Iteration: 1  Instance: /tb_osd_layers_scroll
+# Break in Module tb_osd_layers_scroll at tb_osd_layers_scroll.v line 65
+# Stopped at tb_osd_layers_scroll.v line 65
+# End time: 20:17:57 on Oct 13,2026, Elapsed time: 0:00:01
+# Errors: 0, Warnings: 0
+# vsim -onfinish stop osd_layers.tb_osd_layers_pixels 
+# Start time: 20:17:57 on Oct 13,2026
+# Loading osd_layers.tb_osd_layers_pixels
+# Loading osd_layers.osd_layer_renderer
+# Loading osd_layers.osd_text_lengths
+# Loading osd_layers.osd_layer_scroll
+# Loading osd_layers.osd_resources
+# FRAME 0 checked pixels=307200 errors=0
+# FRAME 1 checked pixels=614400 errors=0
+# FRAME 2 checked pixels=921600 errors=0
+# FRAME 3 checked pixels=1228800 errors=0
+# FRAME 4 checked pixels=1536000 errors=0
+# FRAME 5 checked pixels=1843200 errors=0
+# FRAME 6 checked pixels=2150400 errors=0
+# FRAME 7 checked pixels=2457600 errors=0
+# FRAME 8 checked pixels=2764800 errors=0
+# OSD P3 PIXELS COMPLETE checked=2764800 errors=0
+# ** Note: $finish    : tb_osd_layers_pixels.v(56)
+#    Time: 27995080 ns  Iteration: 1  Instance: /tb_osd_layers_pixels
+# Break in Module tb_osd_layers_pixels at tb_osd_layers_pixels.v line 56
+# Stopped at tb_osd_layers_pixels.v line 56
+# End time: 20:18:19 on Oct 13,2026, Elapsed time: 0:00:22
+# Errors: 0, Warnings: 0
+# Model Technology ModelSim - Intel FPGA Edition vlog 2020.1 Compiler 2020.02 Feb 28 2020
+# Start time: 20:18:19 on Oct 13,2026
+# vlog -work osd_layers src/user_source/hdl_source/osd_overlay.v src/user_source/hdl_source/team/osd_text_renderer.v src/user_source/hdl_source/team/waveform_overlay.v tb_osd_layers_pipeline.v 
+# -- Compiling module osd_overlay
+# -- Compiling module osd_text_renderer
+# -- Compiling module osd_scroll_ctrl
+# -- Compiling module waveform_overlay
+# -- Compiling module tb_osd_layers_pipeline
+# 
+# Top level modules:
+# 	tb_osd_layers_pipeline
+# End time: 20:18:19 on Oct 13,2026, Elapsed time: 0:00:00
+# Errors: 0, Warnings: 0
+# vsim -onfinish stop osd_layers.tb_osd_layers_pipeline 
+# Start time: 20:18:19 on Oct 13,2026
+# Loading osd_layers.tb_osd_layers_pipeline
+# Loading osd_layers.osd_layer_renderer
+# Loading osd_layers.osd_text_lengths
+# Loading osd_layers.osd_layer_scroll
+# Loading osd_layers.osd_resources
+# Loading osd_layers.osd_overlay
+# Loading osd_layers.osd_text_renderer
+# Loading osd_layers.osd_scroll_ctrl
+# Loading osd_layers.waveform_overlay
+# OSD P3 PIPELINE COMPLETE checked=569408 overlap=6660 errors=0
+# ** Note: $finish    : tb_osd_layers_pipeline.v(56)
+#    Time: 6237380 ns  Iteration: 1  Instance: /tb_osd_layers_pipeline
+# Break in Module tb_osd_layers_pipeline at tb_osd_layers_pipeline.v line 56
+# Stopped at tb_osd_layers_pipeline.v line 56
+# End time: 20:18:36 on Oct 13,2026, Elapsed time: 0:00:17
+# Errors: 0, Warnings: 0
+# Model Technology ModelSim - Intel FPGA Edition vlog 2020.1 Compiler 2020.02 Feb 28 2020
+# Start time: 20:18:36 on Oct 13,2026
+# vlog -work osd_layers "+incdir+src/user_source/hdl_source/SD" src/user_source/hdl_source/SD/color_bar.v src/user_source/hdl_source/SD/video_timing_data.v src/user_source/hdl_source/SD/frame_fifo_read.v src/user_source/hdl_source/team/osd_display_commit.v tb_osd_layers_video.v 
+# -- Compiling module color_bar
+# -- Compiling module video_timing_data
+# -- Compiling module frame_fifo_read
+# -- Compiling module osd_display_commit
+# -- Compiling module tb_osd_layers_video
+# 
+# Top level modules:
+# 	tb_osd_layers_video
+# End time: 20:18:36 on Oct 13,2026, Elapsed time: 0:00:00
+# Errors: 0, Warnings: 0
+# vsim -onfinish stop osd_layers.tb_osd_layers_video 
+# Start time: 20:18:36 on Oct 13,2026
+# Loading osd_layers.tb_osd_layers_video
+# Loading osd_layers.video_timing_data
+# Loading osd_layers.color_bar
+# Loading osd_layers.osd_display_commit
+# Loading osd_layers.frame_fifo_read
+# Loading osd_layers.osd_layer_renderer
+# Loading osd_layers.osd_text_lengths
+# Loading osd_layers.osd_layer_scroll
+# Loading osd_layers.osd_resources
+# OSD P3 REAL VIDEO COMMIT COMPLETE frames=5 commits=4 errors=0
+# ** Note: $finish    : tb_osd_layers_video.v(75)
+#    Time: 84353120 ns  Iteration: 1  Instance: /tb_osd_layers_video
+# Break in Module tb_osd_layers_video at tb_osd_layers_video.v line 75
+# Stopped at tb_osd_layers_video.v line 75
+# End time: 20:19:25 on Oct 13,2026, Elapsed time: 0:00:49
+# Errors: 0, Warnings: 0
+#  do run_osd_scroll.do
+# Model Technology ModelSim - Intel FPGA Edition vmap 2020.1 Lib Mapping Utility 2020.02 Feb 28 2020
+# vmap osd_scroll osd_scroll_sim_build/work 
+# Modifying modelsim.ini
+# src/user_source/hdl_source
+# Model Technology ModelSim - Intel FPGA Edition vlog 2020.1 Compiler 2020.02 Feb 28 2020
+# Start time: 20:19:25 on Oct 13,2026
+# vlog -work osd_scroll src/user_source/hdl_source/team/osd_resources.v src/user_source/hdl_source/team/osd_text_renderer.v tb_osd_scroll_ctrl.v tb_osd_scroll_pixels.v 
+# -- Compiling module osd_resources
+# -- Compiling module osd_text_lengths
+# -- Compiling module osd_text_renderer
+# -- Compiling module osd_scroll_ctrl
+# -- Compiling module tb_osd_scroll_ctrl
+# -- Compiling module tb_osd_scroll_pixels
+# 
+# Top level modules:
+# 	tb_osd_scroll_ctrl
+# 	tb_osd_scroll_pixels
+# End time: 20:19:25 on Oct 13,2026, Elapsed time: 0:00:00
+# Errors: 0, Warnings: 0
+# vsim -onfinish stop osd_scroll.tb_osd_scroll_ctrl 
+# Start time: 20:19:25 on Oct 13,2026
+# Loading osd_scroll.tb_osd_scroll_ctrl
+# Loading osd_scroll.osd_scroll_ctrl
+# OSD SCROLL CONTROL COMPLETE frames=2228 errors=0
+# ** Note: $finish    : tb_osd_scroll_ctrl.v(60)
+#    Time: 200620 ns  Iteration: 1  Instance: /tb_osd_scroll_ctrl
+# Break in Module tb_osd_scroll_ctrl at tb_osd_scroll_ctrl.v line 60
+# Stopped at tb_osd_scroll_ctrl.v line 60
+# End time: 20:19:25 on Oct 13,2026, Elapsed time: 0:00:00
+# Errors: 0, Warnings: 0
+# vsim -onfinish stop osd_scroll.tb_osd_scroll_pixels 
+# Start time: 20:19:25 on Oct 13,2026
+# Loading osd_scroll.tb_osd_scroll_pixels
+# Loading osd_scroll.osd_text_renderer
+# Loading osd_scroll.osd_text_lengths
+# Loading osd_scroll.osd_scroll_ctrl
+# Loading osd_scroll.osd_resources
+# FRAME 0 checked pixels=307200 errors=0
+# FRAME 1 checked pixels=614400 errors=0
+# FRAME 2 checked pixels=921600 errors=0
+# FRAME 3 checked pixels=1228800 errors=0
+# FRAME 4 checked pixels=1536000 errors=0
+# FRAME 5 checked pixels=1843200 errors=0
+# FRAME 6 checked pixels=2150400 errors=0
+# FRAME 7 checked pixels=2457600 errors=0
+# FRAME 8 checked pixels=2764800 errors=0
+# FRAME 9 checked pixels=3072000 errors=0
+# FRAME 10 checked pixels=3379200 errors=0
+# FRAME 11 checked pixels=3686400 errors=0
+# FRAME 12 checked pixels=3993600 errors=0
+# FRAME 13 checked pixels=4300800 errors=0
+# OSD SCROLL PIXELS COMPLETE checked=4300800 errors=0
+# ** Note: $finish    : tb_osd_scroll_pixels.v(51)
+#    Time: 43547740 ns  Iteration: 1  Instance: /tb_osd_scroll_pixels
+# Break in Module tb_osd_scroll_pixels at tb_osd_scroll_pixels.v line 51
+# Stopped at tb_osd_scroll_pixels.v line 51
+# End time: 20:19:43 on Oct 13,2026, Elapsed time: 0:00:18
+# Errors: 0, Warnings: 0
+# Model Technology ModelSim - Intel FPGA Edition vlog 2020.1 Compiler 2020.02 Feb 28 2020
+# Start time: 20:19:43 on Oct 13,2026
+# vlog -work osd_scroll "+incdir+src/user_source/hdl_source/SD" src/user_source/hdl_source/SD/color_bar.v src/user_source/hdl_source/SD/video_timing_data.v src/user_source/hdl_source/SD/frame_fifo_read.v src/user_source/hdl_source/team/osd_display_commit.v tb_osd_scroll_video.v 
+# -- Compiling module color_bar
+# -- Compiling module video_timing_data
+# -- Compiling module frame_fifo_read
+# -- Compiling module osd_display_commit
+# -- Compiling module tb_osd_scroll_video
+# 
+# Top level modules:
+# 	tb_osd_scroll_video
+# End time: 20:19:43 on Oct 13,2026, Elapsed time: 0:00:00
+# Errors: 0, Warnings: 0
+# vsim -onfinish stop osd_scroll.tb_osd_scroll_video 
+# Start time: 20:19:43 on Oct 13,2026
+# Loading osd_scroll.tb_osd_scroll_video
+# Loading osd_scroll.video_timing_data
+# Loading osd_scroll.color_bar
+# Loading osd_scroll.osd_display_commit
+# Loading osd_scroll.frame_fifo_read
+# Loading osd_scroll.osd_text_renderer
+# Loading osd_scroll.osd_text_lengths
+# Loading osd_scroll.osd_scroll_ctrl
+# Loading osd_scroll.osd_resources
+# OSD SCROLL REAL VIDEO COMMIT COMPLETE frames=5 commits=4 errors=0
+# ** Note: $finish    : tb_osd_scroll_video.v(74)
+#    Time: 84353120 ns  Iteration: 1  Instance: /tb_osd_scroll_video
+# Break in Module tb_osd_scroll_video at tb_osd_scroll_video.v line 74
+# Stopped at tb_osd_scroll_video.v line 74
+# End time: 20:20:22 on Oct 13,2026, Elapsed time: 0:00:39
+# Errors: 0, Warnings: 0
+#  quit -f

@@ -1,0 +1,10 @@
+{
+    "Run":  "osd_layers_20261013_final",
+    "Bit":  "C:\\Users\\j1573\\Documents\\ChatGPT\\PLD\\repo-osd-layers\\lab_ex5_i2s\\src\\td_project\\osd_layers_20261013_final_Runs\\phy_1\\HDMI1.4b_Transmitter_v1.0.bit",
+    "SHA256":  "D365DF2F1360AD404E455E7917D54326FB801F07C3AED33ECE4657BCB4EE051B",
+    "SetupWNS":  0.194,
+    "SetupTNS":  0,
+    "HoldWNS":  0.003,
+    "HoldTNS":  0,
+    "Status":  "Local candidate only; inspect warnings/coverage; board unverified"
+}

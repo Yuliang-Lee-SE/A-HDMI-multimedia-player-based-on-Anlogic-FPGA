@@ -1,0 +1,59 @@
+{
+  "Run": "osd_layers_20261013_final",
+  "Bit": "osd_layers_candidate.bit",
+  "SHA256": "D365DF2F1360AD404E455E7917D54326FB801F07C3AED33ECE4657BCB4EE051B",
+  "SetupWNS": 0.194,
+  "SetupTNS": 0,
+  "HoldWNS": 0.003,
+  "HoldTNS": 0,
+  "Status": "Local candidate only; inspect warnings/coverage; board unverified",
+  "SourceCommit": "98fe01f15d33b898908e5d09c023ccc0a885dc69",
+  "Baseline": "04c90d7dd524783c8398ee4ac1fd245dbf7fdfb4",
+  "Board": "UNVERIFIED P3 candidate",
+  "Coverage": "95.94%",
+  "Utilization": {
+    "lut": 5660,
+    "reg": 4394,
+    "bram9k": 34,
+    "bram32k": 12,
+    "dsp": 1
+  },
+  "LayerPixelsCompared": 2764800,
+  "LayerConfigAtomicity": true,
+  "DynamicScrollControlFrames": 2243,
+  "PipelinePixelsCompared": 569408,
+  "WaveformOverlapPixelsCompared": 6660,
+  "ScrollControlFrames": 2228,
+  "ScrollPixelsCompared": 4300800,
+  "StaticPixelsCompared": 2150400,
+  "StatusWaveformPixelsCompared": 294144,
+  "MappedRomInitCheck": {
+    "shadow_address_banks_inverted": true,
+    "shadow_bram_cells": [
+      "u_osd_layers/ramread0_syn_6"
+    ],
+    "status": "PASS",
+    "text_entries": 512,
+    "glyph_rows": 2048,
+    "bram_cells": [
+      "u_osd_layers/resources/ramread0_syn_6",
+      "u_osd_layers/resources/ramread1_syn_5",
+      "u_osd_layers/resources/ramread1_syn_10",
+      "u_osd_layers/resources/ramread1_syn_15",
+      "u_osd_layers/resources/ramread1_syn_20"
+    ],
+    "source_sha256": "e8ad5d32318cbd8bd3862598565dd6923e312aa730da014a4a361bcdaa698c1d",
+    "audit_sha256": "6f87f32a4aba63f9e8b73a8430b76d8b31921c12b5e65f78ad2298ef9d1057e6",
+    "note": "Mapped gate database ROM INIT words match generated text/glyph data; frontend HDL-5314 does not imply lost ROM initialization in this build",
+    "gate_db_sha256": "8c22a7f39701c810b11203946d953fbc37eff62687240b831ca1291b599c410f",
+    "mapped_netlist_sha256": "85037786bf544aab0c8c7c4bcac35dafe82a82ab5d6ab2a6e19f303b0422888f"
+  },
+  "InputFileCount": 113,
+  "SourceSHA256": {
+    "top_tf_hdmi_audio.v": "3AB0093C802FFFD88447299FE6BC390FC0CDEC0199D46E8D44949914B4FF886A",
+    "team/osd_layer_renderer.v": "558408A7486E4BE0722B87468608D9E8316A37FC02FFA2D0E4E307DC6DFD873F",
+    "team/osd_resources.v": "E8AD5D32318CBD8BD3862598565DD6923E312AA730DA014A4A361BCDAA698C1D"
+  },
+  "StorageEvidence": "../osd_three_zoom_20261011/osd_three_storage_20261011.log",
+  "Limits": "Storage/control/commit RTL unchanged; previous full SDRAM evidence retained, not rerun. Configuration is video-clock local, top uses reset defaults with cfg_valid=0; no new key bindings. No real SD/HDMI/audio physical validation. AUTO interval remains 3s, so use manual mode to view the whole long description. Copy/font still test resources."
+}
