@@ -18,3 +18,6 @@
 
 /src/user_source/hdl_source/team/osd_text_renderer.v -text
 /delivery/osd_scroll_20261011/** -text
+
+/src/user_source/hdl_source/team/osd_layer_renderer.v -text
+/delivery/osd_layers_20261013/** -text

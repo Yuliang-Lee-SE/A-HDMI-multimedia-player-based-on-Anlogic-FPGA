@@ -50,10 +50,6 @@ wire de;
 
 wire [23:0] vout_data_raw;
 wire [23:0] vout_data;
-wire [23:0] osd_rgb;
-wire        osd_hs;
-wire        osd_vs;
-wire        osd_de;
 wire        osd_auto_mode_sd;
 wire [1:0]  osd_item_index_sd;
 reg         osd_auto_sync0;
@@ -302,27 +298,13 @@ always @(posedge video_clk or posedge rst_all) begin
     end
 end
 
-osd_overlay #(.TEXT_Y_REL(8)) u_osd_overlay (
-    .clk        (video_clk),
-    .rst        (rst_all),
-    .enable     (video_display_valid),
-    .auto_mode  (osd_auto_frame),
-    .item_index (video_item),
-    .hs_in      (hs),
-    .vs_in      (vs),
-    .de_in      (de),
-    .rgb_in     (vout_data),
-    .hs_out     (osd_hs),
-    .vs_out     (osd_vs),
-    .de_out     (osd_de),
-    .rgb_out    (osd_rgb)
-);
-
-osd_text_renderer u_osd_text(
-    .clk(video_clk),.rst(rst_all),.enable(video_display_valid),.item_index(video_item),
-    .scroll_pause(1'b0),
-    .hs_in(osd_hs),.vs_in(osd_vs),.de_in(osd_de),.rgb_in(osd_rgb),
-    .hs_out(caption_hs),.vs_out(caption_vs),.de_out(caption_de),.rgb_out(caption_rgb));
+osd_layer_renderer u_osd_layers(
+    .clk(video_clk),.rst(rst_all),.enable(video_display_valid),
+    .auto_mode(osd_auto_frame),.item_index(video_item),
+    .hs_in(hs),.vs_in(vs),.de_in(de),.rgb_in(vout_data),
+    .hs_out(caption_hs),.vs_out(caption_vs),.de_out(caption_de),.rgb_out(caption_rgb),
+    .cfg_valid(1'b0),.cfg_ready(),.cfg_show(1'b1),.cfg_x(10'd24),.cfg_y(10'd380),
+    .cfg_alpha(3'd3),.cfg_shadow(1'b1),.cfg_pause(1'b0),.cfg_step(4'd2));
 
 // 角色 C：音频可视化（时域波形）。串在 OSD 之后，只改像素、不改时序，
 // 与输入同延迟 1 拍。位置/大小是波形模块的参数，可用参数挪走或缩窄。

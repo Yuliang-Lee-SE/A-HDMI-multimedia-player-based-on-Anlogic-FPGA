@@ -1,3 +1,9 @@
+# 半透明字幕面板与文字阴影
+
+P3候选：半透明深蓝面板、黑色文字阴影，保留P2滚动与原有操作。[交付入口](delivery/README.md) · [复现和接口](OSD_LAYERS_20261013.md) · [样式对比](osd_assets/layers_preview_compare.png)。P3待上板。
+
+以下为历史说明。
+
 # 滚动简介字幕
 
 本轮增加长简介滚动，标题固定，沿用原三档缩放和标点修正。操作与候选bit见 [交付入口](delivery/README.md)，复现见 [开发说明](OSD_SCROLL_20261011.md)，[滚动预览](osd_assets/scroll_preview.gif)。P2候选待上板。
