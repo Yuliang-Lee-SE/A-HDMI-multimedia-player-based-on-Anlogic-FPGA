@@ -24,6 +24,7 @@
 // 复位：高有效（rst_all），异步复位、同步释放，与接口约束文档 1.2 一致。
 //======================================================================
 module audio_rom_player #(
+    parameter integer ENABLE_MUTE=0,
     parameter integer MCLK_HZ     = 12295000,  // PLL_HDMI_AUDIO C2 实际输出（文档 2.1 节）
     parameter integer SRC_HZ      = 8000,      // 素材采样率
     parameter integer SEG_SAMPLES = 12288,     // 每段样点数 = 1.536s @ 8kHz
@@ -37,6 +38,7 @@ module audio_rom_player #(
     input  wire        I_mclk,          // 12.295MHz 音频主时钟
     input  wire        I_rst,           // 高有效
     input  wire [1:0]  I_track_idx,     // 来自 sd_card_clk 域，稳定电平
+    input wire I_enabled,
     input  wire        I_track_toggle,  // 来自 sd_card_clk 域，换段时翻转
     input  wire [7:0]  I_rom_data,      // ROM 读数据（有符号 8bit PCM）
     output wire [15:0] O_rom_addr,      // ROM 读地址
@@ -62,7 +64,8 @@ module audio_rom_player #(
     //------------------------------------------------------------------
     // 跨域同步：索引打两拍，toggle 打三拍取边沿
     //------------------------------------------------------------------
-    reg  [1:0] S_idx_sync;
+    reg [1:0] S_idx_meta,S_idx_sync;
+    reg enabled_meta,enabled_sync,enabled_lat;
     reg  [2:0] S_tgl_sync;
     wire       S_tgl_pulse = S_tgl_sync[2] ^ S_tgl_sync[1];
 
@@ -111,7 +114,7 @@ module audio_rom_player #(
     wire signed [7:0]  S_s8  = S_rom_d;
     wire signed [15:0] S_mul = S_s8 * $signed({1'b0, S_gain});
     wire signed [23:0] S_mul_ext = {{8{S_mul[15]}}, S_mul};
-    wire signed [23:0] S_out = S_mul_ext <<< 8;
+    wire signed [23:0] S_out = (ENABLE_MUTE && !enabled_lat) ? 24'sd0 : S_mul_ext <<< 8;
 
     assign O_rom_addr = S_track_base + {{(16-POS_W){1'b0}}, S_pos};
 
@@ -128,7 +131,7 @@ module audio_rom_player #(
             S_sample_word <= 24'sd0;
             S_sample_next <= 24'sd0;
 
-            S_idx_sync    <= 2'd0;
+            S_idx_sync    <= 2'd0;S_idx_meta<=0;enabled_meta<=0;enabled_sync<=0;enabled_lat<=0;
             S_tgl_sync    <= 3'b000;
             S_rom_d       <= 8'd0;
 
@@ -142,7 +145,8 @@ module audio_rom_player #(
             S_sw_req      <= 1'b0;
         end else begin
             // 跨域同步链
-            S_idx_sync <= {S_idx_sync[0], I_track_idx};
+            S_idx_meta<=I_track_idx;S_idx_sync<=S_idx_meta;
+            enabled_meta<=I_enabled;enabled_sync<=enabled_meta;
             S_tgl_sync <= {S_tgl_sync[1:0], I_track_toggle};
             S_rom_d    <= I_rom_data;
 
@@ -181,7 +185,7 @@ module audio_rom_player #(
                                 S_fade_state <= ST_FADE_IN;
                                 S_pos        <= {POS_W{1'b0}};
                                 S_src_acc    <= 24'd0;
-                                S_track_lat  <= S_idx_sync;
+                                S_track_lat  <= S_idx_sync;enabled_lat<=enabled_sync;
                                 case (S_idx_sync)
                                     2'd0: S_track_base <= TRACK0_ADDR;
                                     2'd1: S_track_base <= TRACK1_ADDR;

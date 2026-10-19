@@ -1,5 +1,5 @@
-# 字幕交付
+# 当前交付
 
-当前本地候选：[滚动简介](osd_scroll_20261011/README.md)，待上板。
+[TF卡多图片：默认32张候选及RAM检查](tf_fat32_20261019/README.md)，待A上板。
 
-回退：[标点修正版](osd_punctuation_20261011/README.md)；[静态字幕原版](osd_three_zoom_20261011/README.md)已获用户上板正常反馈。
+正常回退：[P2滚动简介](osd_scroll_20261011/README.md)，使用配套原正常卡/素材布局。P3仍待板，未并入本候选。

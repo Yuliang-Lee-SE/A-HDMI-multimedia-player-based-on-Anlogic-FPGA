@@ -2,16 +2,17 @@
 // Bundled-data CDC. Source holds bank/item/valid until ack_toggle returns.
 // Commit only at a new video frame read request; forward that request one
 // clock later so the selected bank settles before the memory-domain request.
-module osd_display_commit(input clk,input rst,input src_toggle,
- input [1:0] src_bank,input [1:0] src_item,input src_valid,
+module osd_display_commit #(parameter ITEM_W=2)(input clk,input rst,input src_toggle,
+ input [1:0] src_bank,input [ITEM_W-1:0] src_item,input src_valid,
  input frame_read_req,input mem_read_ack,
  output reg read_req,output reg ack_toggle,
- output reg [1:0] bank,output reg [1:0] item,output reg valid);
+ output reg [1:0] bank,output reg [ITEM_W-1:0] item,output reg valid);
 reg [2:0] req_sync;
 reg [1:0] ack_sync;
 reg frame_prev,accepted,await_ack;
 reg captured,pending_valid;
-reg [1:0] pending_bank,pending_item;
+reg [1:0] pending_bank;
+reg [ITEM_W-1:0] pending_item;
 always @(posedge clk or posedge rst) begin
  if(rst) begin
   req_sync<=0;ack_sync<=0;frame_prev<=0;accepted<=0;await_ack<=0;

@@ -1,7 +1,8 @@
 param(
     [Parameter(Mandatory=$true)][string]$RunName,
     [string]$TdExecutable = 'D:/FPGA-learning/Anlogic/TD5.6.2/bin/td_commands_prompt.exe',
-    [switch]$ValidateOnly
+    [switch]$ValidateOnly,
+    [switch]$RouteOnly
 )
 $ErrorActionPreference = 'Stop'
 if ($RunName -notmatch '^[A-Za-z0-9_-]+$') { throw 'Use letters, digits, underscore or hyphen for RunName.' }
@@ -25,8 +26,13 @@ function Get-ProjectSignature([string]$File,[string]$BaseDirectory) {
     }
 }
 $actualSignature=@(Get-ProjectSignature $projectFile (Split-Path -Parent $projectFile))
-$templateSignature=@(Get-ProjectSignature (Join-Path $templateRoot 'syn_1/HDMI1.4b_Transmitter_v1.0.prj') (Join-Path $runRoot 'syn_1'))
-if (Compare-Object $actualSignature $templateSignature) { throw 'Project source list/attributes differ from captured template; regenerate and review the project flow templates.' }
+foreach($templateStage in @('syn_1','phy_1')) {
+    $templateSignature=@(Get-ProjectSignature (Join-Path $templateRoot ($templateStage+'/HDMI1.4b_Transmitter_v1.0.prj')) (Join-Path $runRoot $templateStage))
+    if ($actualSignature.Count -ne $templateSignature.Count -or
+        [string]::Join("`n",$actualSignature) -cne [string]::Join("`n",$templateSignature)) {
+        throw "Project source order/list/attributes differ from $templateStage template; regenerate and review the project flow templates."
+    }
+}
 if ($ValidateOnly) { Write-Output 'Template source list, attributes, top and device match the current project. No build started.'; return }
 foreach ($stage in @('syn_1','phy_1')) {
     $destination = Join-Path $runRoot $stage
@@ -69,6 +75,12 @@ $before = Get-Content (Join-Path $runRoot 'inputs_before.json') -Raw -Encoding U
 $after = Get-Content (Join-Path $runRoot 'inputs_after.json') -Raw -Encoding UTF8 | ConvertFrom-Json
 if (Compare-Object @($before.InputHashes | ForEach-Object {$_.Path+' '+$_.SHA256}) @($after.InputHashes | ForEach-Object {$_.Path+' '+$_.SHA256})) { throw 'Inputs changed during build; candidate rejected.' }
 if (@($values | Where-Object {$_ -lt 0}).Count -gt 0) { throw "Timing violation; bit not generated. See $timingPath" }
+if ($RouteOnly) {
+    $routeSummary = [ordered]@{Run=$RunName;SetupWNS=$values[0];SetupTNS=$values[1];HoldWNS=$values[2];HoldTNS=$values[3];Status='Routed only; bit generation withheld pending regression, constraints and RAM/ROM review'}
+    [IO.File]::WriteAllText((Join-Path $runRoot 'route_result.json'),($routeSummary|ConvertTo-Json),(New-Object Text.UTF8Encoding($false)))
+    $routeSummary | ConvertTo-Json
+    return
+}
 $cfgText=$cfgText.Replace('set start_step opt_place','set start_step bitgen').Replace('set end_step opt_route','set end_step bitgen')
 [IO.File]::WriteAllText($phyCfg,$cfgText,(New-Object Text.UTF8Encoding($false)))
 Invoke-CheckedStage 'phy_1' '.bitgen.end.f' 'driver_bitgen.log'

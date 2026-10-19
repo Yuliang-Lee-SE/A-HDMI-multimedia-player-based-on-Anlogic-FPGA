@@ -1,0 +1,96 @@
+{
+  "status": "PASS",
+  "run": "tf_stage3_hw_v15_route15",
+  "default_files": 32,
+  "checks": [
+    {
+      "check": "SPI 37",
+      "passed": true
+    },
+    {
+      "check": "short 8 including real index RAM 16/32/64",
+      "passed": true
+    },
+    {
+      "check": "actual asset IDs 31 to 32 through real index RAM",
+      "passed": true
+    },
+    {
+      "check": "canvas three configurations / 21 cases",
+      "passed": true
+    },
+    {
+      "check": "five complete SPI commits plus one failure",
+      "passed": true
+    },
+    {
+      "check": "FAT 76",
+      "passed": true
+    },
+    {
+      "check": "three exact read-only BMP image fixtures",
+      "passed": true
+    },
+    {
+      "check": "simulation executable identities",
+      "passed": true
+    },
+    {
+      "check": "capacity 10",
+      "passed": true
+    },
+    {
+      "check": "stable-ID captions 2150400 golden pixels",
+      "passed": true
+    },
+    {
+      "check": "storage 640x480 three scales normal and refresh",
+      "passed": true
+    },
+    {
+      "check": "cancel five real-controller boundaries",
+      "passed": true
+    },
+    {
+      "check": "end-to-end mode 0 refresh 0 controller parameter 1",
+      "passed": true
+    },
+    {
+      "check": "end-to-end mode 0 refresh 1 controller parameter 1",
+      "passed": true
+    },
+    {
+      "check": "end-to-end mode 1 refresh 0 controller parameter 1",
+      "passed": true
+    },
+    {
+      "check": "end-to-end mode 1 refresh 1 controller parameter 1",
+      "passed": true
+    },
+    {
+      "check": "end-to-end mode 2 refresh 0 controller parameter 1",
+      "passed": true
+    },
+    {
+      "check": "end-to-end mode 2 refresh 1 controller parameter 1",
+      "passed": true
+    },
+    {
+      "check": "exact original failure configuration, controller parameter 0",
+      "passed": true
+    },
+    {
+      "check": "standard build inputs and Routed timing",
+      "passed": true
+    },
+    {
+      "check": "RAM modes and complete ROM INIT",
+      "passed": true
+    },
+    {
+      "check": "Gray paths, constraint reports and CDC/warning review",
+      "passed": true
+    }
+  ],
+  "note": "Behavioral card and custom SDRAM pin model; board, real cards, Flash and power cycling unverified."
+}

@@ -2,9 +2,9 @@
 // Three registered stages: text lookup, glyph-row lookup, pixel composition.
 // ID 0 is space; padded text means empty/short strings need no variable logic.
 module osd_text_renderer #(
- parameter SCROLL_ENABLE=1, parameter SCROLL_STEP_FRAMES=2,
+ parameter STABLE_ID=0, parameter SCROLL_ENABLE=1, parameter SCROLL_STEP_FRAMES=2,
  parameter SCROLL_HEAD_FRAMES=45, parameter SCROLL_TAIL_FRAMES=45
-)(input clk, input rst, input enable, input [1:0] item_index,
+)(input clk, input rst, input enable, input [13:0] item_index,
  input hs_in, input vs_in, input de_in, input [23:0] rgb_in,
  output reg hs_out, output reg vs_out, output reg de_out, output reg [23:0] rgb_out,
  input scroll_pause);
@@ -18,8 +18,10 @@ wire [10:0] scroll_offset;
 wire [10:0] source_x={1'b0,dx}+scroll_offset;
 wire [10:0] text_width={description_length,4'b0000};
 wire area = enable && de_in && (title || (desc && source_x<text_width));
-osd_text_lengths lengths(.item_index(item_index),.description_length(description_length));
-osd_scroll_ctrl #(.STEP_FRAMES(SCROLL_STEP_FRAMES),.HEAD_FRAMES(SCROLL_HEAD_FRAMES),
+wire [1:0] resource_index=STABLE_ID ?
+ (item_index==1 ? 0:item_index==2 ? 1:item_index==3 ? 2:item_index==4 ? 3:0):item_index[1:0];
+osd_text_lengths lengths(.item_index(resource_index),.description_length(description_length));
+osd_scroll_ctrl #(.ITEM_W(14),.STEP_FRAMES(SCROLL_STEP_FRAMES),.HEAD_FRAMES(SCROLL_HEAD_FRAMES),
  .TAIL_FRAMES(SCROLL_TAIL_FRAMES)) scroll(
  .clk(clk),.rst(rst),.frame_tick(vs_in && !vs_prev && !de_in),
  .enable(enable && SCROLL_ENABLE),.pause(scroll_pause),.item_index(item_index),
@@ -36,7 +38,7 @@ reg [23:0] rgb1,rgb2;
 reg [2:0] sync1,sync2;
 // The generator emits 16*power-of-two(glyph count) rows; the upper unused
 // address bits are pruned by synthesis. IDs are generated and range checked.
-osd_resources resources(.clk(clk),.text_addr({item_index,offset}),.text_id(text_id),
+osd_resources resources(.clk(clk),.text_addr({resource_index,offset}),.text_id(text_id),
  .glyph_addr({text_id,row1}),.glyph_row(glyph_row));
 always @(posedge clk or posedge rst) begin
  if(rst) begin x<=0; y<=0; de_prev<=0; vs_prev<=0; end
@@ -67,11 +69,11 @@ endmodule
 // state advances only at the end of VS in blanking. Same-ID bank reloads
 // (zoom) and failed loads leave the trajectory intact.
 module osd_scroll_ctrl #(
- parameter STEP_FRAMES=2, parameter HEAD_FRAMES=45, parameter TAIL_FRAMES=45,
+ parameter ITEM_W=2, parameter STEP_FRAMES=2, parameter HEAD_FRAMES=45, parameter TAIL_FRAMES=45,
  parameter WINDOW_PIXELS=560, parameter GAP_PIXELS=32
 )(input clk,input rst,input frame_tick,input enable,input pause,
- input [1:0] item_index,input [6:0] length,output reg [10:0] offset);
-reg [1:0] seen_item;
+ input [ITEM_W-1:0] item_index,input [6:0] length,output reg [10:0] offset);
+reg [ITEM_W-1:0] seen_item;
 reg active;
 reg [15:0] step_count,hold_count;
 reg [1:0] phase;

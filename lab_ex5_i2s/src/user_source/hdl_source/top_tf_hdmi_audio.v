@@ -27,6 +27,7 @@ module top(
 );
 
 parameter MEM_DATA_BITS = 32;
+parameter TF_MAX_FILES = 32; // Verified configurations: 16, 32, 64.
 parameter ADDR_BITS     = 21;
 parameter BUSRT_BITS    = 10;
 parameter [ADDR_BITS-1:0] FRAME_PIXELS = 307200;   // 640*480，与 frame_read_write 的地址端口同宽
@@ -55,13 +56,19 @@ wire        osd_hs;
 wire        osd_vs;
 wire        osd_de;
 wire        osd_auto_mode_sd;
-wire [1:0]  osd_item_index_sd;
+wire [13:0] display_asset_sd;
+wire [6:0] display_ordinal_sd;
+wire write_abort,write_abort_done,audio_enabled;
 reg         osd_auto_sync0;
 reg         osd_auto_sync1;
 reg         osd_auto_frame;
 wire        display_valid;
 wire display_commit_toggle, display_commit_ack, video_display_valid;
-wire [1:0] video_bank, video_item;
+wire [1:0] video_bank;
+wire [20:0] video_item;
+wire [13:0] video_asset=video_item[13:0];
+wire [6:0] video_ordinal=video_item[20:14];
+wire caption_valid=(video_asset==1 || video_asset==2 || video_asset==3 || video_asset==4);
 wire memory_read_req;
 wire [23:0] caption_rgb;
 wire caption_hs, caption_vs, caption_de;
@@ -193,15 +200,7 @@ always @(posedge ext_mem_clk or posedge rst_all) begin
 end
 
 // ===================== TF 多图扫描与缓存（双缓冲） =====================
-sd_card_bmp #(
-    .CLK_FREQ_HZ       (100_000_000),
-    .ENABLE_ZOOM       (1),
-    .ENABLE_DISPLAY_COMMIT(1),
-    .SCAN_START_SECTOR (32'd0),
-    .SCAN_MAX_SECTOR   (32'd131071),
-    .SCAN_TARGET_COUNT (3'd4),
-    .AUTO_INTERVAL_MS  (3000)
-) sd_card_bmp_m0(
+tf_file_player #(.MAX_FILES(TF_MAX_FILES)) sd_card_bmp_m0(
     .clk               (sd_card_clk),
     .rst               (rst_all),
     .key_next          (key1),
@@ -209,11 +208,10 @@ sd_card_bmp #(
     .key_zoom          (key3),
     .write_ready       (sd_card_write_ready),
     .state_code        (state_code),
-    .bmp_width         (16'd640),
-    .bmp_height        (16'd480),
     .display_valid     (display_valid),
     .osd_auto_mode     (osd_auto_mode_sd),
-    .osd_item_index    (osd_item_index_sd),
+    .display_asset(display_asset_sd),.display_ordinal(display_ordinal_sd),
+    .write_abort(write_abort),.write_abort_done(write_abort_done),.audio_enabled(audio_enabled),
     .display_commit_toggle(display_commit_toggle),
     .display_commit_ack(display_commit_ack),
 
@@ -281,9 +279,9 @@ video_delay video_delay_m0(
 // 首图提交前黑屏；提交后一直显示当前显示缓冲区内容
 assign vout_data = video_display_valid ? vout_data_raw : 24'd0;
 
-osd_display_commit u_display_commit(
+osd_display_commit #(.ITEM_W(21)) u_display_commit(
     .clk(video_clk),.rst(rst_all),.src_toggle(display_commit_toggle),
-    .src_bank(disp_buf_idx),.src_item(osd_item_index_sd),.src_valid(display_valid),
+    .src_bank(disp_buf_idx),.src_item({display_ordinal_sd,display_asset_sd}),.src_valid(display_valid),
     .frame_read_req(video_read_req),.mem_read_ack(video_read_req_ack),
     .read_req(memory_read_req),.ack_toggle(display_commit_ack),
     .bank(video_bank),.item(video_item),.valid(video_display_valid));
@@ -302,12 +300,12 @@ always @(posedge video_clk or posedge rst_all) begin
     end
 end
 
-osd_overlay #(.TEXT_Y_REL(8)) u_osd_overlay (
+osd_overlay #(.TEXT_Y_REL(8),.TWO_DIGIT(1)) u_osd_overlay (
     .clk        (video_clk),
     .rst        (rst_all),
     .enable     (video_display_valid),
     .auto_mode  (osd_auto_frame),
-    .item_index (video_item),
+    .item_index (video_ordinal-7'd1),
     .hs_in      (hs),
     .vs_in      (vs),
     .de_in      (de),
@@ -318,8 +316,8 @@ osd_overlay #(.TEXT_Y_REL(8)) u_osd_overlay (
     .rgb_out    (osd_rgb)
 );
 
-osd_text_renderer u_osd_text(
-    .clk(video_clk),.rst(rst_all),.enable(video_display_valid),.item_index(video_item),
+osd_text_renderer #(.STABLE_ID(1)) u_osd_text(
+    .clk(video_clk),.rst(rst_all),.enable(video_display_valid && caption_valid),.item_index(video_asset),
     .scroll_pause(1'b0),
     .hs_in(osd_hs),.vs_in(osd_vs),.de_in(osd_de),.rgb_in(osd_rgb),
     .hs_out(caption_hs),.vs_out(caption_vs),.de_out(caption_de),.rgb_out(caption_rgb));
@@ -354,6 +352,7 @@ frame_read_write #(
 ) frame_read_write_m0(
     .mem_clk           (ext_mem_clk),
     .rst               (rst_all),
+    .write_abort(write_abort),.write_abort_done(write_abort_done),
     .Sdr_init_done     (Sdr_init_done),
     .Sdr_init_ref_vld  (Sdr_init_ref_vld),
     .Sdr_busy          (Sdr_busy),
@@ -423,6 +422,7 @@ AUDIO_SPEECH_ROM u_audio_speech_rom (
 );
 
 audio_rom_player #(
+    .ENABLE_MUTE(1),
     .MCLK_HZ     (12295000),
     .SRC_HZ      (8000),
     .SEG_SAMPLES (12288),
@@ -435,6 +435,7 @@ audio_rom_player #(
     .I_mclk          (audio_mclk),
     .I_rst           (rst_all),
     .I_track_idx     (audio_track_idx),
+    .I_enabled(audio_enabled),
     .I_track_toggle  (audio_track_toggle),
     .I_rom_data      (audio_rom_data),
     .O_rom_addr      (audio_rom_addr),

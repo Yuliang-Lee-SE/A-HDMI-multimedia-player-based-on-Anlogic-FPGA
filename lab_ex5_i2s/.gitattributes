@@ -18,3 +18,19 @@
 
 /src/user_source/hdl_source/team/osd_text_renderer.v -text
 /delivery/osd_scroll_20261011/** -text
+
+# Bind the TF candidate's reviewed source/evidence to exact on-disk bytes.
+/tf_player/** -text
+/fat32_offline/** -text
+/delivery/tf_fat32_20261018/** -text
+/capture_build_inputs.ps1 -text
+/run_verified_project_build.ps1 -text
+/src/td_project/HDMI1.4b_Transmitter_v1.0.al -text
+/src/user_source/hdl_source/SD/frame_fifo_write.v -text
+/src/user_source/hdl_source/SD/frame_read_write.v -text
+/src/user_source/hdl_source/osd_overlay.v -text
+/src/user_source/hdl_source/team/audio_rom_player.v -text
+/src/user_source/hdl_source/top_tf_hdmi_audio.v -text
+
+/src/user_source/hdl_source/SD/frame_fifo_read.v -text
+/delivery/tf_fat32_20261019/** -text
