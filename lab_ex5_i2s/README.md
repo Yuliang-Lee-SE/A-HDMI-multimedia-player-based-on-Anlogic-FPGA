@@ -1,5 +1,7 @@
 # TF卡多图片播放器
 
-当前32张候选、卡准备和A的RAM上板步骤见 [交付说明](delivery/tf_fat32_20261019/README.md)。验证范围、资源时序和限制见 [结果](delivery/tf_fat32_20261019/RESULTS.md)。
+**上板测试需要TF卡（microSD）。第一次请按[准备卡、图片格式与逐步测试](delivery/tf_fat32_20261019/TESTING.md)操作。**
 
-工程入口：`src/td_project/HDMI1.4b_Transmitter_v1.0.al`。正常P2及原有交付保留，P3未并入；本候选待上板，不表示Flash/掉电通过。
+[候选bit与交付入口](delivery/tf_fat32_20261019/README.md) · [验证结果/资源时序](delivery/tf_fat32_20261019/RESULTS.md)
+
+工程入口：`src/td_project/HDMI1.4b_Transmitter_v1.0.al`。P2正常回退保留，P3未并入；当前候选待A先RAM上板，Flash/掉电另测。

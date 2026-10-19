@@ -822,8 +822,8 @@
   "files": [
     {
       "path": "README.md",
-      "bytes": 2070,
-      "sha256": "f1242de4264923d5a5511bfdf53f106980669fc808ee1852f2b41e8265ef0094"
+      "bytes": 1815,
+      "sha256": "1a01688d6ec5d6f647a610ab9fdc3fac3996f388302a90d3c8a63cb132bc6edd"
     },
     {
       "path": "reports/acceptance.json",
@@ -854,6 +854,11 @@
       "path": "RESULTS.md",
       "bytes": 4005,
       "sha256": "9ede3fa856ab16bcee32cffcd677bf8ed319b6a92dafc9a17cbd80c58812d38d"
+    },
+    {
+      "path": "TESTING.md",
+      "bytes": 8452,
+      "sha256": "239bdb2395e655e4d37519c7d3ede12ece744699fd5de6d1a3485db80d4194d4"
     },
     {
       "path": "tf_fat32_32_candidate.bit",
