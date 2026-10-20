@@ -150,6 +150,18 @@ wire    video_pll_lock;
 wire rst_all;
 assign rst_all = ~rst_n | ~audio_pll_lock | ~video_pll_lock | ~sys_pll_lock;
 
+// The TF scheduler/FAT/SD transaction machines use synchronous reset, while
+// the byte SPI engine resets asynchronously. Hold any asynchronous reset
+// assertion through three SD edges so the complete TF stack resets together.
+// Release is synchronized to sd_card_clk; PLL wiring and legacy resets stay.
+(* async_reg = "true" *) reg [2:0] tf_reset_pipe;
+always @(posedge sd_card_clk or posedge rst_all) begin
+    if (rst_all) tf_reset_pipe <= 3'b111;
+    else tf_reset_pipe <= {tf_reset_pipe[1:0],1'b0};
+end
+wire rst_tf = tf_reset_pipe[2];
+
+
 // 保持你原来的 TF / SDRAM / video 时钟
 wire ext_mem_clk_sft_raw;
 wire ext_mem_clk_raw;
@@ -202,7 +214,7 @@ end
 // ===================== TF 多图扫描与缓存（双缓冲） =====================
 tf_file_player #(.MAX_FILES(TF_MAX_FILES)) sd_card_bmp_m0(
     .clk               (sd_card_clk),
-    .rst               (rst_all),
+    .rst               (rst_tf),
     .key_next          (key1),
     .key_auto          (key2),
     .key_zoom          (key3),

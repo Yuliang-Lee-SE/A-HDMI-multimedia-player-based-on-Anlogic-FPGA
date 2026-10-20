@@ -34,3 +34,5 @@
 
 /src/user_source/hdl_source/SD/frame_fifo_read.v -text
 /delivery/tf_fat32_20261019/** -text
+
+/delivery/tf_fat32_reset_20261020/** -text
