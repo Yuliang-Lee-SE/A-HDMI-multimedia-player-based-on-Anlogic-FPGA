@@ -1,3 +1,27 @@
+# 半透明字幕面板与文字阴影
+
+P3候选：半透明深蓝面板、黑色文字阴影，保留P2滚动与原有操作。[交付入口](delivery/README.md) · [复现和接口](OSD_LAYERS_20261013.md) · [样式对比](osd_assets/layers_preview_compare.png)。P3待上板。
+
+以下为历史说明。
+
+# 滚动简介字幕
+
+本轮增加长简介滚动，标题固定，沿用原三档缩放和标点修正。操作与候选bit见 [交付入口](delivery/README.md)，复现见 [开发说明](OSD_SCROLL_20261011.md)，[滚动预览](osd_assets/scroll_preview.gif)。P2候选待上板。
+
+下面为历史说明。
+
+# 中文字幕标点修正版
+
+当前bit和上板说明见 [交付入口](delivery/README.md)。本次只修正标点位置，上一版已上板正常。
+
+# 三档缩放＋中文字幕
+
+本分支的上板文件和操作说明见 [当前交付](delivery/README.md)。源码工程在 `src/td_project/`，改文案和重建见 [说明](OSD_STATIC_CN_20261011.md)。
+
+---
+
+以下为原有子系统仿真记录；本次整机验证请使用上面的入口。
+
 # lab_ex5_i2s 纯 RTL 子系统仿真（ModelSim）
 
 > **工作目录 / 建库位置：`D:\FPGA\lab_ex5_i2s`**

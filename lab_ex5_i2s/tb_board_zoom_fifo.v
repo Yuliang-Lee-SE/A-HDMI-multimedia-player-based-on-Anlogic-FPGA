@@ -81,6 +81,23 @@ end
 endtask
 initial begin
     repeat(5) @(negedge clk); rst=0;
+    repeat(5) @(negedge clk);
+    // Exercise sub-cycle asynchronous assertion at different clock phases.
+    for(sx=1;sx<5;sx=sx+1) begin
+        @(negedge clk); #(sx);
+        force store.write_fifo_aclr=1'b1;
+        #0.1;
+        if(ready!==1'b0) begin errors=errors+1;$display("[FAIL] Reset did not asynchronously block ready");end
+        #0.4;release store.write_fifo_aclr;
+        wait(!store.write_reset_mem_hold);
+        @(posedge clk);#0.1;
+        if(ready!==1'b0) begin errors=errors+1;$display("[FAIL] Reset release phase=%0d first clock",sx);end
+        @(posedge clk);#0.1;
+        if(ready!==1'b0) begin errors=errors+1;$display("[FAIL] Reset release phase=%0d second clock",sx);end
+        @(posedge clk);#0.1;
+        if(ready!==1'b1) begin errors=errors+1;$display("[FAIL] Ready release did not take three write clocks");end
+    end
+    $display("[PASS] Async reset assertion and three-clock synchronous release checked");
     frame(0); bank=1; frame(1); bank=0; frame(0);
     if(full_checks!=1) errors=errors+1;
     completed=1;

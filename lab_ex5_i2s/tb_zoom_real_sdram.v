@@ -7,16 +7,29 @@ parameter H=48;
 parameter FORCED_REFRESH=0;
 parameter OUTPUT_DIV=1;
 parameter PACE_ZOOM=1;
+parameter DISPLAY_COMMIT=0;
 integer integer_placeholder;
 localparam W=640, N=W*H;
 localparam BANK_BASE=307200;
 reg [1:0] read_bank=0;
-reg read_zoom=0;
+reg [1:0] read_zoom=0;
 integer expected_source_x, expected_source_y;
 reg [31:0] expected_read_data;
-reg clk=0, mem_clk=0, rst=1, start=0, zoom=0, valid=0, req=0;
+reg clk=0, mem_clk=0, rst=1, start=0, valid=0, req=0;
 integer output_cycles=0;
 always @(posedge clk) output_cycles<=output_cycles+1;
+reg [1:0] zoom=0;
+wire source_permit;
+reg request_seen=0,writer_armed=0;
+wire writer_allowed=zoom!=2 || writer_armed;
+// Match sd_card_bmp's request-withdrawal gate before padding transfers.
+always @(posedge clk) begin
+ if(rst || start) begin request_seen<=0; writer_armed<=0; end
+ else begin
+  if(req) request_seen<=1;
+  if(request_seen && !req) writer_armed<=1;
+ end
+end
 wire output_slot=!zoom || output_cycles%OUTPUT_DIV==0;
 always #5 clk=~clk;
 always #4 mem_clk=~mem_clk;
@@ -26,6 +39,13 @@ reg finished_seen=0;
 reg video_clk=0, read_req=0, consume=0, seed_only=0;
 always #20 video_clk=~video_clk;
 wire read_ack;
+reg commit_toggle=0;
+wire commit_ack,committed_valid,bridge_read_req;
+wire [1:0] committed_bank,committed_item;
+osd_display_commit display_bridge(.clk(video_clk),.rst(rst),.src_toggle(commit_toggle),
+ .src_bank(read_bank),.src_item(read_zoom),.src_valid(1'b1),
+ .frame_read_req(read_req),.mem_read_ack(read_ack),.read_req(bridge_read_req),
+ .ack_toggle(commit_ack),.bank(committed_bank),.item(committed_item),.valid(committed_valid));
 wire out_valid, ready, source_done, output_done, overflow, ack, finish, wr_en;
 wire [23:0] out_rgb;
 wire [20:0] address;
@@ -79,9 +99,16 @@ always @(posedge mem_clk) if(!rst) begin
  if(store.App_rd_en) requests=requests+1;
  if(core_valid) begin
    returns=returns+1;
-   expected_source_x=read_zoom ? W/4+((returns-1)%W)/2 : (returns-1)%W;
-   expected_source_y=read_zoom ? H/4+(H-1-(returns-1)/W)/2 : H-1-(returns-1)/W;
+   expected_source_x=read_zoom==1 ? W/4+((returns-1)%W)/2 : (returns-1)%W;
+   expected_source_y=read_zoom==1 ? H/4+(H-1-(returns-1)/W)/2 : H-1-(returns-1)/W;
    expected_read_data=(24'h112200+expected_source_y*W+expected_source_x)<<8;
+   if(read_zoom==2) begin
+     expected_source_x=2*((returns-1)%W-W/4);
+     expected_source_y=2*(H-1-(returns-1)/W-H/4)+1;
+     expected_read_data=((returns-1)%W>=W/4 && (returns-1)%W<3*W/4 &&
+         (returns-1)/W>=H/4 && (returns-1)/W<3*H/4) ?
+         (24'h112200+expected_source_y*W+expected_source_x)<<8 : 0;
+   end
    if(core_data!==expected_read_data) begin
      if(bad_returns<4) $display("[BAD RETURN] index=%0d data=%h expected=%h",returns-1,core_data,expected_read_data);
      bad_returns=bad_returns+1;
@@ -99,27 +126,32 @@ end
 
 integer errors=0, completed=0, count=0, sx, sy, expected_addr, full_checks=0;
 reg [23:0] expected;
-bmp_center_zoom_2x #(.WIDTH(W),.HEIGHT(H),.PACE_ZOOM_OUTPUT(PACE_ZOOM)) scaler (
-    .clk(clk),.rst(rst),.frame_start(start),.zoom_enable(zoom),.in_valid(valid),.in_rgb(rgb),
-    .out_valid(out_valid),.out_ready(ready && output_slot),.out_rgb(out_rgb),.out_last(),.out_frame_last(),
+bmp_center_zoom_2x #(.WIDTH(W),.HEIGHT(H),.PACE_ZOOM_OUTPUT(PACE_ZOOM), .ENABLE_HALF(1)) scaler (
+    .clk(clk),.rst(rst),.frame_start(start),.zoom_enable(zoom==1),.half_enable(zoom==2),.source_permit(source_permit),.in_valid(valid),.in_rgb(rgb),
+    .out_valid(out_valid),.out_ready(ready && output_slot && writer_allowed),.out_rgb(out_rgb),.out_last(),.out_frame_last(),
     .source_done(source_done),.output_done(output_done),.overflow(overflow)
 );
 frame_read_write #(.BURST_SIZE(256),.FRAME_WIDTH(W),.FRAME_HEIGHT(H)) store (
     .rst(rst),.mem_clk(mem_clk),.Sdr_init_done(init_done),.Sdr_init_ref_vld(refresh_active),.Sdr_busy(sdr_busy),
     .App_rd_en(),.App_rd_addr(),.Sdr_rd_en(core_valid),.Sdr_rd_dout(core_data),
-    .read_clk(video_clk),.read_req(read_req),.read_req_ack(read_ack),.read_finish(),
+    .read_clk(video_clk),.read_req(DISPLAY_COMMIT ? bridge_read_req : read_req),.read_req_ack(read_ack),.read_finish(),
     .read_addr_0(21'd0),.read_addr_1(BANK_BASE),.read_addr_2(21'd0),.read_addr_3(21'd0),
-    .read_addr_index(read_bank),.read_len(N),.read_en(consume),.read_data(),
+    .read_addr_index(DISPLAY_COMMIT ? committed_bank : read_bank),.read_len(N),.read_en(consume),.read_data(),
     .App_wr_en(wr_en),.App_wr_addr(address),.App_wr_din(data),.App_wr_dm(dm),
     .write_clk(clk),.write_req(req),.write_req_ack(ack),.write_finish(finish),
     .write_addr_0(21'd0),.write_addr_1(BANK_BASE),.write_addr_2(21'd0),.write_addr_3(21'd0),
-    .write_addr_index(bank),.write_len(N),.write_en(out_valid&&ready&&output_slot),
+    .write_addr_index(bank),.write_len(N),.write_en(out_valid&&ready&&output_slot&&writer_allowed),
     .write_data({out_rgb,8'b0}),.write_ready(ready)
 );
 always @(posedge mem_clk) if(!rst && wr_en) begin
-    sx=zoom ? W/4+(count%W)/2 : count%W;
-    sy=zoom ? H/4+(count/W)/2 : count/W;
+    sx=zoom==1 ? W/4+(count%W)/2 : count%W;
+    sy=zoom==1 ? H/4+(count/W)/2 : count/W;
     expected=24'h112200+sy*W+sx;
+    if(zoom==2) begin
+      sx=2*(count%W-W/4); sy=2*(count/W-H/4)+1;
+      expected=(count%W>=W/4 && count%W<3*W/4 && count/W>=H/4 && count/W<3*H/4) ?
+               24'h112200+sy*W+sx : 0;
+    end
     expected_addr=bank*BANK_BASE+(H-1-count/W)*W+count%W;
     if(count>=N || data !== {expected,8'b0} || address!==expected_addr || dm!==0) begin
         if(errors<8) $display("[FAIL] FIFO word=%0d data=%h expected=%h address=%0d expected=%0d",count,data,{expected,8'b0},address,expected_addr);
@@ -131,14 +163,19 @@ always @(posedge mem_clk)
     if(rst || start) finished_seen<=0;
     else if(finish) finished_seen<=1;
 task frame;
-input mode;
+input [1:0] mode;
 integer i, j;
 begin
+    if(DISPLAY_COMMIT && !seed_only) begin
+        commit_toggle=~commit_toggle;
+        repeat(8) @(negedge video_clk);
+    end
     @(negedge clk); zoom=mode; start=1; req=1; count=0;
     frame_physical_start=physical_write_words; frame_unknown_start=physical_unknown_words; refresh_snapshot=physical_refresh_commands; read_req=!seed_only; underflows=0; consumed=0; overlap_samples=0; requests=0; returns=0; bad_returns=0; refresh_cycles=0;
     @(negedge clk); start=0;
     wait(ack); @(negedge clk); req=0;
     wait(ready);
+    wait(source_permit);
     fork
         begin
             for(i=0;i<N;i=i+1) begin
@@ -150,6 +187,9 @@ begin
         begin
             if(!seed_only) begin
             wait(read_ack); @(negedge video_clk); read_req=0;
+            if(DISPLAY_COMMIT && (committed_bank!=read_bank || committed_item!=read_zoom)) begin
+                errors=errors+1;$display("[FAIL] Real controller bank / caption mismatch");
+            end
             wait(store.read_buf.rdusedw >= 256);
             for(j=0;j<N;j=j+1) begin
                 @(negedge video_clk); consume=1;
@@ -172,14 +212,21 @@ begin
 end
 endtask
 task read_new_frame;
-input mode;
+input [1:0] mode;
 integer k;
 begin
     repeat(100) @(negedge mem_clk);
     read_bank=1; read_zoom=mode;
+    if(DISPLAY_COMMIT) begin
+        commit_toggle=~commit_toggle;
+        repeat(8) @(negedge video_clk);
+    end
     requests=0; returns=0; bad_returns=0; consumed=0; underflows=0;
     @(negedge video_clk); read_req=1;
     wait(read_ack); @(negedge video_clk); read_req=0;
+    if(DISPLAY_COMMIT && (committed_bank!=read_bank || committed_item!=read_zoom)) begin
+        errors=errors+1;$display("[FAIL] New frame bank / caption mismatch");
+    end
     wait(store.read_buf.rdusedw>=256);
     for(k=0;k<N;k=k+1) begin
         @(negedge video_clk); consume=1;
@@ -214,6 +261,10 @@ initial begin
     if(requests!=N || returns!=N || bad_returns!=0) errors=errors+1;
     $display("[PHYSICAL] mode=1 refresh_cmds=%0d last_cmd_after_finish_ns=%0d last_write_after_finish_ns=%0d",physical_refresh_commands-refresh_snapshot,last_write_time-finish_time,last_write_end-finish_time);
     read_new_frame(1);
+    frame(2);
+    repeat(100) @(negedge mem_clk);
+    if(requests!=N || returns!=N || bad_returns!=0) errors=errors+1;
+    read_new_frame(2);
     if(FORCED_REFRESH && physical_refresh_commands==0) begin errors=errors+1; $display("[FAIL] No forced refresh observed"); end
     completed=1;
     if(errors==0) $display("[TEST PASS] Center zoom to original FIFO/address scheduler is correct.");

@@ -2,6 +2,7 @@
 module sd_card_bmp #(
     parameter integer CLK_FREQ_HZ       = 100_000_000,
     parameter integer ENABLE_ZOOM      = 0,
+    parameter integer ENABLE_DISPLAY_COMMIT = 0,
     parameter integer FRAME_WIDTH      = 640,
     parameter integer FRAME_HEIGHT     = 480,
     parameter [31:0]  SCAN_START_SECTOR = 32'd0,
@@ -25,6 +26,8 @@ module sd_card_bmp #(
     output reg                  display_valid,
     output                      osd_auto_mode,
     output [1:0]                osd_item_index,
+    output reg                  display_commit_toggle,
+    input                       display_commit_ack,
 
     // 音画联动：把"当前显示第几张图"送给音频播放器（audio_mclk 域自己同步）
     output reg [1:0]            audio_track_idx,
@@ -49,8 +52,13 @@ wire key_auto_press;
 wire key_zoom_press;
 wire [3:0] bmp_state_code;
 wire zoom_source_done, zoom_output_done, zoom_overflow;
-reg zoom_requested, zoom_loading, zoom_displayed;
+reg [1:0] zoom_requested, zoom_loading, zoom_displayed;
+wire zoom_source_permit;
+reg zoom_write_request_seen, zoom_write_armed;
+wire zoom_write_allowed = zoom_loading != 2 || zoom_write_armed;
 reg write_done_seen, source_started_seen, load_error;
+reg commit_wait;
+reg [2:0] commit_ack_sync;
 
 wire             sd_sec_read;
 wire [31:0]      sd_sec_read_addr;
@@ -110,15 +118,16 @@ assign state_code = load_error ? 4'hf : bmp_state_code;
 generate if (ENABLE_ZOOM) begin : g_zoom
     wire pixel_valid;
     wire [23:0] pixel_rgb;
-    bmp_center_zoom_2x #(.WIDTH(FRAME_WIDTH), .HEIGHT(FRAME_HEIGHT)) zoom (
+    bmp_center_zoom_2x #(.WIDTH(FRAME_WIDTH), .HEIGHT(FRAME_HEIGHT), .ENABLE_HALF(1)) zoom (
         .clk(clk), .rst(rst || !sd_init_done), .frame_start(load_start_pulse),
-        .zoom_enable(zoom_loading), .in_valid(bmp_data_wr_en), .in_rgb(bmp_data),
-        .out_valid(pixel_valid), .out_ready(write_ready && !load_error),
+        .zoom_enable(zoom_loading == 2'd1),
+        .half_enable(zoom_loading == 2'd2), .source_permit(zoom_source_permit), .in_valid(bmp_data_wr_en), .in_rgb(bmp_data),
+        .out_valid(pixel_valid), .out_ready(write_ready && !load_error && zoom_write_allowed),
         .out_rgb(pixel_rgb), .out_last(), .out_frame_last(),
         .source_done(zoom_source_done), .output_done(zoom_output_done),
         .overflow(zoom_overflow)
     );
-    assign write_en = pixel_valid && write_ready && !load_error;
+    assign write_en = pixel_valid && write_ready && !load_error && zoom_write_allowed;
     assign write_data = {pixel_rgb, 8'b0};
 end else begin : g_original
     assign write_en = bmp_data_wr_en;
@@ -126,6 +135,7 @@ end else begin : g_original
     assign zoom_source_done = 1'b1;
     assign zoom_output_done = 1'b1;
     assign zoom_overflow = 1'b0;
+    assign zoom_source_permit = 1'b1;
 end endgenerate
 assign osd_auto_mode  = auto_play_en;
 assign osd_item_index = img_idx;
@@ -163,6 +173,19 @@ key_press_debounce #(
     .button_in  (key_zoom),
     .press_pulse(key_zoom_press)
 );
+
+// Half canvas emits padding before source pixels. Wait for this load's
+// request to be seen and withdrawn before accepting any output into the FIFO.
+// write_ready then supplies the existing reset-release / full protection.
+always @(posedge clk or posedge rst) begin
+    if(rst) begin zoom_write_request_seen<=0; zoom_write_armed<=0; end
+    else if(!sd_init_done || load_start_pulse) begin
+        zoom_write_request_seen<=0; zoom_write_armed<=0;
+    end else if(load_busy) begin
+        if(write_req) zoom_write_request_seen<=1;
+        if(zoom_write_request_seen && !write_req) zoom_write_armed<=1;
+    end
+end
 
 function [1:0] next_index_limited;
     input [1:0] cur;
@@ -237,7 +260,17 @@ always @(posedge clk or posedge rst) begin
         write_done_seen       <= 1'b0;
         source_started_seen   <= 1'b0;
         load_error            <= 1'b0;
+        display_commit_toggle <= 1'b0;
+        commit_wait           <= 1'b0;
+        commit_ack_sync       <= 3'b000;
     end else begin
+        commit_ack_sync <= {commit_ack_sync[1:0],display_commit_ack};
+        if (ENABLE_DISPLAY_COMMIT && commit_wait &&
+            commit_ack_sync[2] == display_commit_toggle) begin
+            commit_wait <= 1'b0;
+            audio_track_idx <= img_idx;
+            audio_track_toggle <= ~audio_track_toggle;
+        end
         wrfin_tgl_sync   <= {wrfin_tgl_sync[1:0], write_finish_toggle};
         wr_ack_sync      <= {wr_ack_sync[0], write_req_ack};
         scan_start_pulse <= 1'b0;
@@ -301,6 +334,10 @@ always @(posedge clk or posedge rst) begin
 
             // Commit only after all three completion conditions have been latched.
             if (load_complete) begin
+                if (ENABLE_DISPLAY_COMMIT) begin
+                    display_commit_toggle <= ~display_commit_toggle;
+                    commit_wait <= 1'b1;
+                end
                 load_busy             <= 1'b0;
                 source_done_seen      <= 1'b0;
                 disp_buf_idx          <= pending_buf_idx;
@@ -308,8 +345,10 @@ always @(posedge clk or posedge rst) begin
                 display_valid         <= 1'b1;
                 first_image_committed <= 1'b1;
                 // 音画联动：图像提交的那一拍同步换音频段
-                audio_track_idx       <= load_idx;
-                audio_track_toggle    <= ~audio_track_toggle;
+                if (!ENABLE_DISPLAY_COMMIT) begin
+                    audio_track_idx       <= load_idx;
+                    audio_track_toggle    <= ~audio_track_toggle;
+                end
                 zoom_displayed        <= zoom_loading;
             end
 
@@ -338,7 +377,7 @@ always @(posedge clk or posedge rst) begin
                 end
 
                 if (ENABLE_ZOOM && key_zoom_press && scan_done && !load_error)
-                    zoom_requested <= !zoom_requested;
+                    zoom_requested <= (zoom_requested == 2'd2) ? 2'd0 : zoom_requested + 2'd1;
 
                 // 自动播放开/关
                 if (key_auto_press && scan_done && (img_found_count > 3'd1)) begin
@@ -347,7 +386,7 @@ always @(posedge clk or posedge rst) begin
                 end
 
                 // 自动播放间隔计数（AUTO_INTERVAL_MS，默认 3s）：只有当前没有写图任务时才计时
-                if (scan_done && auto_play_en && display_valid && !load_busy && first_image_committed && (img_found_count > 3'd1)) begin
+                if (scan_done && auto_play_en && display_valid && !load_busy && !commit_wait && first_image_committed && (img_found_count > 3'd1)) begin
                     if (auto_tick)
                         auto_cnt <= 32'd0;
                     else
@@ -357,7 +396,7 @@ always @(posedge clk or posedge rst) begin
                 end
 
                 // 首图自动加载到 buffer0
-                if (scan_done && !load_error && !first_image_committed && bmp_ready && !load_busy && (img_found_count != 3'd0)) begin
+                if (scan_done && !load_error && !first_image_committed && bmp_ready && !load_busy && !commit_wait && (img_found_count != 3'd0)) begin
                     load_idx         <= 2'd0;
                     load_sector      <= img_sector0;
                     pending_buf_idx  <= 2'd0;
@@ -372,7 +411,7 @@ always @(posedge clk or posedge rst) begin
                 // Reload the current file into the other buffer when zoom changes.
                 // A second press while busy is handled after the current load commits.
                 else if (ENABLE_ZOOM && scan_done && !load_error && bmp_ready &&
-                         display_valid && !load_busy && zoom_requested != zoom_displayed) begin
+                         display_valid && !load_busy && !commit_wait && zoom_requested != zoom_displayed) begin
                     load_idx         <= img_idx;
                     load_sector      <= sector_lut(img_idx);
                     pending_buf_idx  <= next_buf_lut(disp_buf_idx, display_valid);
@@ -385,7 +424,7 @@ always @(posedge clk or posedge rst) begin
                 end
                 // 缩放重载优先于手动切图（角色 B）；下面这条是手动下一张（角色 C，
                 // 2bit 连按计数：加载期间连按最多记 3 次，用一次减一）。
-                else if (scan_done && !load_error && bmp_ready && display_valid && !load_busy && (next_req_pending != 2'd0) && (img_found_count != 3'd0)) begin
+                else if (scan_done && !load_error && bmp_ready && display_valid && !load_busy && !commit_wait && (next_req_pending != 2'd0) && (img_found_count != 3'd0)) begin
                     load_idx         <= next_from_current;
                     load_sector      <= sector_lut(next_from_current);
                     pending_buf_idx  <= next_buf_lut(disp_buf_idx, display_valid);
@@ -398,7 +437,7 @@ always @(posedge clk or posedge rst) begin
                     auto_cnt         <= 32'd0;
                 end
                 // 自动播放下一张：同样写到“非当前显示”的另一块 buffer
-                else if (scan_done && !load_error && bmp_ready && display_valid && !load_busy && auto_play_en && auto_tick && (img_found_count > 3'd1)) begin
+                else if (scan_done && !load_error && bmp_ready && display_valid && !load_busy && !commit_wait && auto_play_en && auto_tick && (img_found_count > 3'd1)) begin
                     load_idx         <= next_from_current;
                     load_sector      <= sector_lut(next_from_current);
                     pending_buf_idx  <= next_buf_lut(disp_buf_idx, display_valid);
@@ -414,7 +453,7 @@ always @(posedge clk or posedge rst) begin
     end
 end
 
-bmp_read bmp_read_m0(
+bmp_read #(.USE_PIXEL_START_PERMIT(1)) bmp_read_m0(
     .clk                    (clk),
     .rst                    (rst),
     .ready                  (bmp_ready),
@@ -437,6 +476,7 @@ bmp_read bmp_read_m0(
     .bmp_height             (bmp_height),
     .write_req              (write_req),
     .write_req_ack          (wr_ack_sync[1]),
+    .pixel_start_permit     (zoom_source_permit),
     .sd_sec_read            (sd_sec_read),
     .sd_sec_read_addr       (sd_sec_read_addr),
     .sd_sec_read_data       (sd_sec_read_data),

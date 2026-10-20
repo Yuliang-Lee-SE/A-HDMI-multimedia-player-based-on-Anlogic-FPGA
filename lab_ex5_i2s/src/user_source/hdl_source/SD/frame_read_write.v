@@ -85,14 +85,26 @@ wire                                 write_fifo_aclr;            // fifo Asynchr
 wire O_wr_busy;
 wire O_rd_busy;
 wire write_fifo_full;
-reg [2:0] write_reset_release;
+reg write_reset_first;
+reg [1:0] write_reset_release;
 wire write_fifo_reset = rst || write_fifo_aclr;
+reg write_reset_mem_hold;
+// Register the combined reset locally before its write-clock CDC. This
+// removes reset OR logic from the short inter-clock recovery path, and
+// captures even a sub-cycle pulse. Adds at most one memory clock of hold.
+always @(posedge mem_clk or posedge write_fifo_reset)
+    if(write_fifo_reset) write_reset_mem_hold <= 1'b1;
+    else write_reset_mem_hold <= 1'b0;
 // Asynchronous assertion, synchronous release in the FIFO write domain.
-always @(posedge write_clk or posedge write_fifo_reset)
-    if (write_fifo_reset) write_reset_release <= 3'b111;
-    else write_reset_release <= {write_reset_release[1:0], 1'b0};
+always @(posedge write_clk or posedge write_reset_mem_hold)
+    if (write_reset_mem_hold) write_reset_first <= 1'b1;
+    else write_reset_first <= 1'b0;
+// Only the first stage has asynchronous reset fanout. Later stages sample
+// it synchronously; raw reset and stage zero mask them until initialized.
+always @(posedge write_clk)
+    write_reset_release <= {write_reset_release[0],write_reset_first};
 // Hold ready low during FIFO reset and for three write clocks after release.
-assign write_ready = !write_reset_release[2] && !write_fifo_full;
+assign write_ready = !write_reset_first && !(|write_reset_release) && !write_fifo_full;
 
 assign App_wr_busy = O_wr_busy;//下个时钟写指令拉高
 assign App_rd_busy = O_rd_busy;//读指令还没有过去十个时钟;因为写指令优先，不需要在意下个时钟是否是读指令

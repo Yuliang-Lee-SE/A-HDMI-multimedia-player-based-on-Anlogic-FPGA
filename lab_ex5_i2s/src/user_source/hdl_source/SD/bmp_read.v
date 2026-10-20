@@ -1,4 +1,4 @@
-module bmp_read(
+module bmp_read #(parameter integer USE_PIXEL_START_PERMIT=0)(
     input                       clk,
     input                       rst,
     output                      ready,
@@ -24,6 +24,7 @@ module bmp_read(
 
     output reg                  write_req,
     input                       write_req_ack,
+    input                       pixel_start_permit,
 
     output reg                  sd_sec_read,
     output reg [31:0]           sd_sec_read_addr,
@@ -40,6 +41,7 @@ localparam ST_SCAN      = 3'd1;
 localparam ST_LOAD_HDR  = 3'd2;
 localparam ST_LOAD_WAIT = 3'd3;
 localparam ST_LOAD_DATA = 3'd4;
+localparam ST_LOAD_PRIME = 3'd5;
 
 reg [2:0]  state;
 reg [9:0]  rd_cnt;
@@ -291,10 +293,15 @@ always @(posedge clk or posedge rst) begin
                 state_code <= 4'd3;
                 if (write_req_ack) begin
                     write_req <= 1'b0;
-                    state     <= ST_LOAD_DATA;
+                    state     <= (USE_PIXEL_START_PERMIT && !pixel_start_permit) ? ST_LOAD_PRIME : ST_LOAD_DATA;
                 end
             end
 
+            ST_LOAD_PRIME: begin
+                state_code <= 4'd3;
+                sd_sec_read <= 1'b0;
+                if(pixel_start_permit) state <= ST_LOAD_DATA;
+            end
             ST_LOAD_DATA: begin
                 state_code  <= 4'd4;
                 sd_sec_read <= 1'b1;

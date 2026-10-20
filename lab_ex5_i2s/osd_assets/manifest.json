@@ -1,0 +1,19 @@
+{
+  "status": "TEST ONLY; formal copy/font approval pending",
+  "font_name": "simhei.ttf",
+  "font_sha256": "9b1959db3b3abeb7efdaec26edf7dfe871a6039de8d614af7248575207be629e",
+  "config_sha256": "5abba2c287f958d0a4813892c63b701f7975b18b4718077094192d1fd617bb5c",
+  "generator_sha256": "ae7a2408d267ed6309501d6e9bff69faa64a26087e279aa376b6484afd2dd65c",
+  "pillow": "12.3.0",
+  "glyph_count": 75,
+  "glyph_rom_bytes": 4096,
+  "text_bytes": 512,
+  "files": {
+    "src/user_source/hdl_source/team/osd_resources.v": "e8ad5d32318cbd8bd3862598565dd6923e312aa730da014a4a361bcdaa698c1d",
+    "osd_assets/text_ids.json": "a9e3a1cd1db69b1a3a4e11314c7db85113a42e1074b1fd97a93b67b90417e390",
+    "osd_assets/preview_1.png": "d9dc90a5991105e733839d28468ba48f13abdefd166aa565d4c6f93668d014fe",
+    "osd_assets/preview_2.png": "c2cdec9bd95c76bef3755df2da937428a9686fd3fb5c227c3ce93261d4f56037",
+    "osd_assets/preview_3.png": "801ad8fa4d8a0cd47d9b2cdfff19011f42c3efdbb3a99f7bc68ff4d70f51388f",
+    "osd_assets/preview_4.png": "dee8a3f919dad5bc73004f2b7609caedebaa9c65f9286f180608d5f10474083a"
+  }
+}
