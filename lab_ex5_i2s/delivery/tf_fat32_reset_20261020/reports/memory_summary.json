@@ -1,0 +1,41 @@
+{
+  "status": "PASS",
+  "text_entries": 512,
+  "glyph_rows": 2048,
+  "audio_samples": 49152,
+  "logical_fat_rams": [
+    {
+      "name": "sd_card_bmp_m0/fs/ramread0_syn_4",
+      "mode": "single dual port",
+      "depth": 2048,
+      "width": 28
+    },
+    {
+      "name": "sd_card_bmp_m0/fs/ramread1_syn_5",
+      "mode": "single dual port",
+      "depth": 128,
+      "width": 28
+    },
+    {
+      "name": "sd_card_bmp_m0/fs/ramread2_syn_4",
+      "mode": "single dual port",
+      "depth": 512,
+      "width": 8
+    },
+    {
+      "name": "sd_card_bmp_m0/fs/ramread3_syn_4",
+      "mode": "dual port",
+      "depth": 32,
+      "width": 78
+    }
+  ],
+  "logical_sd_rams": [
+    {
+      "name": "sd_card_bmp_m0/card/ramread0_syn_4",
+      "mode": "single dual port",
+      "depth": 512,
+      "width": 8
+    }
+  ],
+  "full_audit_sha256": "defa77c515888fc64a8e75ce08d7029f2be32b749b57463f33cb6b93040993d6"
+}

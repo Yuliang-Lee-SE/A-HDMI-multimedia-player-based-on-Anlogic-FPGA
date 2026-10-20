@@ -1,0 +1,56 @@
+{
+  "status": "PASS_FOR_LOCAL_RESET_REPAIR_CANDIDATE",
+  "tests": {
+    "boardfix_reset_matrix02": {
+      "status": "PASS",
+      "result_sha256": "8cdfdfc2a42e0eab55b8f708ed96580061f2745cd25d6a5b7e41232c3dbf8926",
+      "log_sha256": "bdff988c9857d71e381ceef1d41849c4d5ae39dbaff301dd20eeb3ebd1a47e4c"
+    },
+    "boardfix_top_rgb01": {
+      "status": "PASS",
+      "result_sha256": "28eede5eab25ec827915fa232ccdaf9b65de30619622e4e381ccb136288aa9f1",
+      "log_sha256": "2eec56516706dde2bdafe69443d41745966803fb7e2511697b21e79f637490ee"
+    },
+    "original_top_negative": {
+      "status": "EXPECTED_FAILURE",
+      "same_reset_test_source": true,
+      "log_sha256": "2c0ced63494007d5b2057e87767f1cfa64021445fb001bc116f450bd4256535a",
+      "result_sha256": "f0811790fa1bcc7a54a2e122f052acb7934296c65e29ebbe09d70d971806ffeb"
+    },
+    "mapped_reset_only": {
+      "status": "PASS",
+      "result_sha256": "4173a0a7f9f52b03b4ff40cef7a05aab0a64e8555c098117be22d24ff5608291"
+    },
+    "fat_unit_mapped_mounts": {
+      "status": "PASS",
+      "result_sha256": "c5d53e7b8c44b71312a5ba15106a20714d6fd66e2f47d26227285a9424af71e0",
+      "scope": "Separately synthesized same FAT source and 32/2048/timeouts; direct FAT32 and virtual MBR, 32 indexes each, ideal sector adapter. Not integrated gate netlist or board."
+    }
+  },
+  "limits": [
+    "Board black-screen root cause not confirmed; original RTL top passes the ideal-card RGB/AXIS test.",
+    "Reset-cone mapped simulation only; full-FPGA gate diagnostic interrupted, not passed.",
+    "PLL/HDMI serializer and physical card/SDRAM/electrical timing are outside the top behavioral regression.",
+    "Unchanged core module evidence may be referenced with matching hashes; no new full three-scale storage replay or 64-file hardware claim."
+  ],
+  "configuration": {
+    "files": 32,
+    "max_chain": 2048,
+    "self_refresh_open": 1
+  },
+  "old_unchanged_module_evidence": "../tf_fat32_20261019/reports/acceptance.json",
+  "original_top_rgb": {
+    "status": "PASS",
+    "full_frame_pixels": 307200,
+    "axis_checked_pixels": 172800
+  },
+  "candidate_top_rgb": {
+    "status": "PASS",
+    "full_frame_pixels": 307200,
+    "axis_checked_pixels": 172800
+  },
+  "reset_cases": 6,
+  "post_reset_mount_count": 32,
+  "mapped_reset_cells": 3,
+  "mapped_reset_pulses": 3
+}
