@@ -1,9 +1,9 @@
 # TF卡多图片播放器
 
-**当前为 TF 复位修复候选，待 A 做 RAM 测试。需要 TF 卡（microSD），请按[卡格式、图片与测试步骤](delivery/tf_fat32_reset_20261020/TESTING.md)操作。**
+**当前排查 SD 初始化失败。最新复位版 `1e4f3111` 也已板测失败，请使用[初始化诊断版与三步测试](delivery/tf_init_diag_20261021/TESTING.md)取得完整错误码。**
 
-[新候选bit与交付入口](delivery/tf_fat32_reset_20261020/README.md) · [验证结果/资源时序](delivery/tf_fat32_reset_20261020/RESULTS.md)
+[诊断bit与用卡说明](delivery/tf_init_diag_20261021/README.md) · [验证结果/资源时序](delivery/tf_init_diag_20261021/RESULTS.md)
 
-原 TF 候选已反馈黑屏，保留作历史；本轮修复一个已复现的 TF/SPI 复位缺陷，板上黑屏根因仍未证实，不能视为已解决。
+两份旧 TF 候选均保留作失败历史；诊断版只增加错误读出，尚未确认初始化根因，没有宣称修复成功。继续使用已核对的同一卡和图片，先RAM加载后拍整排数码管。
 
 工程入口：`src/td_project/HDMI1.4b_Transmitter_v1.0.al`。P2正常回退保留，P3未并入；当前候选待A先RAM上板，Flash/掉电另测。

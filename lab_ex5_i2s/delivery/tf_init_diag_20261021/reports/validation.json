@@ -1,0 +1,45 @@
+{
+  "status": "PASS_FOR_DIAGNOSTIC_CANDIDATE_ONLY",
+  "tests": {
+    "init_diag_matrix03": {
+      "passed": true,
+      "result_sha256": "25aa8013b67b03b239f2c94e3710fc5b1f27a91abf4ba8f8d6a2638c93ba7cac"
+    },
+    "init_diag_top03": {
+      "passed": true,
+      "result_sha256": "1dc9e708d958a661f8deeffd528273432185e148eb6b8f12c4a9b9a129ad50fb"
+    },
+    "init_diag_reset02": {
+      "passed": true,
+      "result_sha256": "ff213f400a1f1ebaf3ec78d52ae40f28bd3dbb929a6cbee6d320338b8227d123"
+    },
+    "spi37": {
+      "passed": true,
+      "result_sha256": "955541c88912848341d906267d3fd740f5b50233715a5454eae45d2a980c1eea"
+    },
+    "short8": {
+      "passed": true,
+      "result_sha256": "22fc4b536d9f8a60e99dd3658914ce6dae34521db452bb45b089dfa727eefb6b"
+    }
+  },
+  "limits": [
+    "Diagnostic candidate only; cb1948f2 and 1e4f3111 board tests failed; actual initialization failure cause still unknown.",
+    "Model fault injections and exact-reference lockstep do not prove the physical card, SPI electrical timing, HDMI, audio or board.",
+    "Functional paths match published source after removing named diagnostic additions; not formal equivalence. Prior full-frame evidence referenced only for unchanged functional paths, no new full-frame/three-scale replay.",
+    "No 64-file hardware build, no physical card operation, programming, Flash or power-cycle validation."
+  ],
+  "functional_scope_sha256": "90391e4921cf4bc1d25130882b440a47eb0de12a5cc98d7c241eb36b61d10605",
+  "cdc_review": "Held diagnostic payload; two-flop held-valid synchronization plus two scan clocks before capture. Only status digits consume payload; no protocol/frame feedback. Original clock groups and FIFO constraints retained.",
+  "warning_counts": {
+    "HDL-5007": 8,
+    "HDL-5314": 2,
+    "HDL-5317": 3,
+    "HDL-5001": 2,
+    "SYN-5013": 2,
+    "SYN-5025": 3,
+    "SYN-5011": 12,
+    "SYN-6577": 1,
+    "SYN-6562": 10,
+    "PHY-7002": 2
+  }
+}
