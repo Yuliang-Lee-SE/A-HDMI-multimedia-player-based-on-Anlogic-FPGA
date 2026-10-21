@@ -13,6 +13,7 @@ module tf_file_player #(
  output wire osd_auto_mode,output reg [1:0] audio_track_idx,
  output reg audio_track_toggle,audio_enabled,
  output wire [3:0] state_code,
+ output wire [19:0] init_diagnostic,
  output SD_nCS,SD_DCLK,SD_MOSI,input SD_MISO);
  wire media_ready,init_error,block_addressed;wire [31:0] sectors;
  wire req_valid,req_ready,rsp_valid,rsp_done,rsp_error,cancel;
@@ -51,7 +52,7 @@ module tf_file_player #(
  assign state_code=(failed || init_error) ? 4'hf:state;
  sd_spi_reader #(.CLK_HZ(CLK_FREQ_HZ)) card(.clk(clk),.rst(rst),.reinit(card_reinit),
  .SD_nCS(SD_nCS),.SD_DCLK(SD_DCLK),.SD_MOSI(SD_MOSI),.SD_MISO(SD_MISO),
- .media_ready(media_ready),.init_error(init_error),.block_addressed(block_addressed),.media_sectors(sectors),
+ .media_ready(media_ready),.init_error(init_error),.init_diagnostic(init_diagnostic),.block_addressed(block_addressed),.media_sectors(sectors),
  .req_valid(req_valid),.req_ready(req_ready),.req_lba(lba),.req_tag(req_tag),
  .cancel_valid(cancel),.cancel_tag(cancel_tag),.rsp_tag(rsp_tag),.rsp_valid(rsp_valid),
  .rsp_data(rsp_data),.rsp_done(rsp_done),.rsp_error(rsp_error));

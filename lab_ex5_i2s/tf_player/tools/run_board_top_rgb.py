@@ -8,7 +8,7 @@ from pathlib import Path
 lab=Path(__file__).resolve().parents[2];rtl=lab/'src/user_source/hdl_source'
 ap=argparse.ArgumentParser();ap.add_argument('--out',type=Path,required=True)
 ap.add_argument('--image',type=Path,required=True)
-ap.add_argument('--bench',choices=['tb_board_top_rgb','tb_board_reset_pulse'],default='tb_board_top_rgb')
+ap.add_argument('--bench',choices=['tb_board_top_rgb','tb_board_reset_pulse','tb_board_init_diagnostic'],default='tb_board_top_rgb')
 ap.add_argument('--top-source',type=Path,help='Explicit isolated candidate top; actual selected file is hashed')
 a=ap.parse_args();out=a.out.resolve();out.mkdir(parents=True,exist_ok=False)
 ms=Path('D:/j1573/modelsim/modelsim_ase/win32aloem')
@@ -60,7 +60,8 @@ rc,s=run(['vsim.exe','-c','-onfinish','stop','work.'+a.bench,
  '+IMAGE='+str(a.image.resolve()),'+ROMHEX='+str(rom),'-do',
  'onerror {quit -code 1}; onbreak {quit -code 1}; run -all; quit -code 0'],'sim.log',7200)
 unchanged=hashes()==before
-marker={'tb_board_top_rgb':'BOARD_TOP_RGB_PASS','tb_board_reset_pulse':'BOARD_RESET_PULSE_PASS'}[a.bench]
+marker={'tb_board_top_rgb':'BOARD_TOP_RGB_PASS','tb_board_reset_pulse':'BOARD_RESET_PULSE_PASS',
+ 'tb_board_init_diagnostic':'BOARD_INIT_DIAGNOSTIC_PASS'}[a.bench]
 ok=rc==0 and marker in s and not re.search(r'FAIL|\*\* (?:Error|Fatal)',s)
 (out/'result.json').write_text(json.dumps(dict(passed=ok,inputs_unchanged=unchanged,inputs=before,
  image=str(a.image.resolve()),scope=__doc__),indent=2),encoding='utf-8')

@@ -80,6 +80,7 @@ wire        wav_vs;
 wire        wav_de;
 
 wire [3:0]  state_code;
+wire [19:0] tf_init_diagnostic;
 wire [6:0]  seg_data_0;
 
 wire        video_read_req;
@@ -220,6 +221,7 @@ tf_file_player #(.MAX_FILES(TF_MAX_FILES)) sd_card_bmp_m0(
     .key_zoom          (key3),
     .write_ready       (sd_card_write_ready),
     .state_code        (state_code),
+    .init_diagnostic   (tf_init_diagnostic),
     .display_valid     (display_valid),
     .osd_auto_mode     (osd_auto_mode_sd),
     .display_asset(display_asset_sd),.display_ordinal(display_ordinal_sd),
@@ -245,6 +247,30 @@ tf_file_player #(.MAX_FILES(TF_MAX_FILES)) sd_card_bmp_m0(
     .SD_MISO           (sd_miso)
 );
 
+// Frozen failure payload crossing: synchronize its held-valid indication,
+// wait two more scan clocks, then capture the stable word. Payload is held
+// until reset/reinitialization and never feeds protocol/frame control.
+(* async_reg = "true" *) reg [1:0] init_diag_valid_sync;
+reg [19:0] init_diag_sync;
+reg [1:0] init_diag_settle;
+always @(posedge clk or posedge rst_all) begin
+    if(rst_all) begin init_diag_valid_sync<=0;init_diag_sync<=0;init_diag_settle<=0;end
+    else begin
+        init_diag_valid_sync<={init_diag_valid_sync[0],|tf_init_diagnostic[19:16]};
+        if(!init_diag_valid_sync[1]) init_diag_settle<=0;
+        else begin
+            init_diag_settle<={init_diag_settle[0],1'b1};
+            if(!init_diag_settle[1]) init_diag_sync<=tf_init_diagnostic;
+        end
+    end
+end
+wire [34:0] init_diag_segments;
+genvar diag_digit;
+generate for(diag_digit=0;diag_digit<5;diag_digit=diag_digit+1) begin: init_diag_decode
+    seg_decoder decode(.bin_data(init_diag_sync[19-diag_digit*4 -: 4]),
+                       .seg_data(init_diag_segments[diag_digit*7 +: 7]));
+end endgenerate
+
 seg_decoder seg_decoder_m0(
     .bin_data          (state_code),
     .seg_data          (seg_data_0)
@@ -255,11 +281,11 @@ seg_scan seg_scan_m0(
     .rst_n             (rst_n),
     .seg_sel           (seg_sel),
     .seg_data          (seg_data),
-    .seg_data_0        ({1'b1,7'b1111_111}),
-    .seg_data_1        ({1'b1,7'b1111_111}),
-    .seg_data_2        ({1'b1,7'b1111_111}),
-    .seg_data_3        ({1'b1,7'b1111_111}),
-    .seg_data_4        ({1'b1,7'b1111_111}),
+    .seg_data_0        ({1'b1,(init_diag_settle[1] ? init_diag_segments[0 +: 7]:7'b1111111)}),
+    .seg_data_1        ({1'b1,(init_diag_settle[1] ? init_diag_segments[7 +: 7]:7'b1111111)}),
+    .seg_data_2        ({1'b1,(init_diag_settle[1] ? init_diag_segments[14 +: 7]:7'b1111111)}),
+    .seg_data_3        ({1'b1,(init_diag_settle[1] ? init_diag_segments[21 +: 7]:7'b1111111)}),
+    .seg_data_4        ({1'b1,(init_diag_settle[1] ? init_diag_segments[28 +: 7]:7'b1111111)}),
     .seg_data_5        ({1'b1,seg_data_0})
 );
 

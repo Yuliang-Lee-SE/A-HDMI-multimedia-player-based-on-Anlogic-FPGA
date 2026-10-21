@@ -9,6 +9,7 @@ module sd_spi_reader #(
  output wire SD_nCS,SD_DCLK,SD_MOSI,input wire SD_MISO,
  output reg media_ready,init_error,output reg block_addressed,
  output reg [31:0] media_sectors,
+ output reg [19:0] init_diagnostic,
  input wire req_valid,output wire req_ready,input wire [31:0] req_lba,req_tag,
  input wire cancel_valid,input wire [31:0] cancel_tag,
  output reg [31:0] rsp_tag,output reg rsp_valid,output reg [7:0] rsp_data,
@@ -59,6 +60,7 @@ module sd_spi_reader #(
  reg [3:0] phase; reg [5:0] cmd_num; reg [31:0] cmd_arg;
  reg [47:0] command; reg [2:0] cmd_pos,tail_pos;
  reg [7:0] response; reg [31:0] tail; reg v2,active;
+ reg [7:0] init_last_rx;
  reg [7:0] poll_count,attempt; reg [15:0] crc,card_crc;
  reg [127:0] csd; reg [7:0] buffer[0:511];
  reg [7:0] buffer_q;reg cancel_hit_q;
@@ -88,8 +90,11 @@ module sd_spi_reader #(
  begin cmd_num<=n;cmd_arg<=a;phase<=p;state<=CMD_PRE;end endtask
  task automatic release_to(input [STATE_W-1:0] r);
  begin cs<=1;after_release<=r;state<=DESELECT;end endtask
- task automatic read_fail;
+ task automatic read_fail(input [3:0] reason);
  begin
+  // Observation only: reason, command (hex), last received byte. Frozen on
+  // initialization failure; never used by protocol or frame control.
+  if(!active && !init_error) init_diagnostic<={reason,2'b0,cmd_num,rx};
   // A retry never emits a partial buffer and never changes rsp_tag.
   if(active && attempt+1<MAX_ATTEMPTS && read_timer<READ_CYCLES) begin
    attempt<=attempt+1;release_to(CMD_PRE);
@@ -101,11 +106,12 @@ module sd_spi_reader #(
  always @(posedge clk) begin
   if(rst) begin
    state<=POWER;timer<=0;init_timer<=0;read_timer<=0;token_timer<=0;
-   media_ready<=0;media_sectors<=0;init_error<=0;block_addressed<=0;
+   media_ready<=0;media_sectors<=0;init_error<=0;block_addressed<=0;init_diagnostic<=0;init_last_rx<=8'hff;
    cs<=1;wr_req<=0;tx<=255;divider<=LOW_DIV;gap<=0;active<=0;
    rsp_tag<=0;rsp_valid<=0;rsp_data<=0;rsp_done<=0;rsp_error<=0;
    count<=0;attempt<=0;v2<=0;phase<=0;crc<=0;csd<=0;
   end else begin
+   if(ack) init_last_rx<=rx;
    rsp_valid<=0;rsp_done<=0;rsp_error<=0;
    if(media_ready) init_timer<=0;
    else if(!(|(state & FAILED))) init_timer<=init_timer+1;
@@ -114,7 +120,7 @@ module sd_spi_reader #(
       (((|(state & BYTE_WAIT)) || (|(state & BYTE_GAP))) && (|(resume & TOKEN_GOT)))) token_timer<=token_timer+1;
    // Finish the in-flight byte before aborting; CS stays high until a new CMD0.
    if(reinit || cancel_hit_q) begin
-    active<=0;media_ready<=0;init_error<=0;init_timer<=0;cs<=1;
+    active<=0;media_ready<=0;init_error<=0;init_timer<=0;cs<=1;init_diagnostic<=0;init_last_rx<=8'hff;
     if((|(state & BYTE_WAIT))) begin resume<=ABORT;if(ack) begin wr_req<=0;gap<=3;state<=BYTE_GAP;end end
     else if((|(state & BYTE_GAP))) begin resume<=ABORT;if(gap==0) state<=ABORT;else gap<=gap-1;end
     else state<=ABORT;
@@ -125,6 +131,7 @@ module sd_spi_reader #(
     else state<=ABORT;
    end else if(!media_ready && !init_error && init_timer>=INIT_CYCLES && !(|(state & FAILED)) && !(|(state & ABORT))) begin
     init_error<=1;cs<=1;
+    init_diagnostic<={4'ha,((|(state & (POWER|CLOCKS|CLOCKED))) ? 8'hff:{2'b0,cmd_num}),(ack ? rx:init_last_rx)};
     if((|(state & BYTE_WAIT))) begin resume<=FAILED;if(ack) begin wr_req<=0;gap<=3;state<=BYTE_GAP;end end
     else if((|(state & BYTE_GAP))) begin resume<=FAILED;if(gap==0) state<=FAILED;else gap<=gap-1;end
     else state<=FAILED;
@@ -148,24 +155,24 @@ module sd_spi_reader #(
     (|(state & R1_GOT)): if(!rx[7]) begin
      response<=rx;tail<=0;tail_pos<=0;
      if((phase==1 && rx==1) || (phase==4 && rx==0)) state<=TAIL;else state<=DISPATCH;
-    end else if(poll_count==15) read_fail();else begin poll_count<=poll_count+1;state<=R1;end
+    end else if(poll_count==15) read_fail(4'h1);else begin poll_count<=poll_count+1;state<=R1;end
     (|(state & TAIL)): byte_io(255,TAIL_GOT);
     (|(state & TAIL_GOT)): begin tail<={tail[23:0],rx};
      if(tail_pos==3) state<=DISPATCH;else begin tail_pos<=tail_pos+1;state<=TAIL;end
     end
     (|(state & DISPATCH)): case(phase)
-     0: if(response==1) begin release_to(RELEASED);phase<=1;end else read_fail();
+     0: if(response==1) begin release_to(RELEASED);phase<=1;end else read_fail(4'h2);
      1: if(response==1 && tail==32'h1aa) begin v2<=1;release_to(RELEASED);phase<=2;end
-        else if(response==5) begin v2<=0;release_to(RELEASED);phase<=2;end else read_fail();
-     2: if(response==1 || response==0) begin release_to(RELEASED);phase<=3;end else read_fail();
+        else if(response==5) begin v2<=0;release_to(RELEASED);phase<=2;end else read_fail(4'h2);
+     2: if(response==1 || response==0) begin release_to(RELEASED);phase<=3;end else read_fail(4'h2);
      3: if(response==0) begin release_to(RELEASED);phase<=4;end
-        else if(response==1) begin release_to(RELEASED);phase<=2;end else read_fail();
+        else if(response==1) begin release_to(RELEASED);phase<=2;end else read_fail(4'h2);
      4: if(response==0 && tail[31] && |tail[23:15] && (!tail[30] || v2)) begin
          block_addressed<=tail[30];release_to(RELEASED);phase<=tail[30] ? 6:5;
-        end else read_fail();
-     5: if(response==0) begin release_to(RELEASED);phase<=6;end else read_fail();
-     6,7: if(response==0) begin count<=0;crc<=0;csd<=0;token_timer<=0;state<=TOKEN;end else read_fail();
-     default: read_fail();
+        end else read_fail(4'h2);
+     5: if(response==0) begin release_to(RELEASED);phase<=6;end else read_fail(4'h2);
+     6,7: if(response==0) begin count<=0;crc<=0;csd<=0;token_timer<=0;state<=TOKEN;end else read_fail(4'h2);
+     default: read_fail(4'h2);
     endcase
     (|(state & RELEASED)): case(phase)
      1:command_io(8,32'h1aa,1);
@@ -174,11 +181,11 @@ module sd_spi_reader #(
      4:command_io(58,0,4);
      5:command_io(16,512,5);
      6:command_io(9,0,6);
-     default:read_fail();
+     default:read_fail(4'h2);
     endcase
-    (|(state & TOKEN)): if(token_timer>=TOKEN_CYCLES) read_fail();else byte_io(255,TOKEN_GOT);
+    (|(state & TOKEN)): if(token_timer>=TOKEN_CYCLES) read_fail(4'h3);else byte_io(255,TOKEN_GOT);
     (|(state & TOKEN_GOT)): if(rx==8'hfe) state<=DATA;
-      else if(rx!=255) read_fail();else state<=TOKEN;
+      else if(rx!=255) read_fail(4'h4);else state<=TOKEN;
     (|(state & DATA)): byte_io(255,DATA_GOT);
     (|(state & DATA_GOT)): begin
      crc<=crc16(crc,rx);if(phase==6) csd<={csd[119:0],rx};else buffer[count[8:0]]<=rx;
@@ -186,14 +193,14 @@ module sd_spi_reader #(
     end
     (|(state & CRC_HI)): byte_io(255,CRC_LO);
     (|(state & CRC_LO)): begin card_crc[15:8]<=rx;byte_io(255,CRC_CHECK);end
-    (|(state & CRC_CHECK)): if({card_crc[15:8],rx}!=crc) read_fail();else state<=GUARD;
+    (|(state & CRC_CHECK)): if({card_crc[15:8],rx}!=crc) read_fail(4'h5);else state<=GUARD;
     (|(state & GUARD)): byte_io(255,GUARDED);
-    (|(state & GUARDED)): if(rx!=255) read_fail();else if(phase==6) release_to(CSD_CHECK);else release_to(EMIT);
+    (|(state & GUARDED)): if(rx!=255) read_fail(4'h6);else if(phase==6) release_to(CSD_CHECK);else release_to(EMIT);
     (|(state & DESELECT)): byte_io(255,after_release);
     (|(state & CSD_CHECK)): begin
      if((csd[127:126]!=0 && csd[127:126]!=1) ||
        (block_addressed!=(csd[127:126]==1)) ||
-       (!block_addressed && (csd[83:80]<9 || csd[83:80]>11))) read_fail();
+       (!block_addressed && (csd[83:80]<9 || csd[83:80]>11))) read_fail(4'h7);
      else begin
       cap_v2<=csd[127:126]==1;
       v1_units<={1'b0,csd[73:62]}+13'd1;
@@ -211,7 +218,7 @@ module sd_spi_reader #(
      state<=CSD_ACCEPT;
     end
     (|(state & CSD_ACCEPT)): begin
-     if(capacity_bad) read_fail();
+     if(capacity_bad) read_fail(4'h8);
      else begin media_sectors<=capacity[31:0];media_ready<=1;init_error<=0;divider<=HIGH_DIV;state<=IDLE;end
     end
     (|(state & IDLE)): if(req_valid && req_ready) begin
@@ -233,7 +240,7 @@ module sd_spi_reader #(
      divider<=LOW_DIV;init_timer<=0;timer<=0;v2<=0;state<=CLOCKS;
     end
     (|(state & FAILED)): begin media_ready<=0;cs<=1;end
-    default: read_fail();
+    default: read_fail(4'h2);
    endcase
   end
  end

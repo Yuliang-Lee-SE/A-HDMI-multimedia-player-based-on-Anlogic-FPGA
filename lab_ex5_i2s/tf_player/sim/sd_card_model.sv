@@ -22,7 +22,7 @@ module sd_card_model #(
   arg={packet[1],packet[2],packet[3],packet[4]};
   push(255);
   case(packet[0]&63)
-   0:begin if(packet[5]!=8'h95)$fatal(1,"CMD0 CRC7");idle=1;push(1);end
+   0:begin if(packet[5]!=8'h95)$fatal(1,"CMD0 CRC7");idle=1;if(fault!=13)push(1);end
    8:begin if(packet[5]!=8'h87)$fatal(1,"CMD8 CRC7");
     if(legacy) push(5);else begin push(1);push(0);push(0);push(1);push(fault==11 ? 8'hab:8'haa);end end
    55:push(idle ? 1:0);
@@ -30,7 +30,9 @@ module sd_card_model #(
    58:begin push(0);push(fault==10 ? 0:hc ? 8'hc0:8'h80);push(8'hff);push(8'h80);push(0);end
    16:push(arg==512 ? 0:64);
    9:begin
-    push(0);push(255);push(8'hfe);csd=0;
+    push(0);push(255);
+    if(fault!=15) begin
+    push(fault==14 ? 8'h0b:8'hfe);csd=0;
     if(hc) begin csd[127:126]=1;csd[69:48]=CSD_HC_SIZE;end
     else begin csd[83:80]=CSD_READ_BL;csd[73:62]=CSD_SC_SIZE;csd[49:47]=CSD_SC_MULT;end
     if(fault==8) csd[127:126]=2;
@@ -38,6 +40,8 @@ module sd_card_model #(
     for(i=15;i>=0;i=i-1) begin value=csd[i*8+:8];push(value);crc=crc_byte(crc,value);end
     if(fault==9)crc=crc^1;
     push(crc[15:8]);push(crc[7:0]);
+    if(fault==12)push(8'h12);
+    end
    end
    17:begin
     reads=reads+1;last_arg=arg;
