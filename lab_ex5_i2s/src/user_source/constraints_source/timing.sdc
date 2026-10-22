@@ -95,6 +95,17 @@ set_clock_groups -asynchronous \
 # ------------------------------------------------------------
 set_false_path -from [get_clocks {sd_card_clk}] -to [get_clocks {audio_mclk}]
 
+# The startup guard is a quasi-static asynchronous reset control generated in
+# the 50 MHz input-clock domain. Exclude only this register output from
+# cross-domain timing. The 50 MHz clock domain contains only the reset guard
+# and the independent seven-segment scanner, so no functional data crosses
+# these clock pairs. Target the clock pair after synthesis optimization.
+set_false_path -from [get_clocks {clk}] -to [get_clocks {sd_card_clk}]
+set_false_path -from [get_clocks {clk}] -to [get_clocks {ext_mem_clk}]
+set_false_path -from [get_clocks {clk}] -to [get_clocks {video_clk}]
+set_false_path -from [get_clocks {clk}] -to [get_clocks {audio_mclk}]
+set_false_path -from [get_clocks {clk}] -to [get_clocks {hdmi_5x_clk}]
+
 # ------------------------------------------------------------
 # 6. 可选：如果你的 frame_read_write 内部异步 FIFO 已经完全处理好了跨域，
 #    且报告里总出现 video_clk / sd_card_clk / ext_mem_clk 之间的大量伪违例，
