@@ -1,0 +1,55 @@
+read_buf full_report_sha256=5ccde98a06134a1163a1df0b8afeec813b75f95ce1481660c1b888ff5314f008
+Created by          : Tang Dynasty v6.2.168116
+                    : Copyright (c) 2012-2025 Anlogic Inc.
+Generated           : Wed Oct 21 22:52:26 2026
+
+Top Model           : top
+Device              : EG4S20BG256
+Speed               : NA
+STA coverage        : 98.82%
+
+Timing details for FRAME_READ_WRITE_M0/READ_BUF
+------------------------------
+
+Timing details for frame_read_write_m0/read_buf
+------------------------------------------------------------
+
+
+----------------------------------------------------------------------------------------------------
+Path Group     :     
+set_max_delay -from [get_regs -nowarn {*/primary_addr_gray_reg[*]}] -to [get_regs -nowarn {*/sync_r1[*]}] -datapath_only 7.700
+
+Type           :     SMD
+
+Statistics:
+Max            : SWNS      6.388ns, STNS      0.000ns,         0 Viol Endpoints,        18 Total Endpoints,        18 Paths Analyzed
+Min            : HWNS      0.000ns, HTNS      0.000ns,         0 Viol Endpoints,         0 Total Endpoints,         0 Paths Analyzed
+----------------------------------------------------------------------------------------------------
+
+write_buf full_report_sha256=5225e54ce9f92c1d103ebb068611a76814c67ef1c6d117628a81573b18b70b18
+Created by          : Tang Dynasty v6.2.168116
+                    : Copyright (c) 2012-2025 Anlogic Inc.
+Generated           : Wed Oct 21 22:52:26 2026
+
+Top Model           : top
+Device              : EG4S20BG256
+Speed               : NA
+STA coverage        : 98.82%
+
+Timing details for FRAME_READ_WRITE_M0/WRITE_BUF
+------------------------------
+
+Timing details for frame_read_write_m0/write_buf
+------------------------------------------------------------
+
+
+----------------------------------------------------------------------------------------------------
+Path Group     :     
+set_max_delay -from [get_regs -nowarn {*/primary_addr_gray_reg[*]}] -to [get_regs -nowarn {*/sync_r1[*]}] -datapath_only 7.700
+
+Type           :     SMD
+
+Statistics:
+Max            : SWNS      6.492ns, STNS      0.000ns,         0 Viol Endpoints,        18 Total Endpoints,        18 Paths Analyzed
+Min            : HWNS      0.000ns, HTNS      0.000ns,         0 Viol Endpoints,         0 Total Endpoints,         0 Paths Analyzed
+----------------------------------------------------------------------------------------------------
