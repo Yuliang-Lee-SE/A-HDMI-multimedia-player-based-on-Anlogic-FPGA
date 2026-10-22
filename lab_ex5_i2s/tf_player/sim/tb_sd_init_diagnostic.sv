@@ -30,7 +30,7 @@ module tb_sd_init_diagnostic;
   checks=checks+1;
  end
  function automatic [3:0] reason;
- case(CASE_ID) 1:reason=1;2,3:reason=2;4:reason=3;5:reason=4;6:reason=5;
+ case(CASE_ID) 1:reason=1;2:reason=13;3:reason=2;4:reason=3;5:reason=4;6:reason=5;
  7:reason=6;8:reason=7;9:reason=8;10:reason=10;default:reason=0;endcase
  endfunction
  initial begin
