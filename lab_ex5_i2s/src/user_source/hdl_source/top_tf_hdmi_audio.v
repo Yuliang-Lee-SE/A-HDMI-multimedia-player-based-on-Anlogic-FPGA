@@ -152,7 +152,22 @@ wire    audio_pll_lock;
 wire    sys_pll_lock;
 wire    video_pll_lock;        
 wire rst_all;
-assign rst_all = ~rst_n | ~audio_pll_lock | ~video_pll_lock | ~sys_pll_lock;
+wire rst_n_guard;
+
+// Hold the whole design for 500 ms after the board resets, then ignore
+// additional reset-button presses for 2 s. This prevents a double refresh
+// from restarting SD initialization while the card stack is still settling.
+reset_startup_guard #(
+    .CLK_HZ            (50_000_000),
+    .STARTUP_HOLD_MS   (500),
+    .LOCKOUT_MS        (2000)
+) u_reset_startup_guard (
+    .clk       (clk),
+    .raw_rst_n (rst_n),
+    .reset_n   (rst_n_guard)
+);
+
+assign rst_all = ~rst_n_guard | ~audio_pll_lock | ~video_pll_lock | ~sys_pll_lock;
 
 // The TF scheduler/FAT/SD transaction machines use synchronous reset, while
 // the byte SPI engine resets asynchronously. Hold any asynchronous reset
@@ -281,7 +296,7 @@ seg_decoder seg_decoder_m0(
 
 seg_scan seg_scan_m0(
     .clk               (clk),
-    .rst_n             (rst_n),
+    .rst_n             (rst_n_guard),
     .seg_sel           (seg_sel),
     .seg_data          (seg_data),
     .seg_data_0        ({1'b1,(init_diag_settle[1] ? init_diag_segments[0 +: 7]:7'b1111111)}),

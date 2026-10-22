@@ -403,6 +403,14 @@
                     <Attr Name="CompileOrder" Val="87"/>
                 </FileInfo>
             </File>
+            <File Path="../user_source/hdl_source/team/reset_startup_guard.v">
+                <FileInfo>
+                    <Attr Name="UsedInSyn" Val="true"/>
+                    <Attr Name="UsedInP&amp;R" Val="true"/>
+                    <Attr Name="BelongTo" Val="design_1"/>
+                    <Attr Name="CompileOrder" Val="88"/>
+                </FileInfo>
+            </File>
         </Verilog>
         <ADC_FILE>
             <File Path="../user_source/constraints_source/pin.adc">
