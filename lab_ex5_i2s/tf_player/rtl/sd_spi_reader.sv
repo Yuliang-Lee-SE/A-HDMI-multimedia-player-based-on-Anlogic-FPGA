@@ -162,8 +162,17 @@ module sd_spi_reader #(
     end
     (|(state & DISPATCH)): case(phase)
      0: if(response==1) begin release_to(RELEASED);phase<=1;end else read_fail(4'h2);
-     1: if(response==1 && tail==32'h1aa) begin v2<=1;release_to(RELEASED);phase<=2;end
-        else if(response==5) begin v2<=0;release_to(RELEASED);phase<=2;end else read_fail(4'h2);
+     1: if(response==1) begin
+         // Validate the echoed pattern and accepted-voltage fields, not
+         // reserved/extension bits outside this host's negotiation.
+         if(tail[7:0]!=8'haa) read_fail(4'hd);
+         else if(tail[11:8]!=4'h1) begin
+          read_fail(4'hc);
+          init_diagnostic<={4'hc,8'h08,4'b0,tail[11:8]};
+         end else begin v2<=1;release_to(RELEASED);phase<=8;end
+        end else if(response==5) begin v2<=0;release_to(RELEASED);phase<=8;end else read_fail(4'h2);
+     // CRC mode must be negotiated before ACMD41; keep data CRC checks.
+     8: if(response==1) begin release_to(RELEASED);phase<=2;end else read_fail(4'h2);
      2: if(response==1 || response==0) begin release_to(RELEASED);phase<=3;end else read_fail(4'h2);
      3: if(response==0) begin release_to(RELEASED);phase<=4;end
         else if(response==1) begin release_to(RELEASED);phase<=2;end else read_fail(4'h2);
@@ -176,6 +185,7 @@ module sd_spi_reader #(
     endcase
     (|(state & RELEASED)): case(phase)
      1:command_io(8,32'h1aa,1);
+     8:command_io(59,1,8);
      2:command_io(55,0,2);
      3:command_io(41,v2 ? 32'h40000000:0,3);
      4:command_io(58,0,4);

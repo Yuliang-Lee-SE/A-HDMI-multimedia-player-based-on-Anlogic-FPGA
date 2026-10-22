@@ -37,3 +37,5 @@
 
 /delivery/tf_fat32_reset_20261020/** -text
 /delivery/tf_init_diag_20261021/** -text
+/delivery/tf_cmd8_fix_20261021/** -text
+/delivery/tf_crc_fix_20261021/** -text

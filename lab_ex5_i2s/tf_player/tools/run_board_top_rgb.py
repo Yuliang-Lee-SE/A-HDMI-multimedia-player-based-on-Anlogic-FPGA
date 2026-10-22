@@ -8,8 +8,9 @@ from pathlib import Path
 lab=Path(__file__).resolve().parents[2];rtl=lab/'src/user_source/hdl_source'
 ap=argparse.ArgumentParser();ap.add_argument('--out',type=Path,required=True)
 ap.add_argument('--image',type=Path,required=True)
-ap.add_argument('--bench',choices=['tb_board_top_rgb','tb_board_reset_pulse','tb_board_init_diagnostic'],default='tb_board_top_rgb')
+ap.add_argument('--bench',choices=['tb_board_top_rgb','tb_board_reset_pulse','tb_board_init_diagnostic','tb_board_cmd8_rgb'],default='tb_board_top_rgb')
 ap.add_argument('--top-source',type=Path,help='Explicit isolated candidate top; actual selected file is hashed')
+ap.add_argument('--sd-source',type=Path,help='Explicit SD reference for negative control; actual selected file is hashed')
 a=ap.parse_args();out=a.out.resolve();out.mkdir(parents=True,exist_ok=False)
 ms=Path('D:/j1573/modelsim/modelsim_ase/win32aloem')
 sources=[rtl/'include'/s for s in ['sdr_as_ram.enc.v','sdr_init_ref.enc.v','sdr_wrrd.enc.v']]
@@ -26,6 +27,8 @@ if a.top_source:
  sources[sources.index(rtl/'top_tf_hdmi_audio.v')]=a.top_source.resolve()
 sources += [*sorted((lab/'tf_player/rtl').glob('*.sv')),lab/'tf_player/sim/sd_card_model.sv',
  lab/'diagnostic_sdram_pin_model.v',lab/'tf_player/sim/tb_board_top_rgb.sv']
+if a.sd_source:
+ sources[sources.index(lab/'tf_player/rtl/sd_spi_reader.sv')]=a.sd_source.resolve()
 if a.bench!='tb_board_top_rgb':sources.append(lab/f'tf_player/sim/{a.bench}.sv')
 hdmi=rtl/'hdmi1.4b_transmitter_core/hdmi_1_4b_transmitter_core_wrapper.enc.v'
 header=hdmi.read_text(encoding='utf-8').split('`pragma protect begin_protected')[0]
@@ -58,10 +61,10 @@ for args,name in [(['vlib.exe','work'],'vlib.log'),(['vlog.exe',
  if rc or '** Error' in s:raise SystemExit(1)
 rc,s=run(['vsim.exe','-c','-onfinish','stop','work.'+a.bench,
  '+IMAGE='+str(a.image.resolve()),'+ROMHEX='+str(rom),'-do',
- 'onerror {quit -code 1}; onbreak {quit -code 1}; run -all; quit -code 0'],'sim.log',7200)
+ 'onerror {quit -code 1}; onbreak {quit -code 1}; run -all; quit -code 0'],'sim.log',14400)
 unchanged=hashes()==before
 marker={'tb_board_top_rgb':'BOARD_TOP_RGB_PASS','tb_board_reset_pulse':'BOARD_RESET_PULSE_PASS',
- 'tb_board_init_diagnostic':'BOARD_INIT_DIAGNOSTIC_PASS'}[a.bench]
+ 'tb_board_init_diagnostic':'BOARD_INIT_DIAGNOSTIC_PASS','tb_board_cmd8_rgb':'BOARD_TOP_RGB_PASS'}[a.bench]
 ok=rc==0 and marker in s and not re.search(r'FAIL|\*\* (?:Error|Fatal)',s)
 (out/'result.json').write_text(json.dumps(dict(passed=ok,inputs_unchanged=unchanged,inputs=before,
  image=str(a.image.resolve()),scope=__doc__),indent=2),encoding='utf-8')
