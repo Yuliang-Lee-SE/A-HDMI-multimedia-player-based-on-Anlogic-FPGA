@@ -10,7 +10,7 @@ reg [10:0] selected_offset;
 wire ready;
 reg [23:0] rgb=0;
 wire oh,ov,od;wire [23:0] out;
-osd_layer_renderer dut(clk,rst,enable,am,item,hs,vs,de,rgb,oh,ov,od,out,
+osd_layer_renderer dut(clk,rst,enable,am,item,item,1'b1,hs,vs,de,rgb,oh,ov,od,out,
  cfg_valid,ready,cfg_show,cfg_x,cfg_y,cfg_alpha,cfg_shadow,1'b0,4'd2);
 reg [23:0] golden[0:307199];
 reg [26:0] queue0,queue1,queue2,expected;

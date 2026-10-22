@@ -3,7 +3,8 @@
 // before waveform/HDMI is unchanged. Configuration is video-clock local.
 module osd_layer_renderer #(parameter DEFAULT_STEP=2,
  parameter SCROLL_HEAD_FRAMES=45,parameter SCROLL_TAIL_FRAMES=45)(
- input clk,input rst,input enable,input auto_mode,input [1:0] item_index,
+ input clk,input rst,input enable,input auto_mode,input [6:0] item_index,
+ input [1:0] caption_index,input caption_enable,
  input hs_in,input vs_in,input de_in,input [23:0] rgb_in,
  output reg hs_out,output reg vs_out,output reg de_out,output reg [23:0] rgb_out,
  input cfg_valid,output cfg_ready,input cfg_show,input [9:0] cfg_x,input [9:0] cfg_y,
@@ -57,25 +58,26 @@ wire panel=rx<592 && ry<76;
 wire border=panel && (rx<2 || rx>=590 || ry<2 || ry>=74);
 wire title=rx>=16 && rx<272 && ry>=30 && ry<46;
 wire desc=rx>=16 && rx<576 && ry>=54 && ry<70;
-wire status_area=rx>=16 && rx<88 && ry>=8 && ry<22;
+ wire status_area=rx>=16 && rx<100 && ry>=8 && ry<22;
 wire [10:0] dx=rx-16;
 wire [10:0] dy=title ? ry-30 : ry-54;
 wire [6:0] length;
 wire [10:0] scroll_offset;
 wire [10:0] sx=dx+scroll_offset;
 wire [10:0] width={length,4'b0};
-osd_text_lengths lengths(.item_index(item_index),.description_length(length));
-osd_layer_scroll #(.HEAD_FRAMES(SCROLL_HEAD_FRAMES),.TAIL_FRAMES(SCROLL_TAIL_FRAMES)) scroll(.clk(clk),.rst(rst),.frame_tick(frame_tick),.enable(enable),
- .pause(scroll_pause),.step_frames(scroll_step),.item_index(item_index),.length(length),.offset(scroll_offset));
+osd_text_lengths lengths(.item_index(caption_index),.description_length(length));
+osd_layer_scroll #(.HEAD_FRAMES(SCROLL_HEAD_FRAMES),.TAIL_FRAMES(SCROLL_TAIL_FRAMES)) scroll(.clk(clk),.rst(rst),.frame_tick(frame_tick),.enable(enable && caption_enable),
+ .pause(scroll_pause),.step_frames(scroll_step),.item_index(caption_index),.length(length),.offset(scroll_offset));
 wire [6:0] address=title ? {3'b0,dx[7:4]} : ((sx<width) ? 7'd32+{1'b0,sx[9:4]} : 7'd32);
 wire [7:0] text_id;
 wire [15:0] glyph;
 reg [3:0] row1,col1,col2;
-osd_resources resources(.clk(clk),.text_addr({item_index,address}),.text_id(text_id),
+osd_resources resources(.clk(clk),.text_addr({caption_index,address}),.text_id(text_id),
  .glyph_addr({text_id,row1}),.glyph_row(glyph));
 wire [10:0] stx=rx-16,sty=ry-8;
 wire [2:0] stchar=stx/12,stcol=(stx/2)%6,strow=sty/2;
-reg [3:0] code;
+wire [6:0] ordinal=item_index+7'd1;
+reg [4:0] code;
 always @* begin
  case(stchar)
   0:code=auto_mode ? 2 : 0;
@@ -83,7 +85,8 @@ always @* begin
   2:code=auto_mode ? 5 : 2;
   3:code=auto_mode ? 6 : 3;
   4:code=15;
-  5:code=8+item_index;
+  5:code=16+ordinal/10;
+  6:code=16+ordinal%10;
   default:code=15;
  endcase
 end
@@ -105,8 +108,8 @@ function [7:0] blend;
   blend=s[9:2];
  end
 endfunction
-function [4:0] status_row;
-    input [3:0] glyph;
+ function [4:0] status_row;
+     input [4:0] glyph;
     input [2:0] row;
     begin
         case (glyph)
@@ -207,6 +210,16 @@ function [4:0] status_row;
                     default: status_row = 5'b00000;
                 endcase
             end
+            5'd16: status_row = (35'b01110100011001110101110011000101110 >> ((6-row)*5));
+            5'd17: status_row = (35'b00100011000010000100001000010001110 >> ((6-row)*5));
+            5'd18: status_row = (35'b01110100010000100010001000100011111 >> ((6-row)*5));
+            5'd19: status_row = (35'b11110000010000101110000010000111110 >> ((6-row)*5));
+            5'd20: status_row = (35'b10010100101001011111000100001000010 >> ((6-row)*5));
+            5'd21: status_row = (35'b11111100001000011110000010000111110 >> ((6-row)*5));
+            5'd22: status_row = (35'b01110100001000011110100011000101110 >> ((6-row)*5));
+            5'd23: status_row = (35'b11111000010001000100010000100001000 >> ((6-row)*5));
+            5'd24: status_row = (35'b01110100011000101110100011000101110 >> ((6-row)*5));
+            5'd25: status_row = (35'b01110100011000101111000010000101110 >> ((6-row)*5));
             default: status_row = 5'b00000;
         endcase
     end
@@ -240,10 +253,10 @@ always @(posedge clk or posedge rst) begin
   rgb1<=rgb_in;rgb2<=rgb1;
   sync1<={hs_in,vs_in,de_in};sync2<=sync1;sync3<=sync2;
   row1<=dy[3:0];col1<=title ? dx[3:0] : sx[3:0];col2<=col1;
-  title1<=title;title2<=title1;area1<=title || (desc && sx<width);area2<=area1;
+  title1<=title;title2<=title1;area1<=caption_enable && (title || (desc && sx<width));area2<=area1;
   status1<=status_pixel;status2<=status1;
   panel1<=panel;panel2<=panel1;border1<=border;border2<=border1;
-  clip1<=title || desc || status_area;clip2<=clip1;clip3<=clip2;
+  clip1<=(caption_enable && (title || desc)) || status_area;clip2<=clip1;clip3<=clip2;
   visible1<=enable && show;visible2<=visible1;
   shadow1<=shadow;shadow2<=shadow1;shadow3<=shadow2 && visible2;
   alpha1<=alpha;alpha2<=alpha1;

@@ -13,7 +13,9 @@ module frame_read_write
 	parameter FRAME_HEIGHT           = 480
 ) 
 (
-	input                            rst,                  
+	input                            rst,
+    input                            write_abort,
+    output                           write_abort_done,
 	input                            mem_clk,                    // external memory controller user interface clock
 	input							 Sdr_init_done,
 	input							 Sdr_init_ref_vld,
@@ -140,6 +142,8 @@ frame_fifo_write
 frame_fifo_write_m0              
 (  
 	.rst                        (rst                      ),
+    .abort_req                  (write_abort),
+    .abort_done                 (write_abort_done),
 	.mem_clk                    (mem_clk                  ),
     .Sdr_init_done				(Sdr_init_done),
 	.Sdr_init_ref_vld			(Sdr_init_ref_vld),

@@ -363,12 +363,44 @@
                     <Attr Name="CompileOrder" Val="82"/>
                 </FileInfo>
             </File>
-            <File Path="../user_source/hdl_source/team/osd_layer_renderer.v">
+            <File Path="../../tf_player/rtl/fat32_ro.sv">
                 <FileInfo>
                     <Attr Name="UsedInSyn" Val="true"/>
                     <Attr Name="UsedInP&amp;R" Val="true"/>
                     <Attr Name="BelongTo" Val="design_1"/>
                     <Attr Name="CompileOrder" Val="83"/>
+                </FileInfo>
+            </File>
+            <File Path="../../tf_player/rtl/sd_spi_reader.sv">
+                <FileInfo>
+                    <Attr Name="UsedInSyn" Val="true"/>
+                    <Attr Name="UsedInP&amp;R" Val="true"/>
+                    <Attr Name="BelongTo" Val="design_1"/>
+                    <Attr Name="CompileOrder" Val="84"/>
+                </FileInfo>
+            </File>
+            <File Path="../../tf_player/rtl/bmp_file_stream.sv">
+                <FileInfo>
+                    <Attr Name="UsedInSyn" Val="true"/>
+                    <Attr Name="UsedInP&amp;R" Val="true"/>
+                    <Attr Name="BelongTo" Val="design_1"/>
+                    <Attr Name="CompileOrder" Val="85"/>
+                </FileInfo>
+            </File>
+            <File Path="../../tf_player/rtl/tf_file_player.sv">
+                <FileInfo>
+                    <Attr Name="UsedInSyn" Val="true"/>
+                    <Attr Name="UsedInP&amp;R" Val="true"/>
+                    <Attr Name="BelongTo" Val="design_1"/>
+                    <Attr Name="CompileOrder" Val="86"/>
+                </FileInfo>
+            </File>
+            <File Path="../user_source/hdl_source/team/osd_layer_renderer.v">
+                <FileInfo>
+                    <Attr Name="UsedInSyn" Val="true"/>
+                    <Attr Name="UsedInP&amp;R" Val="true"/>
+                    <Attr Name="BelongTo" Val="design_1"/>
+                    <Attr Name="CompileOrder" Val="87"/>
                 </FileInfo>
             </File>
         </Verilog>

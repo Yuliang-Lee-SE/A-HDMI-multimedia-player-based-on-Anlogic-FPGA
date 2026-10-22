@@ -6,7 +6,7 @@ wire oh,ov,od,ready;wire [23:0] rgb;
 reg cv=0,show=1,shadow=1,pause=0;
 reg [9:0] x=24,y=380;reg [2:0] a=3;reg [3:0] step=2;
 integer errors=0,completed=0,n,saved;
-osd_layer_renderer dut(clk,rst,en,am,item,hs,vs,de,24'h123456,oh,ov,od,rgb,
+osd_layer_renderer dut(clk,rst,en,am,item,item,1'b1,hs,vs,de,24'h123456,oh,ov,od,rgb,
  cv,ready,show,x,y,a,shadow,pause,step);
 task frame;
 begin @(negedge clk);vs=1;@(negedge clk);vs=0;repeat(4)@(negedge clk);end

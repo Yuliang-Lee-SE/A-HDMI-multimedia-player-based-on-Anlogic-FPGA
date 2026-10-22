@@ -221,7 +221,9 @@ begin
 					state <= S_ACK;
 				end
 				//if the FIFO space is a burst read request, goto burst read state
-				else if(wrusedw < (FIFO_DEPTH - BURST_SIZE) && ~App_wr_busy)
+				// Waiting for controller idle also preserves the first row activation
+                // when switching from a write burst to a different read row.
+                else if(wrusedw < (FIFO_DEPTH - BURST_SIZE) && ~App_wr_busy && !Sdr_busy && !Sdr_init_ref_vld)
 				begin
 					state <= S_READ_BURST;
 					//rd_burst_len <= BURST_SIZE[BURST_BITS - 1:0];

@@ -19,7 +19,7 @@ frame_fifo_read #(.BURST_SIZE(256)) reader(
  .read_addr_index(bank),.read_len(21'd307200),.fifo_aclr(),.wrusedw(9'd0));
 wire caption_hs,caption_vs,caption_de;wire [23:0] caption_rgb;
 osd_layer_renderer #(.DEFAULT_STEP(1),.SCROLL_HEAD_FRAMES(0),.SCROLL_TAIL_FRAMES(0)) captions(
- video_clk,rst,valid,1'b0,item,hs,vs,de,24'h123456,caption_hs,caption_vs,caption_de,caption_rgb,
+ video_clk,rst,valid,1'b0,item,item[1:0],1'b1,hs,vs,de,24'h123456,caption_hs,caption_vs,caption_de,caption_rgb,
  1'b0,,1'b1,10'd24,10'd380,3'd3,1'b1,1'b0,4'd1);
 reg prev_req=0,prev_de=0,prev_ack=0;
 reg [1:0] old_bank=0,old_item=0;

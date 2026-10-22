@@ -35,6 +35,10 @@ foreach ($folder in @('osd_assets','tools')) {
         $inputFiles += @(Get-ChildItem -LiteralPath $extra -File | Where-Object {$_.Extension -in @('.py','.json','.png','.gif')})
     }
 }
+foreach ($folder in @('tf_player/rtl','tf_player/tools','fat32_offline/rtl')) {
+    $extra = Join-Path $labDir $folder
+    $inputFiles += @(Get-ChildItem -LiteralPath $extra -File)
+}
 $inputFiles += @(Get-Item -LiteralPath $PSCommandPath)
 $inputFiles += @(Get-Item -LiteralPath (Join-Path $labDir 'run_verified_project_build.ps1'))
 $hashes = @($inputFiles | Sort-Object FullName -Unique | ForEach-Object {

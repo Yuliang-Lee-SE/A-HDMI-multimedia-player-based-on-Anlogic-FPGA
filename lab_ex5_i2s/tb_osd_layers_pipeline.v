@@ -5,7 +5,7 @@ reg rst=1,hs=0,vs=0,de=0,av=0;reg [23:0] rgb=0,sample=0;
 reg cv=0,shadow=0;reg [2:0] alpha=4;
 wire ready,ph,pv,pd,sh,sv,sd,ch,ccv,cd,ah,asv,ad,bh,bv,bd;
 wire [23:0] pr,sr,cr,ar,br;
-osd_layer_renderer layers(clk,rst,1'b1,1'b0,2'd0,hs,vs,de,rgb,ph,pv,pd,pr,
+osd_layer_renderer layers(clk,rst,1'b1,1'b0,7'd0,2'd0,1'b1,hs,vs,de,rgb,ph,pv,pd,pr,
  cv,ready,1'b1,10'd24,10'd380,alpha,shadow,1'b0,4'd2);
 osd_overlay #(.TEXT_Y_REL(8)) status(clk,rst,1'b1,1'b0,2'd0,hs,vs,de,rgb,sh,sv,sd,sr);
 osd_text_renderer captions(clk,rst,1'b1,2'd0,sh,sv,sd,sr,ch,ccv,cd,cr,1'b0);

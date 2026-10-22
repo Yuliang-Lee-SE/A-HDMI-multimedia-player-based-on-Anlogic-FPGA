@@ -4,6 +4,7 @@
 // Counts active pixels from DE and overlays a bordered information panel.
 // RGB and timing outputs all have the same one-clock latency.
 module osd_overlay #(
+    parameter TWO_DIGIT=0,
     parameter H_ACTIVE     = 640,
     parameter V_ACTIVE     = 480,
     parameter OSD_X        = 24,
@@ -23,7 +24,7 @@ module osd_overlay #(
     input             rst,
     input             enable,
     input             auto_mode,
-    input      [1:0]  item_index,
+    input      [6:0]  item_index,
     input             hs_in,
     input             vs_in,
     input             de_in,
@@ -47,7 +48,8 @@ wire [11:0] text_dy;
 wire [2:0]  text_glyph;
 wire [2:0]  text_col;
 wire [2:0]  text_row;
-reg  [3:0]  glyph_code;
+reg  [4:0]  glyph_code;
+wire [6:0] ordinal=item_index+7'd1;
 wire [4:0]  text_row_bits;
 wire        text_pixel;
 
@@ -63,7 +65,7 @@ assign in_border = in_panel &&
 // Dynamic status text: "PLAY 1".."PLAY 4" or "AUTO 1".."AUTO 4".
 assign in_text_area = TEXT_ENABLE &&
                       (x >= OSD_X + TEXT_X_REL) &&
-                      (x <  OSD_X + TEXT_X_REL + 36 * TEXT_SCALE) &&
+                      (x <  OSD_X + TEXT_X_REL + (TWO_DIGIT ? 42:36) * TEXT_SCALE) &&
                       (y >= OSD_Y + TEXT_Y_REL) &&
                       (y <  OSD_Y + TEXT_Y_REL + 7 * TEXT_SCALE);
 assign text_dx    = x - (OSD_X + TEXT_X_REL);
@@ -72,7 +74,7 @@ assign text_glyph = text_dx / (6 * TEXT_SCALE);
 assign text_col   = (text_dx / TEXT_SCALE) % 6;
 assign text_row   = text_dy / TEXT_SCALE;
 assign text_row_bits = glyph_row(glyph_code, text_row);
-assign text_pixel = in_text_area && (text_glyph < 6) &&
+assign text_pixel = in_text_area && (text_glyph < (TWO_DIGIT ? 7:6)) &&
                     (text_col < 5) && text_row_bits[4-text_col];
 
 always @(*) begin
@@ -82,13 +84,14 @@ always @(*) begin
         2: glyph_code = auto_mode ? 4'd5 : 4'd2; // T or A
         3: glyph_code = auto_mode ? 4'd6 : 4'd3; // O or Y
         4: glyph_code = 4'd15;                   // space
-        5: glyph_code = 4'd8 + item_index;       // digits 1..4
+        5: glyph_code = TWO_DIGIT ? 5'd16+ordinal/10 : 5'd8 + item_index;
+        6: glyph_code = TWO_DIGIT ? 5'd16+ordinal%10 : 5'd15;       // digits 1..4
         default: glyph_code = 4'd15;
     endcase
 end
 
 function [4:0] glyph_row;
-    input [3:0] glyph;
+    input [4:0] glyph;
     input [2:0] row;
     begin
         case (glyph)
@@ -189,6 +192,16 @@ function [4:0] glyph_row;
                     default: glyph_row = 5'b00000;
                 endcase
             end
+            5'd16: glyph_row = (35'b01110100011001110101110011000101110 >> ((6-row)*5));
+            5'd17: glyph_row = (35'b00100011000010000100001000010001110 >> ((6-row)*5));
+            5'd18: glyph_row = (35'b01110100010000100010001000100011111 >> ((6-row)*5));
+            5'd19: glyph_row = (35'b11110000010000101110000010000111110 >> ((6-row)*5));
+            5'd20: glyph_row = (35'b10010100101001011111000100001000010 >> ((6-row)*5));
+            5'd21: glyph_row = (35'b11111100001000011110000010000111110 >> ((6-row)*5));
+            5'd22: glyph_row = (35'b01110100001000011110100011000101110 >> ((6-row)*5));
+            5'd23: glyph_row = (35'b11111000010001000100010000100001000 >> ((6-row)*5));
+            5'd24: glyph_row = (35'b01110100011000101110100011000101110 >> ((6-row)*5));
+            5'd25: glyph_row = (35'b01110100011000101111000010000101110 >> ((6-row)*5));
             default: glyph_row = 5'b00000;
         endcase
     end
