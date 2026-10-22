@@ -1,0 +1,106 @@
+{
+  "status": "PASS_FOR_LOCAL_CANDIDATE_BOARD_PENDING",
+  "tests": {
+    "crc_fields01": {
+      "passed": true,
+      "result_sha256": "466d5c2e5e8a9e1e597ad61d79fb6fee9bc264bc09e51619d50849d4e2907bf4",
+      "count": 34
+    },
+    "crc_diag01": {
+      "passed": true,
+      "result_sha256": "84cd41c56448df9553d7ce8d848dbeac58ebbcd6f7dc25c3680ec3d9a0a28615",
+      "count": 12
+    },
+    "crc_spi01": {
+      "passed": true,
+      "result_sha256": "9390f0d1aa6207469fa2da77d95f8b3e65d5dae58786776c2cd0837b71385781",
+      "count": null
+    },
+    "crc_capacity01": {
+      "passed": true,
+      "result_sha256": "df214071d6d969d1403c8cfc4b05c5304a2852f7b6207b2b6251b2cf0b6e7bd5",
+      "count": 10
+    },
+    "crc_short01": {
+      "passed": true,
+      "result_sha256": "469e02b5d6065b6980247da5e34ca990c3e1ecc5787e64f8b0600ab31e518ab9",
+      "count": 8
+    },
+    "crc_ids01": {
+      "passed": true,
+      "result_sha256": "de8cf86f5332b60a7eaf69797df5b7e28e73f12cff0bd684bd391208063a75b2",
+      "count": 1
+    },
+    "cmd8_captions01": {
+      "passed": true,
+      "result_sha256": "18b8514c2a7b449df6bf0b475d36981adc1381ed0f844e92e54139fcd88f3400",
+      "count": null,
+      "scope": "Referenced prior golden-caption test with all actual inputs unchanged."
+    },
+    "unchanged_references": {
+      "audit_sha256": "0295af71cfe723f89b71e2603404c353a81f98f4a0105bcf96e91c0b0fe9a59b",
+      "referenced": [
+        "stage3_storage_v12",
+        "stage3_cancel_v12",
+        "stage3_canvas_final15b",
+        "tf_player/runs/stage3_offline_final15"
+      ]
+    },
+    "crc_reset01": {
+      "passed": true,
+      "result_sha256": "80bb7526007549176a953dbff97f80c027110128faf495c3279696bd1e52ee71",
+      "count": null
+    },
+    "crc_topdiag01": {
+      "passed": true,
+      "result_sha256": "fa5b82fb6cf410efb77f73c70a41d3dc9e05b824e151a2552ae7d1c46b451f6c",
+      "count": null
+    },
+    "crc_negotiation_final01": {
+      "passed": true,
+      "result_sha256": "8922031a806d727bb01067c6d2e29b20e356932d5ce783fd925f217a9b8ddbc3",
+      "count": 16
+    },
+    "crc_mapped01": {
+      "passed": true,
+      "result_sha256": "6790e8c2cd72b4b6b5c9dc86b42a3cd05d04e71bc2808a3e855835f82d397c08",
+      "count": 1
+    },
+    "crc_rgb_negative01": {
+      "expected_failure": true,
+      "result_sha256": "4a0728f4da6c13f2873b3dd7f89506133d7d3939f86190497f18fbbe6b62395f",
+      "derived_audio_hex_sha256": "a72ec1cb24b15897bc3ec9c64c8f4ab3814d2f662122180833e26abf5e5b5c93"
+    },
+    "crc_player01": {
+      "passed": true,
+      "result_sha256": "a0b5ddce1735341cfbdbf78286ef3ed941d745d30a19b53b993376994bfb8c5e",
+      "count": null
+    },
+    "crc_rgb01": {
+      "passed": true,
+      "result_sha256": "281e8665f2090fa94c6749ef981212b96b940f27f11a062f3392414a04afbb8c",
+      "count": null,
+      "derived_audio_hex_sha256": "a72ec1cb24b15897bc3ec9c64c8f4ab3814d2f662122180833e26abf5e5b5c93"
+    }
+  },
+  "limits": [
+    "CRC-mode negotiation repair candidate only; actual card CSD/CRC payload unknown, physical cause unconfirmed, new board result pending.",
+    "Model fault injections and exact-reference lockstep do not prove the physical card, SPI electrical timing, HDMI, audio or board.",
+    "Only CMD59 phase-8 negotiation added since 214abad. New one-scale full-frame regression; old multi-scale SD end-to-end not reused. Scope audit is not formal proof.",
+    "No 64-file hardware build, no physical card operation, programming, Flash or power-cycle validation."
+  ],
+  "functional_scope_sha256": "90b2ebc43a51dccbd0a7c33ce871ba641aeb0c6738ee2066fd0ac31988ce593c",
+  "cdc_review": "Held diagnostic payload; two-flop held-valid synchronization plus two scan clocks before capture. Only status digits consume payload; no protocol/frame feedback. Original clock groups and FIFO constraints retained.",
+  "warning_counts": {
+    "HDL-5007": 8,
+    "HDL-5314": 2,
+    "HDL-5317": 3,
+    "HDL-5001": 2,
+    "SYN-5013": 2,
+    "SYN-5025": 3,
+    "SYN-5011": 12,
+    "SYN-6577": 1,
+    "SYN-6562": 10,
+    "PHY-7002": 2
+  }
+}
