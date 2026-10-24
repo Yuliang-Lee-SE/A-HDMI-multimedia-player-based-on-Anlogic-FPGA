@@ -82,6 +82,12 @@ wire        wav_hs;
 wire        wav_vs;
 wire        wav_de;
 
+// 角色 C：音量/静音提示层（串在 waveform_overlay 之后）
+wire [23:0] aud_rgb;
+wire        aud_hs;
+wire        aud_vs;
+wire        aud_de;
+
 wire [3:0]  state_code;
 wire [19:0] tf_init_diagnostic;
 wire [6:0]  seg_data_0;
@@ -129,6 +135,9 @@ wire [19:0] acr_n;
 // 角色 C：片内 ROM 语音通路（音频段索引/换段从 sd_card_clk 域传过来）
 wire        audio_track_toggle;
 wire [1:0]  audio_track_idx;
+wire        audio_vol_long;      // KEY3 长按（sd_card_clk 域）
+wire [2:0]  audio_vol_level;     // 0=静音,1=25%,2=50%,3=75%,4=100%
+wire        audio_vol_toggle;    // 每次音量变化翻转
 wire [7:0]  audio_rom_data;
 wire [15:0] audio_rom_addr;
 
@@ -250,6 +259,7 @@ tf_file_player #(.MAX_FILES(TF_MAX_FILES)) sd_card_bmp_m0(
     // 音画联动：当前图号 + 换段脉冲（音频域内部自己同步）
     .audio_track_idx   (audio_track_idx),
     .audio_track_toggle(audio_track_toggle),
+    .audio_vol_long    (audio_vol_long),
 
     .write_finish_toggle(frame_write_toggle_mem),
     .write_buf_idx     (write_buf_idx),
@@ -263,6 +273,15 @@ tf_file_player #(.MAX_FILES(TF_MAX_FILES)) sd_card_bmp_m0(
     .SD_DCLK           (sd_dclk),
     .SD_MOSI           (sd_mosi),
     .SD_MISO           (sd_miso)
+);
+
+// 角色 C：音量/静音状态（KEY3 长按，sd_card_clk 域）
+audio_control u_audio_control (
+    .clk        (sd_card_clk),
+    .rst        (rst_tf),
+    .step_press (audio_vol_long),
+    .level      (audio_vol_level),
+    .toggle     (audio_vol_toggle)
 );
 
 // Frozen failure payload crossing: synchronize its held-valid indication,
@@ -388,6 +407,26 @@ waveform_overlay #(
     .rgb_out      (wav_rgb)
 );
 
+// 角色 C：右侧音量条（比较器实现，无 BRAM、无静音图标）
+audio_osd #(
+    .BAR_X  (624),
+    .BAR_TOP(240)
+) u_audio_osd (
+    .clk        (video_clk),
+    .rst        (rst_all),
+    .enable     (video_display_valid),
+    .vol_level  (audio_vol_level),
+    .vol_toggle (audio_vol_toggle),
+    .hs_in      (wav_hs),
+    .vs_in      (wav_vs),
+    .de_in      (wav_de),
+    .rgb_in     (wav_rgb),
+    .hs_out     (aud_hs),
+    .vs_out     (aud_vs),
+    .de_out     (aud_de),
+    .rgb_out    (aud_rgb)
+);
+
 frame_read_write #(
     .WRITE_V_FLIP     (1),
     .FRAME_WIDTH      (640),
@@ -479,6 +518,7 @@ audio_rom_player #(
     .I_rst           (rst_all),
     .I_track_idx     (audio_track_idx),
     .I_enabled(audio_enabled),
+    .I_vol_level     (audio_vol_level),
     .I_track_toggle  (audio_track_toggle),
     .I_rom_data      (audio_rom_data),
     .O_rom_addr      (audio_rom_addr),
@@ -513,9 +553,9 @@ audio_arc_calculate #(
 video_rgb_to_axis_640x480 u_video_rgb_to_axis_640x480(
     .I_clk         (video_clk),
     .I_rst         (rst_all),
-    .I_vs          (wav_vs),
-    .I_de          (wav_de),
-    .I_rgb         (wav_rgb),
+    .I_vs          (aud_vs),
+    .I_de          (aud_de),
+    .I_rgb         (aud_rgb),
     .O_video_user  (axis_s_user),
     .O_video_valid (axis_s_valid),
     .O_video_last  (axis_s_last),

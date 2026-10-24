@@ -2,6 +2,7 @@
 module tf_file_player #(
  parameter integer CLK_FREQ_HZ=100000000,MAX_FILES=32,MAX_CHAIN=2048,
  parameter integer DEBOUNCE_MS=20,AUTO_INTERVAL_MS=3000,
+ parameter integer VOLUME_LONG_MS=1200,
  parameter integer IO_TIMEOUT=CLK_FREQ_HZ*3,STALL_TIMEOUT=CLK_FREQ_HZ/2,
  parameter integer SLOT_W=$clog2(MAX_FILES),COUNT_W=$clog2(MAX_FILES+1)
 )(input clk,rst,input key_next,key_auto,key_zoom,
@@ -11,7 +12,7 @@ module tf_file_player #(
  output reg display_valid,display_commit_toggle,input display_commit_ack,
  output reg [13:0] display_asset,output reg [6:0] display_ordinal,
  output wire osd_auto_mode,output reg [1:0] audio_track_idx,
- output reg audio_track_toggle,audio_enabled,
+ output reg audio_track_toggle,audio_enabled,output wire audio_vol_long,
  output wire [3:0] state_code,
  output wire [19:0] init_diagnostic,
  output SD_nCS,SD_DCLK,SD_MOSI,input SD_MISO);
@@ -76,7 +77,10 @@ module tf_file_player #(
  .out_last(),.out_frame_last(),.source_done(zsource),.output_done(zdone),.overflow(zoverflow));
  key_press_debounce #(.CLK_FREQ_HZ(CLK_FREQ_HZ),.DEBOUNCE_MS(DEBOUNCE_MS)) kn(clk,rst,key_next,next_press);
  key_press_debounce #(.CLK_FREQ_HZ(CLK_FREQ_HZ),.DEBOUNCE_MS(DEBOUNCE_MS)) ka(clk,rst,key_auto,auto_press);
- key_press_debounce #(.CLK_FREQ_HZ(CLK_FREQ_HZ),.DEBOUNCE_MS(DEBOUNCE_MS)) kz(clk,rst,key_zoom,zoom_press);
+ // KEY3 short press keeps the zoom cycle; a 1.2 s hold becomes volume step.
+ key_short_long #(.CLK_FREQ_HZ(CLK_FREQ_HZ),.DEBOUNCE_MS(DEBOUNCE_MS),
+  .LONG_MS(VOLUME_LONG_MS)) kz(.clk(clk),.rst(rst),.button_in(key_zoom),
+  .short_pulse(zoom_press),.long_pulse(audio_vol_long));
  // Explicit four-resource mapping. No ID truncation or modulo mapping.
  function automatic mapped(input [13:0] id);begin mapped=(id==1 || id==2 || id==3 || id==4);end endfunction
  function automatic [1:0] track(input [13:0] id);
