@@ -8,13 +8,15 @@
 //======================================================================
 `timescale 1ns/1ps
 module sdram_model #(
-  parameter MEM_WORDS = 8192          // 够放测试帧即可（真机 2M 字）
+  parameter MEM_WORDS = 8192,         // 够放测试帧即可（真机 2M 字）
+  parameter READ_LATENCY = 1          // 真控制器默认模型取 10 拍
 )(
   input  wire        Clk,
   input  wire        Clk_sft,
   input  wire        Rst,
   output reg         Sdr_init_done,
   output reg         Sdr_init_ref_vld,
+  output reg         Sdr_busy,
   input  wire        App_wr_en,
   input  wire [20:0] App_wr_addr,
   input  wire [3:0]  App_wr_dm,
@@ -25,12 +27,11 @@ module sdram_model #(
   output reg  [31:0] Sdr_rd_dout
 );
   reg [31:0] mem [0:MEM_WORDS-1];
-  integer i;
 
   initial begin
-    for (i = 0; i < MEM_WORDS; i = i + 1) mem[i] = 32'h0000_0000;
     Sdr_init_done    = 1'b0;
     Sdr_init_ref_vld = 1'b0;
+    Sdr_busy         = 1'b0;
     Sdr_rd_en        = 1'b0;
     Sdr_rd_dout      = 32'h0;
   end
@@ -56,16 +57,31 @@ module sdram_model #(
 
   // 写
   always @(posedge Clk)
-    if (App_wr_en && !App_wr_dm[0]) mem[App_wr_addr[12:0]] <= App_wr_din;
+    if (App_wr_en && !App_wr_dm[0]) mem[App_wr_addr] <= App_wr_din;
 
-  // 读（1 拍后返回）
+  // 读流水线：每个 App_rd_en 锁存地址对应数据，经过 READ_LATENCY 拍返回。
+  // Sdr_busy 在最后一批响应离队前保持高，覆盖控制器真实的流水尾延迟。
+  reg [31:0] rd_data_pipe [0:15];
+  reg [15:0] rd_valid_pipe;
+  integer pipe_i;
   always @(posedge Clk or posedge Rst) begin
     if (Rst) begin
       Sdr_rd_en   <= 1'b0;
       Sdr_rd_dout <= 32'h0;
+      Sdr_busy    <= 1'b0;
+      rd_valid_pipe <= 16'd0;
+      for (pipe_i = 0; pipe_i < 16; pipe_i = pipe_i + 1)
+        rd_data_pipe[pipe_i] <= 32'd0;
     end else begin
-      Sdr_rd_en   <= App_rd_en;
-      Sdr_rd_dout <= App_rd_en ? mem[App_rd_addr[12:0]] : Sdr_rd_dout;
+      rd_data_pipe[0]  <= App_rd_en ? mem[App_rd_addr] : 32'd0;
+      rd_valid_pipe[0] <= App_rd_en;
+      for (pipe_i = 1; pipe_i < 16; pipe_i = pipe_i + 1) begin
+        rd_data_pipe[pipe_i]  <= rd_data_pipe[pipe_i-1];
+        rd_valid_pipe[pipe_i] <= rd_valid_pipe[pipe_i-1];
+      end
+      Sdr_rd_en   <= rd_valid_pipe[READ_LATENCY-1];
+      Sdr_rd_dout <= rd_data_pipe[READ_LATENCY-1];
+      Sdr_busy    <= App_rd_en || (|rd_valid_pipe);
     end
   end
 

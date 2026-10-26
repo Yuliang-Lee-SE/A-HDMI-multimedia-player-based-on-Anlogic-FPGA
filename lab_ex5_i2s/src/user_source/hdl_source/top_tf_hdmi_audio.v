@@ -30,6 +30,8 @@ parameter MEM_DATA_BITS = 32;
 parameter TF_MAX_FILES = 32; // Verified configurations: 16, 32, 64.
 parameter ADDR_BITS     = 21;
 parameter BUSRT_BITS    = 10;
+// Diagnostic switch: force the normal single-bank path without transitions.
+parameter integer DIAG_BYPASS_TRANSITION = 0;
 parameter [ADDR_BITS-1:0] FRAME_PIXELS = 307200;   // 640*480，与 frame_read_write 的地址端口同宽
 parameter [ADDR_BITS-1:0] BUF0_ADDR    = 0;
 parameter [ADDR_BITS-1:0] BUF1_ADDR    = FRAME_PIXELS;
@@ -63,11 +65,12 @@ reg         osd_auto_sync0;
 reg         osd_auto_sync1;
 reg         osd_auto_frame;
 wire        display_valid;
-wire display_commit_toggle, display_commit_ack, video_display_valid;
-wire [1:0] video_bank;
-wire [20:0] video_item;
-wire [13:0] video_asset=video_item[13:0];
-wire [6:0] video_ordinal=video_item[20:14];
+wire display_commit_toggle, display_commit_ack;
+wire [20:0] shown_video_item;
+wire [20:0] active_display_item;
+wire        active_display_valid;
+wire [13:0] video_asset=active_display_item[13:0];
+wire [6:0] video_ordinal=active_display_item[20:14];
 wire caption_valid=(video_asset==1 || video_asset==2 || video_asset==3 || video_asset==4);
 wire [1:0] caption_index=(video_asset==1) ? 2'd0 :
                           (video_asset==2) ? 2'd1 :
@@ -94,8 +97,41 @@ wire [6:0]  seg_data_0;
 
 wire        video_read_req;
 wire        video_read_req_ack;
+wire [31:0] video_read_data_a;
+wire [31:0] video_read_data_b;
+wire        video_read_empty_a;
+wire        video_read_empty_b;
+
+wire        committed_video_valid;
+wire [1:0]  committed_video_bank;
+wire [20:0] committed_video_item;
+wire        bridge_ack_toggle;
+
+wire [1:0]  source_bank_a;
+wire [1:0]  source_bank_b;
+wire        source_read_dual;
+wire        transition_active;
+wire [8:0]  transition_progress;
+wire        video_display_valid;
+wire        owner_release_toggle;
+wire        transition_busy;
+wire        sd_card_write_ready_owner;
+wire        active_read_dual = DIAG_BYPASS_TRANSITION ? 1'b0 : source_read_dual;
+wire        active_transition_busy =
+            DIAG_BYPASS_TRANSITION ? 1'b0 : transition_busy;
+wire        use_committed_bank =
+            DIAG_BYPASS_TRANSITION || !transition_active;
+assign active_display_valid =
+       DIAG_BYPASS_TRANSITION ? committed_video_valid : video_display_valid;
+assign active_display_item =
+       DIAG_BYPASS_TRANSITION ? committed_video_item : shown_video_item;
+
 wire        video_read_en;
-wire [31:0] video_read_data;
+wire        display_read_en;
+wire        display_hs;
+wire        display_vs;
+wire        display_de;
+wire [23:0] display_rgb;
 
 wire        sd_card_write_en;
 wire [31:0] sd_card_write_data;
@@ -239,6 +275,17 @@ always @(posedge ext_mem_clk or posedge rst_all) begin
         frame_write_toggle_mem <= ~frame_write_toggle_mem;
 end
 
+// Keep the board-proven main commit ACK path, but block new frame writes while
+// both ping-pong banks are owned by an active A/B transition.
+(* async_reg = "true" *) reg [2:0] transition_busy_sync;
+always @(posedge sd_card_clk or posedge rst_tf) begin
+    if (rst_tf)
+        transition_busy_sync <= 3'b000;
+    else
+        transition_busy_sync <= {transition_busy_sync[1:0],active_transition_busy};
+end
+assign sd_card_write_ready_owner = sd_card_write_ready && !transition_busy_sync[2];
+
 // ===================== TF 多图扫描与缓存（双缓冲） =====================
 tf_file_player #(.MAX_FILES(TF_MAX_FILES)) sd_card_bmp_m0(
     .clk               (sd_card_clk),
@@ -246,7 +293,7 @@ tf_file_player #(.MAX_FILES(TF_MAX_FILES)) sd_card_bmp_m0(
     .key_next          (key1),
     .key_auto          (key2),
     .key_zoom          (key3),
-    .write_ready       (sd_card_write_ready),
+    .write_ready       (sd_card_write_ready_owner),
     .state_code        (state_code),
     .init_diagnostic   (tf_init_diagnostic),
     .display_valid     (display_valid),
@@ -337,29 +384,61 @@ video_timing_data video_timing_data_m0(
     .de                (de_0)
 );
 
-video_delay video_delay_m0(
-    .video_clk         (video_clk),
-    .rst               (rst_all),
-    .read_en           (video_read_en),
-    .read_data         (video_read_data[31:8]),
-    .hs                (hs_0),
-    .vs                (vs_0),
-    .de                (de_0),
-    .hs_r              (hs),
-    .vs_r              (vs),
-    .de_r              (de),
-    .vout_data         (vout_data_raw)
+transition_frame_owner #(
+    .TRANSITION_FRAMES (30)
+) u_transition_owner (
+    .clk                  (video_clk),
+    .rst                  (rst_all),
+    .frame_request        (memory_read_req),
+    .committed_valid      (committed_video_valid),
+    .committed_bank       (committed_video_bank),
+    .committed_item       (committed_video_item),
+    .source_commit_toggle (display_commit_toggle),
+    .source_bank_a        (source_bank_a),
+    .source_bank_b        (source_bank_b),
+    .read_dual            (source_read_dual),
+    .transition_active    (transition_active),
+    .transition_progress  (transition_progress),
+    .display_valid        (video_display_valid),
+    .display_item         (shown_video_item),
+    .release_toggle       (owner_release_toggle),
+    .transition_busy      (transition_busy)
 );
 
+video_delay u_video_delay (
+    .video_clk   (video_clk),
+    .rst         (rst_all),
+    .read_en     (display_read_en),
+    .read_data   (video_read_data_a[31:8]),
+    .hs          (hs_0),
+    .vs          (vs_0),
+    .de          (de_0),
+    .hs_r        (display_hs),
+    .vs_r        (display_vs),
+    .de_r        (display_de),
+    .vout_data   (display_rgb)
+);
+
+assign video_read_en = display_read_en;
+
+assign hs = display_hs;
+assign vs = display_vs;
+assign de = display_de;
+assign vout_data_raw = display_rgb;
+
 // 首图提交前黑屏；提交后一直显示当前显示缓冲区内容
-assign vout_data = video_display_valid ? vout_data_raw : 24'd0;
+assign vout_data = active_display_valid ? vout_data_raw : 24'd0;
 
 osd_display_commit #(.ITEM_W(21)) u_display_commit(
     .clk(video_clk),.rst(rst_all),.src_toggle(display_commit_toggle),
     .src_bank(disp_buf_idx),.src_item({display_ordinal_sd,display_asset_sd}),.src_valid(display_valid),
     .frame_read_req(video_read_req),.mem_read_ack(video_read_req_ack),
-    .read_req(memory_read_req),.ack_toggle(display_commit_ack),
-    .bank(video_bank),.item(video_item),.valid(video_display_valid));
+    .read_req(memory_read_req),.ack_toggle(bridge_ack_toggle),
+    .bank(committed_video_bank),.item(committed_video_item),.valid(committed_video_valid));
+
+// The source may reuse a ping-pong bank only after the owner has completed the
+// current frame or slide. The bridge ACK only confirms video-side capture.
+assign display_commit_ack = owner_release_toggle;
 
 // Status changes slowly in the 100 MHz SD domain; synchronize them before
 // using them in the 25 MHz video-pixel domain.
@@ -376,7 +455,7 @@ always @(posedge video_clk or posedge rst_all) begin
 end
 
 osd_layer_renderer u_osd_layers(
-    .clk(video_clk),.rst(rst_all),.enable(video_display_valid),
+    .clk(video_clk),.rst(rst_all),.enable(active_display_valid),
     .auto_mode(osd_auto_frame),.item_index(video_ordinal-7'd1),
     .caption_index(caption_index),.caption_enable(caption_valid),
     .hs_in(hs),.vs_in(vs),.de_in(de),.rgb_in(vout_data),
@@ -394,7 +473,7 @@ waveform_overlay #(
 ) u_waveform_overlay (
     .clk          (video_clk),
     .rst          (rst_all),
-    .enable       (video_display_valid),
+    .enable       (active_display_valid),
     .audio_valid  (audio_valid),
     .audio_sample (audio_left_data),
     .hs_in        (caption_hs),
@@ -414,7 +493,7 @@ audio_osd #(
 ) u_audio_osd (
     .clk        (video_clk),
     .rst        (rst_all),
-    .enable     (video_display_valid),
+    .enable     (active_display_valid),
     .vol_level  (audio_vol_level),
     .vol_toggle (audio_vol_toggle),
     .hs_in      (wav_hs),
@@ -427,7 +506,7 @@ audio_osd #(
     .rgb_out    (aud_rgb)
 );
 
-frame_read_write #(
+frame_read_write_dual #(
     .WRITE_V_FLIP     (1),
     .FRAME_WIDTH      (640),
     .FRAME_HEIGHT     (480)
@@ -448,14 +527,21 @@ frame_read_write #(
     .read_req          (memory_read_req),
     .read_req_ack      (video_read_req_ack),
     .read_finish       (),
-    .read_addr_0       (BUF0_ADDR),
-    .read_addr_1       (BUF1_ADDR),
-    .read_addr_2       ({ADDR_BITS{1'b0}}),
-    .read_addr_3       ({ADDR_BITS{1'b0}}),
-    .read_addr_index   (video_bank),
+    .read_dual         (active_read_dual),
+    .read_progress     (transition_progress),
+    .read_addr_a       (use_committed_bank ?
+                        (committed_video_bank == 0 ? BUF0_ADDR : BUF1_ADDR) :
+                        (source_bank_a ? BUF1_ADDR : BUF0_ADDR)),
+    .read_addr_b       (use_committed_bank ?
+                        (committed_video_bank == 0 ? BUF0_ADDR : BUF1_ADDR) :
+                        (source_bank_b ? BUF1_ADDR : BUF0_ADDR)),
     .read_len          (FRAME_PIXELS),
-    .read_en           (video_read_en),
-    .read_data         (video_read_data),
+    .read_en_a         (video_read_en),
+    .read_en_b         (1'b0),
+    .read_data_a       (video_read_data_a),
+    .read_data_b       (video_read_data_b),
+    .read_empty_a      (video_read_empty_a),
+    .read_empty_b      (video_read_empty_b),
 
     .App_wr_en         (App_wr_en),
     .App_wr_addr       (App_wr_addr),

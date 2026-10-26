@@ -106,6 +106,17 @@ set_false_path -from [get_clocks {clk}] -to [get_clocks {video_clk}]
 set_false_path -from [get_clocks {clk}] -to [get_clocks {audio_mclk}]
 set_false_path -from [get_clocks {clk}] -to [get_clocks {hdmi_5x_clk}]
 
+# Transition metadata is a bundled-data CDC. The video-side bank/item bundle
+# is held across multiple frame periods and is captured only after req_sync[2]
+# in frame_read_dual_scheduler. The source side likewise synchronizes the
+# commit/owner toggles before consuming metadata. These clock pairs therefore
+# contain no direct same-edge register path, and must not be treated as
+# synchronous hold targets by the post-route hold fixer.
+set_false_path -from [get_clocks {video_clk}] -to [get_clocks {ext_mem_clk}]
+set_false_path -from [get_clocks {ext_mem_clk}] -to [get_clocks {video_clk}]
+set_false_path -from [get_clocks {video_clk}] -to [get_clocks {sd_card_clk}]
+set_false_path -from [get_clocks {sd_card_clk}] -to [get_clocks {video_clk}]
+
 # ------------------------------------------------------------
 # 6. 可选：如果你的 frame_read_write 内部异步 FIFO 已经完全处理好了跨域，
 #    且报告里总出现 video_clk / sd_card_clk / ext_mem_clk 之间的大量伪违例，
