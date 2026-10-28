@@ -61,6 +61,8 @@ module tb_transition_v2_e2e;
     reg commit_ack_toggle = 1'b0;
     wire [1:0] source_bank_a, source_bank_b;
     wire source_dual;
+    wire transition_blinds;
+    wire transition_fade;
     wire transition_active;
     wire [8:0] transition_progress;
     wire shown_valid;
@@ -74,6 +76,8 @@ module tb_transition_v2_e2e;
     integer frame_number = 0;
     integer transition_snapshot = 0;
     integer progress_snapshot = 0;
+    integer blinds_snapshot = 0;
+    integer fade_snapshot = 0;
     reg [23:0] expected_rgb;
 
     frame_read_write_dual #(
@@ -95,6 +99,8 @@ module tb_transition_v2_e2e;
         .read_clk           (vclk),
         .read_req           (frame_request),
         .read_dual          (frame_dual),
+        .read_blinds        (transition_blinds),
+        .read_fade          (transition_fade),
         .read_progress      (transition_progress),
         .read_req_ack       (frame_request_ack),
         .read_finish        (frame_read_finish),
@@ -168,6 +174,8 @@ module tb_transition_v2_e2e;
         .source_bank_a       (source_bank_a),
         .source_bank_b       (source_bank_b),
         .read_dual           (source_dual),
+        .transition_blinds   (transition_blinds),
+        .transition_fade     (transition_fade),
         .transition_active   (transition_active),
         .transition_progress (transition_progress),
         .display_valid       (shown_valid),
@@ -188,6 +196,9 @@ module tb_transition_v2_e2e;
             case (frame)
                 0: file_pixel = {8'h20+x[7:0],8'h40+y[7:0],x[7:0]^y[7:0]};
                 1: file_pixel = {8'hA0+x[7:0],8'h20+y[7:0],x[7:0]+y[7:0]};
+                2: file_pixel = {8'hE0+x[7:0],8'h60+y[7:0],x[7:0]^8'h5a};
+                3: file_pixel = {8'h40+x[7:0],8'hC0+y[7:0],x[7:0]+y[7:0]};
+                4: file_pixel = {8'h10+x[7:0],8'h90+y[7:0],x[7:0]^8'h3c};
                 default:
                     file_pixel = {8'hE0+x[7:0],8'h60+y[7:0],x[7:0]^8'h5a};
             endcase
@@ -256,8 +267,7 @@ module tb_transition_v2_e2e;
             end
             check(timeout < 300000,"write finish timeout");
             $display("write complete bank=%0d t=%0t",bank,$time);
-            check(memory.wr_cnt == (pattern == 0 ? NPIX :
-                                     pattern == 1 ? 2*NPIX : 3*NPIX),
+            check(memory.wr_cnt == (pattern+1)*NPIX,
                   "complete physical frame written");
         end
     endtask
@@ -293,6 +303,8 @@ module tb_transition_v2_e2e;
                      storage.rdusedw_a,read_empty_a,frame_request_ack);
             transition_snapshot = transition_active;
             progress_snapshot = transition_progress;
+            blinds_snapshot = transition_blinds;
+            fade_snapshot = transition_fade;
             frame_pixels = 0;
             $display("frame begin number=%0d bank=%0d item=%0h dual=%b t=%0t",
                      frame_number+1,bank,item,frame_dual,$time);
@@ -337,7 +349,36 @@ module tb_transition_v2_e2e;
                     py = frame_pixels / W;
                     width = (W*progress_snapshot) >> 8;
                     start = W-width;
-                    if (px >= start)
+                    if (fade_snapshot) begin : fade_check
+                        integer fade_a_rgb;
+                        integer fade_b_rgb;
+                        integer fade_alpha;
+                        fade_a_rgb = display_pixel(frame_mode,px,py);
+                        fade_b_rgb = display_pixel(4,px,py);
+                        fade_alpha = progress_snapshot;
+                        expected_rgb[23:16] =
+                            (fade_a_rgb[23:16]*(256-fade_alpha) +
+                             fade_b_rgb[23:16]*fade_alpha + 128) >> 8;
+                        expected_rgb[15:8] =
+                            (fade_a_rgb[15:8]*(256-fade_alpha) +
+                             fade_b_rgb[15:8]*fade_alpha + 128) >> 8;
+                        expected_rgb[7:0] =
+                            (fade_a_rgb[7:0]*(256-fade_alpha) +
+                             fade_b_rgb[7:0]*fade_alpha + 128) >> 8;
+                    end else if (blinds_snapshot) begin : blinds_check
+                        integer reveal;
+                        integer blind_start;
+                        integer blind_end;
+                        integer blade_y;
+                        reveal = (60*progress_snapshot) >> 8;
+                        blind_start = (60-reveal) >> 1;
+                        blind_end = blind_start + reveal;
+                        blade_y = py % 60;
+                        if ((blade_y >= blind_start) && (blade_y < blind_end))
+                            expected_rgb = display_pixel(3,px,py);
+                        else
+                            expected_rgb = display_pixel(frame_mode,px,py);
+                    end else if (px >= start)
                         expected_rgb = display_pixel(1,px-start,py);
                     else
                         expected_rgb = display_pixel(frame_mode,px+width,py);
@@ -397,6 +438,56 @@ module tb_transition_v2_e2e;
         start_frame(1'b1,0,ITEM2);
         drive_frame(2);
         check(!transition_active && shown_item == ITEM2,"same-item reload is hard cut");
+
+        write_frame(1,3);
+        frame_number = 7;
+        start_frame(1'b1,1,{7'd3,14'd3});
+        drive_frame(2);
+        check(transition_active && blinds_snapshot,"blinds transition starts");
+
+        frame_number = 8;
+        start_frame(1'b1,1,{7'd3,14'd3});
+        drive_frame(2);
+        check(progress_snapshot > 0,"blinds progress advances");
+
+        frame_number = 9;
+        start_frame(1'b1,1,{7'd3,14'd3});
+        drive_frame(2);
+
+        frame_number = 10;
+        start_frame(1'b1,1,{7'd3,14'd3});
+        drive_frame(2);
+
+        frame_number = 11;
+        start_frame(1'b1,1,{7'd3,14'd3});
+        drive_frame(3);
+        check(!transition_active && !transition_blinds,"blinds completes");
+        check(shown_item == {7'd3,14'd3},"metadata after blinds");
+
+        write_frame(0,4);
+        frame_number = 12;
+        start_frame(1'b1,0,{7'd4,14'd4});
+        drive_frame(3);
+        check(transition_active && fade_snapshot,"fade transition starts");
+
+        frame_number = 13;
+        start_frame(1'b1,0,{7'd4,14'd4});
+        drive_frame(3);
+        check(progress_snapshot > 0,"fade progress advances");
+
+        frame_number = 14;
+        start_frame(1'b1,0,{7'd4,14'd4});
+        drive_frame(3);
+
+        frame_number = 15;
+        start_frame(1'b1,0,{7'd4,14'd4});
+        drive_frame(3);
+
+        frame_number = 16;
+        start_frame(1'b1,0,{7'd4,14'd4});
+        drive_frame(4);
+        check(!transition_active && !transition_fade,"fade completes");
+        check(shown_item == {7'd4,14'd4},"metadata after fade");
 
         if (errors == 0)
             $display("TRANSITION_V2_E2E_PASS frames=%0d pixels=%0d",frame_number+1,memory.rd_cnt);

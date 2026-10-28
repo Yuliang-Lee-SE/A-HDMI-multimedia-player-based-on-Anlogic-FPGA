@@ -1,8 +1,9 @@
 `timescale 1ns/1ps
 
 module tb_compose_read_sequence;
-    localparam integer WORDS = 1024;
-    localparam [20:0] READ_LEN = 21'd1024;
+    localparam integer WORDS = 4096;
+    localparam integer W_ACTIVE = 64;
+    localparam [20:0] READ_LEN = 21'd4096;
     localparam [8:0] PROGRESS = 9'd128;
 
     reg mclk = 1'b0;
@@ -13,9 +14,11 @@ module tb_compose_read_sequence;
     reg rst = 1'b1;
     reg frame_req = 1'b0;
     reg slide = 1'b0;
+    reg blinds = 1'b0;
+    reg fade = 1'b0;
     reg [8:0] progress = 9'd0;
     reg [20:0] base_a = 21'd0;
-    reg [20:0] base_b = 21'd2048;
+    reg [20:0] base_b = 21'd4096;
 
     wire frame_ack;
     wire frame_finish;
@@ -37,9 +40,11 @@ module tb_compose_read_sequence;
     integer finish_count = 0;
     integer errors = 0;
     integer run_slide = 0;
+    integer run_blinds = 0;
+    integer run_fade = 0;
 
     frame_read_write_dual #(
-        .FRAME_WIDTH  (640),
+        .FRAME_WIDTH  (W_ACTIVE),
         .FRAME_HEIGHT (480)
     ) storage (
         .rst                (rst),
@@ -56,6 +61,8 @@ module tb_compose_read_sequence;
         .read_clk           (vclk),
         .read_req           (frame_req),
         .read_dual          (slide),
+        .read_blinds        (blinds),
+        .read_fade          (fade),
         .read_req_ack       (frame_ack),
         .read_finish        (frame_finish),
         .read_addr_a        (base_a),
@@ -88,7 +95,7 @@ module tb_compose_read_sequence;
     );
 
     sdram_model #(
-        .MEM_WORDS    (4096),
+        .MEM_WORDS    (8192),
         .READ_LATENCY (10)
     ) memory (
         .Clk              (mclk),
@@ -112,19 +119,46 @@ module tb_compose_read_sequence;
             finish_count <= finish_count + 1;
     end
 
+    function [7:0] blend8;
+        input [7:0] a;
+        input [7:0] b;
+        begin
+            blend8 = (a*128 + b*128 + 128) >> 8;
+        end
+    endfunction
+
     function [31:0] expected_word;
         input integer index;
         integer x;
         integer y;
+        reg [31:0] a_word;
+        reg [31:0] b_word;
+        reg [23:0] a_rgb;
+        reg [23:0] b_rgb;
+        reg [23:0] blended_rgb;
         begin
-            x = index % 640;
-            y = index / 640;
-            if (run_slide && x >= 320)
-                expected_word = 32'h00800000 + y*640 + (x-320);
+            x = index % W_ACTIVE;
+            y = index / W_ACTIVE;
+            a_word = index << 8;
+            b_word = (32'h00800000 + index) << 8;
+            if (run_fade) begin
+                a_rgb = index;
+                b_rgb = 32'h00800000 + index;
+                blended_rgb[23:16] = blend8(a_rgb[23:16],b_rgb[23:16]);
+                blended_rgb[15:8]  = blend8(a_rgb[15:8], b_rgb[15:8]);
+                blended_rgb[7:0]   = blend8(a_rgb[7:0],  b_rgb[7:0]);
+                expected_word = {blended_rgb,8'b0};
+            end else if (run_blinds && ((y % 60) >= 15) && ((y % 60) < 45))
+                expected_word = (32'h00800000 + index) << 8;
+            else if (run_blinds)
+                expected_word = index << 8;
+            else if (run_slide && x >= (W_ACTIVE/2))
+                expected_word = (32'h00800000 + y*W_ACTIVE +
+                                 (x-(W_ACTIVE/2))) << 8;
             else if (run_slide)
-                expected_word = y*640 + x + 320;
+                expected_word = (y*W_ACTIVE + x + (W_ACTIVE/2)) << 8;
             else
-                expected_word = index;
+                expected_word = index << 8;
         end
     endfunction
 
@@ -135,8 +169,9 @@ module tb_compose_read_sequence;
             if (read_data_a !== expected_word(count)) begin
                 errors = errors + 1;
                 if (errors < 8)
-                    $display("[FAIL] index=%0d slide=%0b got=%h expected=%h",
-                             count,run_slide,read_data_a,expected_word(count));
+                    $display("[FAIL] index=%0d slide=%0b blinds=%0b got=%h expected=%h",
+                             count,run_slide,run_blinds,
+                             read_data_a,expected_word(count));
             end
             count = count + 1;
         end
@@ -144,22 +179,28 @@ module tb_compose_read_sequence;
 
     integer i;
     initial begin
+        for (i = 0; i < 8192; i = i + 1)
+            memory.mem[i] = i << 8;
         for (i = 0; i < 4096; i = i + 1)
-            memory.mem[i] = i;
-        for (i = 0; i < 2048; i = i + 1)
-            memory.mem[2048+i] = 32'h00800000 + i;
+            memory.mem[4096+i] = (32'h00800000 + i) << 8;
     end
 
     task run_frame;
         input use_slide;
+        input use_blinds;
+        input use_fade;
         integer timeout;
         integer finish_base;
         begin
             run_slide = use_slide;
+            run_blinds = use_blinds;
+            run_fade = use_fade;
             sample = 1'b1;
             finish_base = finish_count;
             @(negedge vclk);
             slide = use_slide;
+            blinds = use_blinds;
+            fade = use_fade;
             progress = use_slide ? PROGRESS : 9'd0;
             frame_req = 1'b1;
             timeout = 0;
@@ -169,8 +210,8 @@ module tb_compose_read_sequence;
             end
             if (timeout >= 100000) begin
                 errors = errors + 1;
-                $display("[FAIL] request timeout slide=%0b state=%0d",
-                         use_slide,storage.frame_compose_read_m0.state);
+                $display("[FAIL] request timeout slide=%0b blinds=%0b state=%0d",
+                         use_slide,use_blinds,storage.frame_compose_read_m0.state);
             end
             @(negedge vclk);
             frame_req = 1'b0;
@@ -182,10 +223,13 @@ module tb_compose_read_sequence;
             end
             if (timeout >= 100000) begin
                 errors = errors + 1;
-                $display("[FAIL] drain timeout slide=%0b count=%0d state=%0d used=%0d",
-                         use_slide,count,
+                $display("[FAIL] drain timeout slide=%0b blinds=%0b count=%0d state=%0d used=%0d read_cnt=%0d len=%0d mem_rd=%0d",
+                         use_slide,use_blinds,count,
                          storage.frame_compose_read_m0.state,
-                         storage.rdusedw_a);
+                         storage.rdusedw_a,
+                         storage.frame_compose_read_m0.read_cnt,
+                         storage.frame_compose_read_m0.read_len_latch,
+                         memory.rd_cnt);
             end
 
             timeout = 0;
@@ -195,8 +239,8 @@ module tb_compose_read_sequence;
             end
             if (finish_count == finish_base) begin
                 errors = errors + 1;
-                $display("[FAIL] frame finish timeout slide=%0b state=%0d",
-                         use_slide,storage.frame_compose_read_m0.state);
+                $display("[FAIL] frame finish timeout slide=%0b blinds=%0b state=%0d",
+                         use_slide,use_blinds,storage.frame_compose_read_m0.state);
             end
 
             repeat (4) @(negedge vclk);
@@ -210,14 +254,18 @@ module tb_compose_read_sequence;
         rst = 1'b0;
         wait (Sdr_init_done);
 
-        run_frame(1'b0);
+        run_frame(1'b0, 1'b0, 1'b0);
         count = 0;
-        run_frame(1'b1);
+        run_frame(1'b1, 1'b0, 1'b0);
         count = 0;
-        run_frame(1'b0);
+        run_frame(1'b1, 1'b1, 1'b0);
+        count = 0;
+        run_frame(1'b1, 1'b0, 1'b1);
+        count = 0;
+        run_frame(1'b0, 1'b0, 1'b0);
 
         if (errors == 0)
-            $display("COMPOSE_READ_SEQUENCE_PASS frames=3 words=%0d",WORDS);
+            $display("COMPOSE_READ_SEQUENCE_PASS frames=5 words=%0d",WORDS);
         else
             $display("COMPOSE_READ_SEQUENCE_FAIL errors=%0d",errors);
         $finish;

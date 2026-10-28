@@ -4,8 +4,9 @@
 //
 // First image and same-item zoom commits are hard cuts at a frame boundary.
 // A different committed item keeps the old bank beside the new bank for a
-// bounded slide. The source-side writer is acknowledged only after both banks
-// are safe to reuse.
+// bounded transition. Transition effects alternate between horizontal slide
+// (0), horizontal blinds (1), and pixel crossfade (2). The source-side writer
+// is acknowledged only after both banks are safe to reuse.
 module transition_frame_owner #(
     parameter integer TRANSITION_FRAMES = 30
 )(
@@ -21,6 +22,8 @@ module transition_frame_owner #(
     output     [1:0]  source_bank_a,
     output     [1:0]  source_bank_b,
     output            read_dual,
+    output wire       transition_blinds,
+    output wire       transition_fade,
     output reg        transition_active,
     output reg [8:0]  transition_progress,
 
@@ -45,6 +48,7 @@ reg [20:0] candidate_item;
 reg [5:0] transition_frame;
 reg release_armed;
 reg transition_warmup;
+reg [1:0] transition_effect;
 
 wire frame_tick = frame_request && !frame_request_prev;
 wire new_bundle =
@@ -64,6 +68,8 @@ assign transition_busy = transition_active;
 assign source_bank_a = active_bank;
 assign source_bank_b = transition_active ? candidate_bank : active_bank;
 assign read_dual = transition_active && !transition_warmup;
+assign transition_blinds = transition_effect == 2'd1;
+assign transition_fade = transition_effect == 2'd2;
 
 always @(posedge clk or posedge rst) begin
     if (rst) begin
@@ -76,6 +82,7 @@ always @(posedge clk or posedge rst) begin
         candidate_bank      <= 2'd0;
         candidate_item      <= 21'd0;
         transition_active   <= 1'b0;
+        transition_effect   <= 2'd0;
         transition_progress <= 9'd0;
         transition_frame    <= 6'd0;
         display_valid       <= 1'b0;
@@ -101,6 +108,9 @@ always @(posedge clk or posedge rst) begin
                     transition_frame    <= 6'd0;
                     release_armed       <= 1'b1;
                     transition_warmup   <= 1'b0;
+                    transition_effect   <=
+                        (transition_effect == 2'd2) ? 2'd0 :
+                        transition_effect + 2'd1;
                 end else if (transition_warmup) begin
                     transition_warmup   <= 1'b0;
                     transition_frame    <= 6'd1;

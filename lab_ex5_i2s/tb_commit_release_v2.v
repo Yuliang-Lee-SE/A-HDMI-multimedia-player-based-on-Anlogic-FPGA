@@ -20,6 +20,8 @@ module tb_commit_release_v2;
     wire committed_valid;
     wire [1:0] source_bank_a, source_bank_b;
     wire source_dual, transition_active;
+    wire transition_blinds;
+    wire transition_fade;
     wire [8:0] transition_progress;
     wire display_valid;
     wire [20:0] display_item;
@@ -49,6 +51,8 @@ module tb_commit_release_v2;
         .source_bank_a(source_bank_a),
         .source_bank_b(source_bank_b),
         .read_dual(source_dual),
+        .transition_blinds(transition_blinds),
+        .transition_fade(transition_fade),
         .transition_active(transition_active),
         .transition_progress(transition_progress),
         .display_valid(display_valid),

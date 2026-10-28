@@ -52,8 +52,8 @@ module sd_spi_reader #(
  CSD_BOUNDS=(36'b1<<33),
  CSD_ACCEPT=(36'b1<<34),
  EMIT_WAIT=(36'b1<<35);
- reg [STATE_W-1:0] state,resume,after_release;
- reg cs,wr_req; reg [7:0] tx; wire [7:0] rx; wire ack;
+reg [STATE_W-1:0] state,resume,after_release;
+reg cs,nCS_q,wr_req; reg [7:0] tx; wire [7:0] rx; wire ack;
  reg [15:0] divider;
  reg [31:0] timer,init_timer,read_timer,token_timer,lba;
  reg [3:0] gap; reg [9:0] count,emit_pos;
@@ -72,9 +72,15 @@ module sd_spi_reader #(
  end
  reg [12:0] v1_units;reg [22:0] v2_units;reg [4:0] v1_shift;
  reg cap_v2,capacity_bad;reg [32:0] capacity;
- assign req_ready=media_ready && (|(state & IDLE)) && !reinit && !cancel_valid && !cancel_hit_q;
+assign req_ready=media_ready && (|(state & IDLE)) && !reinit && !cancel_valid && !cancel_hit_q;
+// Register the final chip-select output. DESELECT always inserts a complete
+// byte transaction before the next command, so a one-clock output delay cannot
+// place a DCLK edge after CS is released or before CS is asserted.
+always @(posedge clk or posedge rst)
+ if(rst) nCS_q<=1;
+ else nCS_q<=cs;
  spi_master spi(.sys_clk(clk),.rst(rst),.nCS(SD_nCS),.DCLK(SD_DCLK),
- .MOSI(SD_MOSI),.MISO(SD_MISO),.CPOL(1'b0),.CPHA(1'b0),.nCS_ctrl(cs),
+ .MOSI(SD_MOSI),.MISO(SD_MISO),.CPOL(1'b0),.CPHA(1'b0),.nCS_ctrl(nCS_q),
  .clk_div(divider),.wr_req(wr_req),.wr_ack(ack),.data_in(tx),.data_out(rx));
  function automatic [15:0] crc16(input [15:0] c,input [7:0] d);
  reg [15:0] t; integer i; begin t=c;

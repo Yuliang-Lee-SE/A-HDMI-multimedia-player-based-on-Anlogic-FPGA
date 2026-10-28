@@ -37,6 +37,8 @@ module frame_read_write_dual
 	input                            read_clk,                   // data read module clock
 	input                            read_req,                   // data read module read request,keep '1' until read_req_ack = '1'
 	input                            read_dual,                  // compose A/B into one sequential slide frame
+	input                            read_blinds,                // select horizontal blinds instead of slide
+	input                            read_fade,                  // select per-pixel A/B crossfade
 	output                           read_req_ack,               // data read module read request response
 	output                           read_finish,                // data read module read request finish
 	input[ADDR_BITS - 1:0]           read_addr_a,
@@ -88,6 +90,8 @@ wire                                             compose_app_busy;
 wire                                             compose_req_ack;
 wire                                             compose_finish;
 wire                                             compose_aclr;
+wire                                             compose_fifo_we;
+wire [31:0]                                      compose_fifo_data;
 
 wire 								 App_rd_busy;
 wire								 App_wr_busy;
@@ -107,7 +111,7 @@ assign App_rd_addr      = compose_app_addr;
 assign App_rd_busy      = compose_app_busy;
 assign read_req_ack     = compose_req_ack;
 assign read_finish      = compose_finish;
-assign read_we_a        = Sdr_rd_en && compose_app_busy;
+assign read_we_a        = compose_fifo_we;
 assign read_fifo_aclr_a = compose_aclr;
 assign read_data_b      = {READ_DATA_BITS{1'b0}};
 assign read_empty_b     = 1'b1;
@@ -204,7 +208,7 @@ rfifo_32_32_512 read_buf_a
 	.rst                      	(read_fifo_aclr_a           ),          // Asynchronous clear
 	.we                     	(read_we_a                  ),          // Write Request
 	.re                     	(read_en_a                  ),          // Read Request
-	.di                      	(Sdr_rd_dout                ),          // Input Data
+	.di                      	(compose_fifo_data          ),          // Input Data
 	.empty_flag					(read_empty_a               ),          // Read side Empty flag
 	.full_flag					(                           ),          // Write side Full flag
 	.wrusedw                	(rdusedw_a                  ),          // Read Used Words
@@ -219,7 +223,8 @@ frame_compose_read
 	.BURST_BITS                 (BURST_BITS               ),
 	.BURST_SIZE                 (BURST_SIZE               ),
 	.FIFO_DEPTH                 (512                      ),
-	.H_ACTIVE                   (FRAME_WIDTH              )
+	.H_ACTIVE                   (FRAME_WIDTH              ),
+	.V_ACTIVE                   (FRAME_HEIGHT             )
 )
 frame_compose_read_m0
 (
@@ -229,6 +234,7 @@ frame_compose_read_m0
 	.Sdr_init_ref_vld			(Sdr_init_ref_vld),
     .Sdr_busy					(Sdr_busy),
     .Sdr_rd_en					(Sdr_rd_en),
+	.Sdr_rd_dout				(Sdr_rd_dout),
 	.App_wr_busy				(App_wr_busy),
 	
     .O_rd_busy					(compose_app_busy),
@@ -238,12 +244,16 @@ frame_compose_read_m0
 	.read_req_ack               (compose_req_ack          ),
 	.read_finish                (compose_finish           ),
 	.read_slide                 (read_dual                ),
+	.read_blinds                (read_blinds              ),
+	.read_fade                  (read_fade                ),
 	.read_base_a                (read_addr_a              ),
 	.read_base_b                (read_addr_b              ),
 	.read_len                   (read_len                 ),
 	.read_progress              (read_progress            ),
 	.fifo_aclr                  (compose_aclr             ),
-	.wrusedw                    (rdusedw_a                )
+	.wrusedw                    (rdusedw_a                ),
+	.fifo_we                    (compose_fifo_we          ),
+	.fifo_data                  (compose_fifo_data        )
 );
 
 endmodule

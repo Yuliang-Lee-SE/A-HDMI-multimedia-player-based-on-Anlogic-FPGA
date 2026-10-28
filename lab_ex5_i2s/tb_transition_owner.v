@@ -14,6 +14,8 @@ module tb_transition_owner;
     wire [1:0] source_bank_a;
     wire [1:0] source_bank_b;
     wire read_dual;
+    wire transition_blinds;
+    wire transition_fade;
     wire transition_active;
     wire [8:0] transition_progress;
     wire display_valid;
@@ -34,6 +36,8 @@ module tb_transition_owner;
         .source_bank_a       (source_bank_a),
         .source_bank_b       (source_bank_b),
         .read_dual           (read_dual),
+        .transition_blinds   (transition_blinds),
+        .transition_fade     (transition_fade),
         .transition_active   (transition_active),
         .transition_progress (transition_progress),
         .display_valid       (display_valid),
@@ -95,6 +99,7 @@ module tb_transition_owner;
         committed_item = {7'd2,14'd2};
         frame;
         check(transition_active && !read_dual, "image switch must start warmup");
+        check(!transition_blinds, "first effect must be slide");
         check(source_bank_a == 1 && source_bank_b == 0, "slide old/new banks");
         check(display_item == {7'd1,14'd1}, "old metadata during slide");
         commit_ack_toggle = 1'b1;
@@ -108,7 +113,39 @@ module tb_transition_owner;
         check(!transition_active && !read_dual, "slide must finish");
         check(source_bank_a == 0 && source_bank_b == 0, "new active bank");
         check(display_item == {7'd2,14'd2}, "new metadata after slide");
+        check(transition_blinds, "next effect must be blinds");
         check(release_toggle == commit_ack_toggle, "release after slide");
+
+        // Same-item reload stays a hard cut and must not consume an effect.
+        committed_bank = 2'd1;
+        frame;
+        commit_ack_toggle = 1'b0;
+        repeat (5) @(negedge clk);
+        check(!transition_active && transition_blinds, "hard cut preserves effect");
+
+        // The next different item uses horizontal blinds.
+        committed_bank = 2'd0;
+        committed_item = {7'd3,14'd3};
+        frame;
+        check(transition_active && !read_dual && transition_blinds,
+              "second transition must start blinds");
+        commit_ack_toggle = 1'b1;
+        repeat (4) frame;
+        repeat (5) @(negedge clk);
+        check(!transition_active && !transition_blinds, "blinds finish");
+        check(display_item == {7'd3,14'd3}, "metadata after blinds");
+        check(transition_fade, "next effect must be fade");
+
+        committed_bank = 2'd1;
+        committed_item = {7'd4,14'd4};
+        frame;
+        check(transition_active && !read_dual && transition_fade,
+              "third transition must start fade");
+        commit_ack_toggle = 1'b0;
+        repeat (4) frame;
+        repeat (5) @(negedge clk);
+        check(!transition_active && !transition_fade, "fade finish");
+        check(display_item == {7'd4,14'd4}, "metadata after fade");
 
         if (errors == 0)
             $display("TRANSITION_OWNER_PASS");

@@ -22,7 +22,7 @@ module tb_top_commit_readback;
     wire [20:0] committed_item;
     wire committed_valid;
     wire [1:0] source_bank_a, source_bank_b;
-    wire source_dual, transition_active;
+    wire source_dual, transition_blinds, transition_fade, transition_active;
     wire [8:0] progress;
     wire display_valid;
     wire [20:0] display_item;
@@ -58,6 +58,8 @@ module tb_top_commit_readback;
         .source_bank_a(source_bank_a),
         .source_bank_b(source_bank_b),
         .read_dual(source_dual),
+        .transition_blinds(transition_blinds),
+        .transition_fade(transition_fade),
         .transition_active(transition_active),
         .transition_progress(progress),
         .display_valid(display_valid),
@@ -85,6 +87,8 @@ module tb_top_commit_readback;
         .read_addr_b(source_bank_b ? 21'd307200 : 21'd0),
         .read_len(21'd307200),
         .read_progress(9'd0),
+        .read_blinds(1'b0),
+        .read_fade(1'b0),
         .read_en_a(!empty_a), .read_en_b(1'b0),
         .read_data_a(data_a), .read_data_b(data_b),
         .read_empty_a(empty_a), .read_empty_b(empty_b),

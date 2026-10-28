@@ -110,6 +110,8 @@ wire        bridge_ack_toggle;
 wire [1:0]  source_bank_a;
 wire [1:0]  source_bank_b;
 wire        source_read_dual;
+wire        transition_blinds;
+wire        transition_fade;
 wire        transition_active;
 wire [8:0]  transition_progress;
 wire        video_display_valid;
@@ -397,6 +399,8 @@ transition_frame_owner #(
     .source_bank_a        (source_bank_a),
     .source_bank_b        (source_bank_b),
     .read_dual            (source_read_dual),
+    .transition_blinds    (transition_blinds),
+    .transition_fade      (transition_fade),
     .transition_active    (transition_active),
     .transition_progress  (transition_progress),
     .display_valid        (video_display_valid),
@@ -528,6 +532,8 @@ frame_read_write_dual #(
     .read_req_ack      (video_read_req_ack),
     .read_finish       (),
     .read_dual         (active_read_dual),
+    .read_blinds       (transition_blinds),
+    .read_fade         (transition_fade),
     .read_progress     (transition_progress),
     .read_addr_a       (use_committed_bank ?
                         (committed_video_bank == 0 ? BUF0_ADDR : BUF1_ADDR) :
