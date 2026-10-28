@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<Project Version="3" Minor="2" Path="D:/Anlogic/lab_ex5_i2s/src/td_project">
+<Project Version="3" Minor="2" Path="D:/FPGA/transition-v2/lab_ex5_i2s/src/td_project">
     <Project_Created_Time></Project_Created_Time>
     <TD_Version>6.2.168116</TD_Version>
     <Name>HDMI1.4b_Transmitter_v1.0</Name>
@@ -342,97 +342,129 @@
             <File Path="../user_source/hdl_source/team/osd_resources.v">
                 <FileInfo>
                     <Attr Name="UsedInSyn" Val="true"/>
-                    <Attr Name="UsedInP&amp;R" Val="true"/>
+                    <Attr Name="UsedInP&R" Val="true"/>
                     <Attr Name="BelongTo" Val="design_1"/>
-                    <Attr Name="CompileOrder" Val="80"/>
+                    <Attr Name="CompileOrder" Val="50"/>
                 </FileInfo>
             </File>
             <File Path="../user_source/hdl_source/team/osd_text_renderer.v">
                 <FileInfo>
                     <Attr Name="UsedInSyn" Val="true"/>
-                    <Attr Name="UsedInP&amp;R" Val="true"/>
+                    <Attr Name="UsedInP&R" Val="true"/>
                     <Attr Name="BelongTo" Val="design_1"/>
-                    <Attr Name="CompileOrder" Val="81"/>
+                    <Attr Name="CompileOrder" Val="51"/>
                 </FileInfo>
             </File>
             <File Path="../user_source/hdl_source/team/osd_display_commit.v">
                 <FileInfo>
                     <Attr Name="UsedInSyn" Val="true"/>
-                    <Attr Name="UsedInP&amp;R" Val="true"/>
+                    <Attr Name="UsedInP&R" Val="true"/>
                     <Attr Name="BelongTo" Val="design_1"/>
-                    <Attr Name="CompileOrder" Val="82"/>
+                    <Attr Name="CompileOrder" Val="52"/>
+                </FileInfo>
+            </File>
+            <File Path="../user_source/hdl_source/team/frame_compose_read.v">
+                <FileInfo>
+                    <Attr Name="UsedInSyn" Val="true"/>
+                    <Attr Name="UsedInP&R" Val="true"/>
+                    <Attr Name="BelongTo" Val="design_1"/>
+                    <Attr Name="CompileOrder" Val="60"/>
+                </FileInfo>
+            </File>
+            <File Path="../user_source/hdl_source/team/frame_read_write_dual.v">
+                <FileInfo>
+                    <Attr Name="UsedInSyn" Val="true"/>
+                    <Attr Name="UsedInP&R" Val="true"/>
+                    <Attr Name="BelongTo" Val="design_1"/>
+                    <Attr Name="CompileOrder" Val="61"/>
+                </FileInfo>
+            </File>
+            <File Path="../user_source/hdl_source/team/transition_frame_owner.v">
+                <FileInfo>
+                    <Attr Name="UsedInSyn" Val="true"/>
+                    <Attr Name="UsedInP&R" Val="true"/>
+                    <Attr Name="BelongTo" Val="design_1"/>
+                    <Attr Name="CompileOrder" Val="64"/>
+                </FileInfo>
+            </File>
+            <File Path="../user_source/hdl_source/team/transition_mode_control.v">
+                <FileInfo>
+                    <Attr Name="UsedInSyn" Val="true"/>
+                    <Attr Name="UsedInP&R" Val="true"/>
+                    <Attr Name="BelongTo" Val="design_1"/>
+                    <Attr Name="CompileOrder" Val="65"/>
                 </FileInfo>
             </File>
             <File Path="../../tf_player/rtl/fat32_ro.sv">
                 <FileInfo>
                     <Attr Name="UsedInSyn" Val="true"/>
-                    <Attr Name="UsedInP&amp;R" Val="true"/>
+                    <Attr Name="UsedInP&R" Val="true"/>
                     <Attr Name="BelongTo" Val="design_1"/>
-                    <Attr Name="CompileOrder" Val="83"/>
+                    <Attr Name="CompileOrder" Val="53"/>
                 </FileInfo>
             </File>
             <File Path="../../tf_player/rtl/sd_spi_reader.sv">
                 <FileInfo>
                     <Attr Name="UsedInSyn" Val="true"/>
-                    <Attr Name="UsedInP&amp;R" Val="true"/>
+                    <Attr Name="UsedInP&R" Val="true"/>
                     <Attr Name="BelongTo" Val="design_1"/>
-                    <Attr Name="CompileOrder" Val="84"/>
+                    <Attr Name="CompileOrder" Val="54"/>
                 </FileInfo>
             </File>
             <File Path="../../tf_player/rtl/bmp_file_stream.sv">
                 <FileInfo>
                     <Attr Name="UsedInSyn" Val="true"/>
-                    <Attr Name="UsedInP&amp;R" Val="true"/>
+                    <Attr Name="UsedInP&R" Val="true"/>
                     <Attr Name="BelongTo" Val="design_1"/>
-                    <Attr Name="CompileOrder" Val="85"/>
+                    <Attr Name="CompileOrder" Val="55"/>
                 </FileInfo>
             </File>
             <File Path="../../tf_player/rtl/tf_file_player.sv">
                 <FileInfo>
                     <Attr Name="UsedInSyn" Val="true"/>
-                    <Attr Name="UsedInP&amp;R" Val="true"/>
+                    <Attr Name="UsedInP&R" Val="true"/>
                     <Attr Name="BelongTo" Val="design_1"/>
-                    <Attr Name="CompileOrder" Val="86"/>
+                    <Attr Name="CompileOrder" Val="56"/>
                 </FileInfo>
             </File>
             <File Path="../user_source/hdl_source/team/osd_layer_renderer.v">
                 <FileInfo>
                     <Attr Name="UsedInSyn" Val="true"/>
-                    <Attr Name="UsedInP&amp;R" Val="true"/>
+                    <Attr Name="UsedInP&R" Val="true"/>
                     <Attr Name="BelongTo" Val="design_1"/>
-                    <Attr Name="CompileOrder" Val="87"/>
+                    <Attr Name="CompileOrder" Val="57"/>
                 </FileInfo>
             </File>
             <File Path="../user_source/hdl_source/team/reset_startup_guard.v">
                 <FileInfo>
                     <Attr Name="UsedInSyn" Val="true"/>
-                    <Attr Name="UsedInP&amp;R" Val="true"/>
+                    <Attr Name="UsedInP&R" Val="true"/>
                     <Attr Name="BelongTo" Val="design_1"/>
-                    <Attr Name="CompileOrder" Val="88"/>
+                    <Attr Name="CompileOrder" Val="58"/>
                 </FileInfo>
             </File>
             <File Path="../user_source/hdl_source/team/audio_control.v">
                 <FileInfo>
                     <Attr Name="UsedInSyn" Val="true"/>
-                    <Attr Name="UsedInP&amp;R" Val="true"/>
+                    <Attr Name="UsedInP&R" Val="true"/>
                     <Attr Name="BelongTo" Val="design_1"/>
-                    <Attr Name="CompileOrder" Val="89"/>
+                    <Attr Name="CompileOrder" Val="59"/>
                 </FileInfo>
             </File>
             <File Path="../user_source/hdl_source/team/audio_osd.v">
                 <FileInfo>
                     <Attr Name="UsedInSyn" Val="true"/>
-                    <Attr Name="UsedInP&amp;R" Val="true"/>
+                    <Attr Name="UsedInP&R" Val="true"/>
                     <Attr Name="BelongTo" Val="design_1"/>
-                    <Attr Name="CompileOrder" Val="90"/>
+                    <Attr Name="CompileOrder" Val="62"/>
                 </FileInfo>
             </File>
             <File Path="../user_source/hdl_source/team/key_short_long.v">
                 <FileInfo>
                     <Attr Name="UsedInSyn" Val="true"/>
-                    <Attr Name="UsedInP&amp;R" Val="true"/>
+                    <Attr Name="UsedInP&R" Val="true"/>
                     <Attr Name="BelongTo" Val="design_1"/>
-                    <Attr Name="CompileOrder" Val="91"/>
+                    <Attr Name="CompileOrder" Val="63"/>
                 </FileInfo>
             </File>
         </Verilog>
@@ -560,6 +592,54 @@
             </UserParams>
         </Run>
         <Run Name="phy_1" Type="PhysicalDesign" ConstraintSet="constraint_1" Description="" SynRun="syn_1" Active="true">
+            <Strategy Name="Default_PhysicalDesign_Strategy">
+            </Strategy>
+            <UserParams>
+            </UserParams>
+        </Run>
+        <Run Name="syn_2" Type="Synthesis" ConstraintSet="constraint_1" Description="">
+            <Strategy Name="Default_Synthesis_Strategy">
+            </Strategy>
+            <UserParams>
+            </UserParams>
+        </Run>
+        <Run Name="phy_12" Type="PhysicalDesign" ConstraintSet="constraint_1" Description="" SynRun="syn_2">
+            <Strategy Name="Default_PhysicalDesign_Strategy">
+            </Strategy>
+            <UserParams>
+            </UserParams>
+        </Run>
+        <Run Name="syn_6" Type="Synthesis" ConstraintSet="constraint_1" Description="">
+            <Strategy Name="Default_Synthesis_Strategy">
+            </Strategy>
+            <UserParams>
+            </UserParams>
+        </Run>
+        <Run Name="syn_13" Type="Synthesis" ConstraintSet="constraint_1" Description="">
+            <Strategy Name="Default_Synthesis_Strategy">
+            </Strategy>
+            <UserParams>
+            </UserParams>
+        </Run>
+        <Run Name="syn_14" Type="Synthesis" ConstraintSet="constraint_1" Description="">
+            <Strategy Name="Default_Synthesis_Strategy">
+            </Strategy>
+            <UserParams>
+            </UserParams>
+        </Run>
+        <Run Name="syn_15" Type="Synthesis" ConstraintSet="constraint_1" Description="">
+            <Strategy Name="Default_Synthesis_Strategy">
+            </Strategy>
+            <UserParams>
+            </UserParams>
+        </Run>
+        <Run Name="phy_32" Type="PhysicalDesign" ConstraintSet="constraint_1" Description="" SynRun="syn_15">
+            <Strategy Name="Default_PhysicalDesign_Strategy">
+            </Strategy>
+            <UserParams>
+            </UserParams>
+        </Run>
+        <Run Name="phy_33" Type="PhysicalDesign" ConstraintSet="constraint_1" Description="" SynRun="syn_15">
             <Strategy Name="Default_PhysicalDesign_Strategy">
             </Strategy>
             <UserParams>

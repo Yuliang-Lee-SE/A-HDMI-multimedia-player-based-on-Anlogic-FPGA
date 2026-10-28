@@ -5,7 +5,9 @@ module tf_file_player #(
  parameter integer VOLUME_LONG_MS=1200,
  parameter integer IO_TIMEOUT=CLK_FREQ_HZ*3,STALL_TIMEOUT=CLK_FREQ_HZ/2,
  parameter integer SLOT_W=$clog2(MAX_FILES),COUNT_W=$clog2(MAX_FILES+1)
-)(input clk,rst,input key_next,key_auto,key_zoom,
+)(input clk,rst,
+  input key_next, // One-clock active-high pulse from the board key controller.
+  input key_auto,key_zoom,
  input write_ready,write_req_ack,write_finish_toggle,write_abort_done,
  output wire write_req,write_en,output wire [31:0] write_data,
  output reg write_abort,output reg [1:0] write_buf_idx,disp_buf_idx,
@@ -34,6 +36,7 @@ module tf_file_player #(
  reg [31:0] auto_count,wait_count;
  reg [2:0] ack_sync,finish_sync,abort_sync,commit_sync;reg wrote,bmp_ok,failed;
  wire next_press,auto_press,zoom_press;
+ assign next_press=key_next;
  localparam BOOT=0,MOUNT=1,IDLE=2,SELECT=3,OPEN=4,LOAD=5,COMMIT=6,CLEAN=7,CLEAN_RELEASE=8,LOCKED=9,INDEX_WAIT=10;
  reg [3:0] state;wire loading=state==LOAD;
  reg load_timeout,clean_timeout,commit_timeout;
@@ -75,7 +78,6 @@ module tf_file_player #(
  .in_valid(bvalid && source_ready && loading && !failed),.in_rgb(bpixel),
  .out_valid(zvalid),.out_ready(source_ready && loading && !failed),.out_rgb(zpixel),
  .out_last(),.out_frame_last(),.source_done(zsource),.output_done(zdone),.overflow(zoverflow));
- key_press_debounce #(.CLK_FREQ_HZ(CLK_FREQ_HZ),.DEBOUNCE_MS(DEBOUNCE_MS)) kn(clk,rst,key_next,next_press);
  key_press_debounce #(.CLK_FREQ_HZ(CLK_FREQ_HZ),.DEBOUNCE_MS(DEBOUNCE_MS)) ka(clk,rst,key_auto,auto_press);
  // KEY3 short press keeps the zoom cycle; a 1.2 s hold becomes volume step.
  key_short_long #(.CLK_FREQ_HZ(CLK_FREQ_HZ),.DEBOUNCE_MS(DEBOUNCE_MS),
