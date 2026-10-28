@@ -4,9 +4,9 @@
 //
 // First image and same-item zoom commits are hard cuts at a frame boundary.
 // A different committed item keeps the old bank beside the new bank for a
-// bounded transition. Transition effects alternate between horizontal slide
-// (0), horizontal blinds (1), and pixel crossfade (2). The source-side writer
-// is acknowledged only after both banks are safe to reuse.
+// bounded transition selected by the user: 0=hard cut, 1=slide, 2=blinds,
+// 3=crossfade. The selected effect is latched when a transition starts. The
+// source-side writer is acknowledged only after both banks are safe to reuse.
 module transition_frame_owner #(
     parameter integer TRANSITION_FRAMES = 30
 )(
@@ -18,6 +18,7 @@ module transition_frame_owner #(
     input      [1:0]  committed_bank,
     input      [20:0] committed_item,
     input             source_commit_toggle,
+    input      [1:0]  transition_mode,
 
     output     [1:0]  source_bank_a,
     output     [1:0]  source_bank_b,
@@ -57,7 +58,7 @@ wire new_bundle =
      (committed_bank != bundle_bank_seen) ||
      (committed_item != bundle_item_seen));
 wire item_change = committed_item != display_item;
-wire can_slide =
+wire can_transition =
     display_valid && committed_valid && new_bundle &&
     (committed_bank != active_bank) && item_change;
 wire finish_transition =
@@ -68,8 +69,10 @@ assign transition_busy = transition_active;
 assign source_bank_a = active_bank;
 assign source_bank_b = transition_active ? candidate_bank : active_bank;
 assign read_dual = transition_active && !transition_warmup;
-assign transition_blinds = transition_effect == 2'd1;
-assign transition_fade = transition_effect == 2'd2;
+assign transition_blinds =
+    transition_active && (transition_effect == 2'd2);
+assign transition_fade =
+    transition_active && (transition_effect == 2'd3);
 
 always @(posedge clk or posedge rst) begin
     if (rst) begin
@@ -108,9 +111,6 @@ always @(posedge clk or posedge rst) begin
                     transition_frame    <= 6'd0;
                     release_armed       <= 1'b1;
                     transition_warmup   <= 1'b0;
-                    transition_effect   <=
-                        (transition_effect == 2'd2) ? 2'd0 :
-                        transition_effect + 2'd1;
                 end else if (transition_warmup) begin
                     transition_warmup   <= 1'b0;
                     transition_frame    <= 6'd1;
@@ -123,9 +123,10 @@ always @(posedge clk or posedge rst) begin
                         transition_progress <= transition_progress + PROGRESS_STEP;
                 end
             end else if (new_bundle) begin
-                if (can_slide) begin
+                if (can_transition && (transition_mode != 2'd0)) begin
                     candidate_bank      <= committed_bank;
                     candidate_item      <= committed_item;
+                    transition_effect   <= transition_mode;
                     transition_active   <= 1'b1;
                     transition_progress <= 9'd0;
                     transition_frame    <= 6'd0;

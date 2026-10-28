@@ -11,7 +11,7 @@ module tb_tf_player;
  reg [3:0] fault=0;wire [31:0] last_arg;integer pixels=0,cycle=0,finish_delay=0,commits=0;
  reg last_req=0,last_commit=0,last_track=0;reg [23:0] banks[0:614399];
  reg [31:0] prefix_checksum=0;integer failures=0;
- tf_file_player #(.DEBOUNCE_MS(1)) dut(.clk(clk),.rst(rst),.key_next(1'b1),.key_auto(1'b1),.key_zoom(1'b1),
+    tf_file_player #(.DEBOUNCE_MS(1)) dut(.clk(clk),.rst(rst),.key_next(1'b0),.key_auto(1'b1),.key_zoom(1'b1),
  .write_ready(!abort_req),.write_req_ack(ack),.write_finish_toggle(finish),.write_abort_done(abort_done),
  .write_req(wr_req),.write_en(wr_en),.write_data(wr_data),.write_abort(abort_req),
  .write_buf_idx(wr_bank),.disp_buf_idx(disp_bank),.display_valid(display_valid),

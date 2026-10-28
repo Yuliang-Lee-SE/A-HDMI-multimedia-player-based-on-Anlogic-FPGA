@@ -10,6 +10,7 @@ module tb_transition_owner;
     reg [1:0] committed_bank = 2'd0;
     reg [20:0] committed_item = 21'd0;
     reg commit_ack_toggle = 1'b0;
+    reg [1:0] transition_mode = 2'd1;
 
     wire [1:0] source_bank_a;
     wire [1:0] source_bank_b;
@@ -33,6 +34,7 @@ module tb_transition_owner;
         .committed_bank      (committed_bank),
         .committed_item      (committed_item),
         .source_commit_toggle(commit_ack_toggle),
+        .transition_mode     (transition_mode),
         .source_bank_a       (source_bank_a),
         .source_bank_b       (source_bank_b),
         .read_dual           (read_dual),
@@ -70,6 +72,7 @@ module tb_transition_owner;
     initial begin
         repeat (4) @(negedge clk);
         rst = 1'b0;
+        transition_mode = 2'd1;
 
         // First complete frame: hard cut and release bank 0.
         committed_valid = 1'b1;
@@ -113,7 +116,8 @@ module tb_transition_owner;
         check(!transition_active && !read_dual, "slide must finish");
         check(source_bank_a == 0 && source_bank_b == 0, "new active bank");
         check(display_item == {7'd2,14'd2}, "new metadata after slide");
-        check(transition_blinds, "next effect must be blinds");
+        check(!transition_blinds && !transition_fade,
+              "slide must not select another effect");
         check(release_toggle == commit_ack_toggle, "release after slide");
 
         // Same-item reload stays a hard cut and must not consume an effect.
@@ -121,9 +125,11 @@ module tb_transition_owner;
         frame;
         commit_ack_toggle = 1'b0;
         repeat (5) @(negedge clk);
-        check(!transition_active && transition_blinds, "hard cut preserves effect");
+        check(!transition_active && !transition_blinds,
+              "hard cut must not start an effect");
 
         // The next different item uses horizontal blinds.
+        transition_mode = 2'd2;
         committed_bank = 2'd0;
         committed_item = {7'd3,14'd3};
         frame;
@@ -134,8 +140,8 @@ module tb_transition_owner;
         repeat (5) @(negedge clk);
         check(!transition_active && !transition_blinds, "blinds finish");
         check(display_item == {7'd3,14'd3}, "metadata after blinds");
-        check(transition_fade, "next effect must be fade");
 
+        transition_mode = 2'd3;
         committed_bank = 2'd1;
         committed_item = {7'd4,14'd4};
         frame;
@@ -146,6 +152,22 @@ module tb_transition_owner;
         repeat (5) @(negedge clk);
         check(!transition_active && !transition_fade, "fade finish");
         check(display_item == {7'd4,14'd4}, "metadata after fade");
+
+        // Mode 0 is a hard cut at the frame boundary.
+        transition_mode = 2'd0;
+        committed_bank = 2'd0;
+        committed_item = {7'd5,14'd5};
+        frame;
+        commit_ack_toggle = 1'b1;
+        repeat (5) @(negedge clk);
+        check(!transition_active && !read_dual,
+              "mode 0 must hard cut without dual read");
+        check(source_bank_a == 0 && source_bank_b == 0,
+              "mode 0 selects the new bank directly");
+        check(display_item == {7'd5,14'd5},
+              "metadata after hard cut");
+        check(release_toggle == commit_ack_toggle,
+              "mode 0 release after hard cut");
 
         if (errors == 0)
             $display("TRANSITION_OWNER_PASS");

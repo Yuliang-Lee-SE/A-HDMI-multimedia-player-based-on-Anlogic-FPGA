@@ -16,6 +16,7 @@ module tb_top_commit_readback;
     reg src_valid = 1'b0;
     reg [1:0] src_bank = 2'd0;
     reg [20:0] src_item = 21'd0;
+    reg [1:0] transition_mode = 2'd1;
 
     wire bridge_req;
     wire [1:0] committed_bank;
@@ -55,6 +56,7 @@ module tb_top_commit_readback;
         .committed_bank(committed_bank),
         .committed_item(committed_item),
         .source_commit_toggle(src_toggle),
+        .transition_mode(transition_mode),
         .source_bank_a(source_bank_a),
         .source_bank_b(source_bank_b),
         .read_dual(source_dual),

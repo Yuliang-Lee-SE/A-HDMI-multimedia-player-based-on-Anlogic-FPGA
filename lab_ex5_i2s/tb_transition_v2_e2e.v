@@ -59,6 +59,7 @@ module tb_transition_v2_e2e;
     reg [1:0] committed_bank = 2'd0;
     reg [20:0] committed_item = 21'd0;
     reg commit_ack_toggle = 1'b0;
+    reg [1:0] transition_mode = 2'd1;
     wire [1:0] source_bank_a, source_bank_b;
     wire source_dual;
     wire transition_blinds;
@@ -171,6 +172,7 @@ module tb_transition_v2_e2e;
         .committed_bank      (committed_bank),
         .committed_item      (committed_item),
         .source_commit_toggle(commit_ack_toggle),
+        .transition_mode     (transition_mode),
         .source_bank_a       (source_bank_a),
         .source_bank_b       (source_bank_b),
         .read_dual           (source_dual),
@@ -400,6 +402,7 @@ module tb_transition_v2_e2e;
     initial begin
         repeat (20) @(negedge mclk);
         rst = 1'b0;
+        transition_mode = 2'd1;
         wait (Sdr_init_done);
         $display("storage initialized t=%0t",$time);
         write_frame(0,0);
@@ -440,6 +443,7 @@ module tb_transition_v2_e2e;
         check(!transition_active && shown_item == ITEM2,"same-item reload is hard cut");
 
         write_frame(1,3);
+        transition_mode = 2'd2;
         frame_number = 7;
         start_frame(1'b1,1,{7'd3,14'd3});
         drive_frame(2);
@@ -465,6 +469,7 @@ module tb_transition_v2_e2e;
         check(shown_item == {7'd3,14'd3},"metadata after blinds");
 
         write_frame(0,4);
+        transition_mode = 2'd3;
         frame_number = 12;
         start_frame(1'b1,0,{7'd4,14'd4});
         drive_frame(3);
@@ -488,6 +493,16 @@ module tb_transition_v2_e2e;
         drive_frame(4);
         check(!transition_active && !transition_fade,"fade completes");
         check(shown_item == {7'd4,14'd4},"metadata after fade");
+
+        write_frame(1,5);
+        transition_mode = 2'd0;
+        frame_number = 17;
+        start_frame(1'b1,1,{7'd5,14'd5});
+        drive_frame(2);
+        check(!transition_active && !source_dual,
+              "mode 0 hard cut must not enter transition");
+        check(shown_item == {7'd5,14'd5},
+              "mode 0 hard-cut metadata");
 
         if (errors == 0)
             $display("TRANSITION_V2_E2E_PASS frames=%0d pixels=%0d",frame_number+1,memory.rd_cnt);

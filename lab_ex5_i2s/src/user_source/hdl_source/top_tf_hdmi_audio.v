@@ -2,7 +2,7 @@
 module top(
     input                       clk,
     input                       rst_n,
-    input                       key1,           // 手动下一张
+    input                       key1,           // 短按下一张，长按设置转场模式
     input                       key2,           // 自动播放 开/关
     input                       key3,           // Board KEY3 / B1: 1x <-> center 2x
 
@@ -94,6 +94,14 @@ wire        aud_de;
 wire [3:0]  state_code;
 wire [19:0] tf_init_diagnostic;
 wire [6:0]  seg_data_0;
+wire [1:0]  transition_mode_sd;
+wire        transition_setting_sd;
+wire        transition_mode_toggle_sd;
+wire        next_press_sd;
+reg  [1:0]  transition_mode_video;
+reg  [1:0]  transition_mode_display;
+wire        transition_setting_display;
+wire [6:0]  transition_mode_seg;
 
 wire        video_read_req;
 wire        video_read_req_ack;
@@ -288,11 +296,23 @@ always @(posedge sd_card_clk or posedge rst_tf) begin
 end
 assign sd_card_write_ready_owner = sd_card_write_ready && !transition_busy_sync[2];
 
+// KEY1 is a single-cycle image-advance pulse outside configuration mode.
+// Holding it for 1.2 seconds enters/leaves transition-mode configuration.
+transition_mode_control u_transition_mode_control (
+    .clk                (sd_card_clk),
+    .rst                (rst_tf),
+    .key                (key1),
+    .mode               (transition_mode_sd),
+    .setting_active     (transition_setting_sd),
+    .mode_change_toggle (transition_mode_toggle_sd),
+    .next_press         (next_press_sd)
+);
+
 // ===================== TF 多图扫描与缓存（双缓冲） =====================
 tf_file_player #(.MAX_FILES(TF_MAX_FILES)) sd_card_bmp_m0(
     .clk               (sd_card_clk),
     .rst               (rst_tf),
-    .key_next          (key1),
+    .key_next          (next_press_sd),
     .key_auto          (key2),
     .key_zoom          (key3),
     .write_ready       (sd_card_write_ready_owner),
@@ -362,6 +382,11 @@ seg_decoder seg_decoder_m0(
     .seg_data          (seg_data_0)
 );
 
+seg_decoder seg_decoder_transition_mode(
+    .bin_data          ({2'b00,transition_mode_display}),
+    .seg_data          (transition_mode_seg)
+);
+
 seg_scan seg_scan_m0(
     .clk               (clk),
     .rst_n             (rst_n_guard),
@@ -372,7 +397,8 @@ seg_scan seg_scan_m0(
     .seg_data_2        ({1'b1,(init_diag_settle[1] ? init_diag_segments[14 +: 7]:7'b1111111)}),
     .seg_data_3        ({1'b1,(init_diag_settle[1] ? init_diag_segments[21 +: 7]:7'b1111111)}),
     .seg_data_4        ({1'b1,(init_diag_settle[1] ? init_diag_segments[28 +: 7]:7'b1111111)}),
-    .seg_data_5        ({1'b1,seg_data_0})
+    .seg_data_5        ({1'b1,(transition_setting_display ?
+                               transition_mode_seg : seg_data_0)})
 );
 
 // ===================== 原图像时序与帧缓存 =====================
@@ -396,6 +422,7 @@ transition_frame_owner #(
     .committed_bank       (committed_video_bank),
     .committed_item       (committed_video_item),
     .source_commit_toggle (display_commit_toggle),
+    .transition_mode      (transition_mode_video),
     .source_bank_a        (source_bank_a),
     .source_bank_b        (source_bank_b),
     .read_dual            (source_read_dual),
@@ -443,6 +470,47 @@ osd_display_commit #(.ITEM_W(21)) u_display_commit(
 // The source may reuse a ping-pong bank only after the owner has completed the
 // current frame or slide. The bridge ACK only confirms video-side capture.
 assign display_commit_ack = owner_release_toggle;
+
+// The selected mode is held in the SD clock domain. Toggle handshakes capture
+// the complete 2-bit value after it has settled in each destination domain.
+(* async_reg = "true" *) reg [2:0] mode_toggle_video_sync;
+reg mode_toggle_video_seen;
+always @(posedge video_clk or posedge rst_all) begin
+    if (rst_all) begin
+        mode_toggle_video_sync <= 3'b000;
+        mode_toggle_video_seen <= 1'b0;
+        transition_mode_video  <= 2'd0;
+    end else begin
+        mode_toggle_video_sync <=
+            {mode_toggle_video_sync[1:0],transition_mode_toggle_sd};
+        if (mode_toggle_video_sync[2] != mode_toggle_video_seen) begin
+            mode_toggle_video_seen <= mode_toggle_video_sync[2];
+            transition_mode_video  <= transition_mode_sd;
+        end
+    end
+end
+
+(* async_reg = "true" *) reg [2:0] mode_toggle_display_sync;
+(* async_reg = "true" *) reg [1:0] transition_setting_sync;
+reg mode_toggle_display_seen;
+always @(posedge clk or posedge rst_all) begin
+    if (rst_all) begin
+        mode_toggle_display_sync <= 3'b000;
+        transition_setting_sync  <= 2'b00;
+        mode_toggle_display_seen <= 1'b0;
+        transition_mode_display  <= 2'd0;
+    end else begin
+        mode_toggle_display_sync <=
+            {mode_toggle_display_sync[1:0],transition_mode_toggle_sd};
+        transition_setting_sync <=
+            {transition_setting_sync[0],transition_setting_sd};
+        if (mode_toggle_display_sync[2] != mode_toggle_display_seen) begin
+            mode_toggle_display_seen <= mode_toggle_display_sync[2];
+            transition_mode_display  <= transition_mode_sd;
+        end
+    end
+end
+assign transition_setting_display = transition_setting_sync[1];
 
 // Status changes slowly in the 100 MHz SD domain; synchronize them before
 // using them in the 25 MHz video-pixel domain.

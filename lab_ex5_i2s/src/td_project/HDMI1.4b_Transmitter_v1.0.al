@@ -100,7 +100,7 @@
                     <Attr Name="UsedInSyn" Val="true"/>
                     <Attr Name="UsedInP&R" Val="true"/>
                     <Attr Name="BelongTo" Val="design_1"/>
-                    <Attr Name="CompileOrder" Val="21"/>
+                    <Attr Name="CompileOrder" Val="20"/>
                 </FileInfo>
             </File>
             <File Path="../user_source/hdl_source/SD/bmp_read.v">
@@ -108,7 +108,7 @@
                     <Attr Name="UsedInSyn" Val="true"/>
                     <Attr Name="UsedInP&R" Val="true"/>
                     <Attr Name="BelongTo" Val="design_1"/>
-                    <Attr Name="CompileOrder" Val="23"/>
+                    <Attr Name="CompileOrder" Val="21"/>
                 </FileInfo>
             </File>
             <File Path="../user_source/hdl_source/SD/color_bar.v">
@@ -116,7 +116,7 @@
                     <Attr Name="UsedInSyn" Val="true"/>
                     <Attr Name="UsedInP&R" Val="true"/>
                     <Attr Name="BelongTo" Val="design_1"/>
-                    <Attr Name="CompileOrder" Val="24"/>
+                    <Attr Name="CompileOrder" Val="22"/>
                 </FileInfo>
             </File>
             <File Path="../user_source/hdl_source/SD/frame_fifo_read.v">
@@ -124,7 +124,7 @@
                     <Attr Name="UsedInSyn" Val="true"/>
                     <Attr Name="UsedInP&R" Val="true"/>
                     <Attr Name="BelongTo" Val="design_1"/>
-                    <Attr Name="CompileOrder" Val="25"/>
+                    <Attr Name="CompileOrder" Val="23"/>
                 </FileInfo>
             </File>
             <File Path="../user_source/hdl_source/SD/frame_fifo_write.v">
@@ -132,7 +132,7 @@
                     <Attr Name="UsedInSyn" Val="true"/>
                     <Attr Name="UsedInP&R" Val="true"/>
                     <Attr Name="BelongTo" Val="design_1"/>
-                    <Attr Name="CompileOrder" Val="26"/>
+                    <Attr Name="CompileOrder" Val="24"/>
                 </FileInfo>
             </File>
             <File Path="../user_source/hdl_source/SD/frame_read_write.v">
@@ -140,7 +140,7 @@
                     <Attr Name="UsedInSyn" Val="true"/>
                     <Attr Name="UsedInP&R" Val="true"/>
                     <Attr Name="BelongTo" Val="design_1"/>
-                    <Attr Name="CompileOrder" Val="27"/>
+                    <Attr Name="CompileOrder" Val="25"/>
                 </FileInfo>
             </File>
             <File Path="../user_source/hdl_source/SD/sd_card_bmp.v">
@@ -148,7 +148,7 @@
                     <Attr Name="UsedInSyn" Val="true"/>
                     <Attr Name="UsedInP&R" Val="true"/>
                     <Attr Name="BelongTo" Val="design_1"/>
-                    <Attr Name="CompileOrder" Val="28"/>
+                    <Attr Name="CompileOrder" Val="26"/>
                 </FileInfo>
             </File>
             <File Path="../user_source/hdl_source/SD/seg_decoder.v">
@@ -156,7 +156,7 @@
                     <Attr Name="UsedInSyn" Val="true"/>
                     <Attr Name="UsedInP&R" Val="true"/>
                     <Attr Name="BelongTo" Val="design_1"/>
-                    <Attr Name="CompileOrder" Val="29"/>
+                    <Attr Name="CompileOrder" Val="27"/>
                 </FileInfo>
             </File>
             <File Path="../user_source/hdl_source/SD/seg_scan.v">
@@ -164,7 +164,7 @@
                     <Attr Name="UsedInSyn" Val="true"/>
                     <Attr Name="UsedInP&R" Val="true"/>
                     <Attr Name="BelongTo" Val="design_1"/>
-                    <Attr Name="CompileOrder" Val="30"/>
+                    <Attr Name="CompileOrder" Val="28"/>
                 </FileInfo>
             </File>
             <File Path="../user_source/hdl_source/SD/video_define.v">
@@ -173,7 +173,7 @@
                     <Attr Name="UsedInSyn" Val="true"/>
                     <Attr Name="UsedInP&R" Val="true"/>
                     <Attr Name="BelongTo" Val="design_1"/>
-                    <Attr Name="CompileOrder" Val="31"/>
+                    <Attr Name="CompileOrder" Val="29"/>
                 </FileInfo>
             </File>
             <File Path="../user_source/hdl_source/SD/video_delay.v">
@@ -181,7 +181,7 @@
                     <Attr Name="UsedInSyn" Val="true"/>
                     <Attr Name="UsedInP&R" Val="true"/>
                     <Attr Name="BelongTo" Val="design_1"/>
-                    <Attr Name="CompileOrder" Val="32"/>
+                    <Attr Name="CompileOrder" Val="30"/>
                 </FileInfo>
             </File>
             <File Path="../user_source/hdl_source/SD/video_timing_data.v">
@@ -189,7 +189,7 @@
                     <Attr Name="UsedInSyn" Val="true"/>
                     <Attr Name="UsedInP&R" Val="true"/>
                     <Attr Name="BelongTo" Val="design_1"/>
-                    <Attr Name="CompileOrder" Val="33"/>
+                    <Attr Name="CompileOrder" Val="31"/>
                 </FileInfo>
             </File>
             <File Path="../user_source/hdl_source/hdmi_audio_tone_i2s_64fs.v">
@@ -198,7 +198,7 @@
                     <Attr Name="UsedInSyn" Val="true"/>
                     <Attr Name="UsedInP&R" Val="true"/>
                     <Attr Name="BelongTo" Val="design_1"/>
-                    <Attr Name="CompileOrder" Val="34"/>
+                    <Attr Name="CompileOrder" Val="32"/>
                 </FileInfo>
             </File>
             <File Path="../user_source/hdl_source/startup_pulse.v">
@@ -206,7 +206,7 @@
                     <Attr Name="UsedInSyn" Val="true"/>
                     <Attr Name="UsedInP&R" Val="true"/>
                     <Attr Name="BelongTo" Val="design_1"/>
-                    <Attr Name="CompileOrder" Val="35"/>
+                    <Attr Name="CompileOrder" Val="33"/>
                 </FileInfo>
             </File>
             <File Path="../user_source/hdl_source/video_rgb_to_axis_640x480.v">
@@ -214,7 +214,7 @@
                     <Attr Name="UsedInSyn" Val="true"/>
                     <Attr Name="UsedInP&R" Val="true"/>
                     <Attr Name="BelongTo" Val="design_1"/>
-                    <Attr Name="CompileOrder" Val="36"/>
+                    <Attr Name="CompileOrder" Val="34"/>
                 </FileInfo>
             </File>
             <File Path="../user_source/hdl_source/SD/sd_card_cmd.v">
@@ -222,7 +222,7 @@
                     <Attr Name="UsedInSyn" Val="true"/>
                     <Attr Name="UsedInP&R" Val="true"/>
                     <Attr Name="BelongTo" Val="design_1"/>
-                    <Attr Name="CompileOrder" Val="37"/>
+                    <Attr Name="CompileOrder" Val="35"/>
                 </FileInfo>
             </File>
             <File Path="../user_source/hdl_source/SD/sd_card_sec_read_write.v">
@@ -230,7 +230,7 @@
                     <Attr Name="UsedInSyn" Val="true"/>
                     <Attr Name="UsedInP&R" Val="true"/>
                     <Attr Name="BelongTo" Val="design_1"/>
-                    <Attr Name="CompileOrder" Val="38"/>
+                    <Attr Name="CompileOrder" Val="36"/>
                 </FileInfo>
             </File>
             <File Path="../user_source/hdl_source/SD/sd_card_top.v">
@@ -238,7 +238,7 @@
                     <Attr Name="UsedInSyn" Val="true"/>
                     <Attr Name="UsedInP&R" Val="true"/>
                     <Attr Name="BelongTo" Val="design_1"/>
-                    <Attr Name="CompileOrder" Val="39"/>
+                    <Attr Name="CompileOrder" Val="37"/>
                 </FileInfo>
             </File>
             <File Path="../user_source/hdl_source/SD/spi_master.v">
@@ -246,7 +246,7 @@
                     <Attr Name="UsedInSyn" Val="true"/>
                     <Attr Name="UsedInP&R" Val="true"/>
                     <Attr Name="BelongTo" Val="design_1"/>
-                    <Attr Name="CompileOrder" Val="40"/>
+                    <Attr Name="CompileOrder" Val="38"/>
                 </FileInfo>
             </File>
             <File Path="../user_source/hdl_source/SD/sdram.v">
@@ -254,7 +254,7 @@
                     <Attr Name="UsedInSyn" Val="true"/>
                     <Attr Name="UsedInP&R" Val="true"/>
                     <Attr Name="BelongTo" Val="design_1"/>
-                    <Attr Name="CompileOrder" Val="41"/>
+                    <Attr Name="CompileOrder" Val="39"/>
                 </FileInfo>
             </File>
             <File Path="../user_source/hdl_source/include/global_def.v">
@@ -263,7 +263,7 @@
                     <Attr Name="UsedInSyn" Val="true"/>
                     <Attr Name="UsedInP&R" Val="true"/>
                     <Attr Name="BelongTo" Val="design_1"/>
-                    <Attr Name="CompileOrder" Val="42"/>
+                    <Attr Name="CompileOrder" Val="40"/>
                 </FileInfo>
             </File>
             <File Path="../user_source/hdl_source/include/sdr_as_ram.enc.v">
@@ -271,7 +271,7 @@
                     <Attr Name="UsedInSyn" Val="true"/>
                     <Attr Name="UsedInP&R" Val="true"/>
                     <Attr Name="BelongTo" Val="design_1"/>
-                    <Attr Name="CompileOrder" Val="43"/>
+                    <Attr Name="CompileOrder" Val="41"/>
                 </FileInfo>
             </File>
             <File Path="../user_source/hdl_source/include/sdr_init_ref.enc.v">
@@ -279,7 +279,7 @@
                     <Attr Name="UsedInSyn" Val="true"/>
                     <Attr Name="UsedInP&R" Val="true"/>
                     <Attr Name="BelongTo" Val="design_1"/>
-                    <Attr Name="CompileOrder" Val="44"/>
+                    <Attr Name="CompileOrder" Val="42"/>
                 </FileInfo>
             </File>
             <File Path="../user_source/hdl_source/include/sdr_wrrd.enc.v">
@@ -287,7 +287,7 @@
                     <Attr Name="UsedInSyn" Val="true"/>
                     <Attr Name="UsedInP&R" Val="true"/>
                     <Attr Name="BelongTo" Val="design_1"/>
-                    <Attr Name="CompileOrder" Val="45"/>
+                    <Attr Name="CompileOrder" Val="43"/>
                 </FileInfo>
             </File>
             <File Path="../user_source/hdl_source/hdmi_audio_tone_pcm_scale.v">
@@ -296,7 +296,7 @@
                     <Attr Name="UsedInSyn" Val="true"/>
                     <Attr Name="UsedInP&R" Val="true"/>
                     <Attr Name="BelongTo" Val="design_1"/>
-                    <Attr Name="CompileOrder" Val="46"/>
+                    <Attr Name="CompileOrder" Val="44"/>
                 </FileInfo>
             </File>
             <File Path="../user_source/hdl_source/osd_overlay.v">
@@ -304,7 +304,7 @@
                     <Attr Name="UsedInSyn" Val="true"/>
                     <Attr Name="UsedInP&R" Val="true"/>
                     <Attr Name="BelongTo" Val="design_1"/>
-                    <Attr Name="CompileOrder" Val="47"/>
+                    <Attr Name="CompileOrder" Val="45"/>
                 </FileInfo>
             </File>
             <File Path="../user_source/hdl_source/team/audio_rom_player.v">
@@ -312,7 +312,7 @@
                     <Attr Name="UsedInSyn" Val="true"/>
                     <Attr Name="UsedInP&R" Val="true"/>
                     <Attr Name="BelongTo" Val="design_1"/>
-                    <Attr Name="CompileOrder" Val="48"/>
+                    <Attr Name="CompileOrder" Val="46"/>
                 </FileInfo>
             </File>
             <File Path="../user_source/hdl_source/team/waveform_overlay.v">
@@ -320,7 +320,7 @@
                     <Attr Name="UsedInSyn" Val="true"/>
                     <Attr Name="UsedInP&R" Val="true"/>
                     <Attr Name="BelongTo" Val="design_1"/>
-                    <Attr Name="CompileOrder" Val="49"/>
+                    <Attr Name="CompileOrder" Val="47"/>
                 </FileInfo>
             </File>
             <File Path="../user_source/hdl_source/team/bmp_center_zoom_2x.v">
@@ -328,7 +328,7 @@
                     <Attr Name="UsedInSyn" Val="true"/>
                     <Attr Name="UsedInP&R" Val="true"/>
                     <Attr Name="BelongTo" Val="design_1"/>
-                    <Attr Name="CompileOrder" Val="50"/>
+                    <Attr Name="CompileOrder" Val="48"/>
                 </FileInfo>
             </File>
             <File Path="../user_source/hdl_source/team/image_scaler_2x_pingpong.v">
@@ -336,7 +336,7 @@
                     <Attr Name="UsedInSyn" Val="true"/>
                     <Attr Name="UsedInP&R" Val="true"/>
                     <Attr Name="BelongTo" Val="design_1"/>
-                    <Attr Name="CompileOrder" Val="51"/>
+                    <Attr Name="CompileOrder" Val="49"/>
                 </FileInfo>
             </File>
             <File Path="../user_source/hdl_source/team/osd_resources.v">
@@ -344,7 +344,7 @@
                     <Attr Name="UsedInSyn" Val="true"/>
                     <Attr Name="UsedInP&R" Val="true"/>
                     <Attr Name="BelongTo" Val="design_1"/>
-                    <Attr Name="CompileOrder" Val="52"/>
+                    <Attr Name="CompileOrder" Val="50"/>
                 </FileInfo>
             </File>
             <File Path="../user_source/hdl_source/team/osd_text_renderer.v">
@@ -352,7 +352,7 @@
                     <Attr Name="UsedInSyn" Val="true"/>
                     <Attr Name="UsedInP&R" Val="true"/>
                     <Attr Name="BelongTo" Val="design_1"/>
-                    <Attr Name="CompileOrder" Val="53"/>
+                    <Attr Name="CompileOrder" Val="51"/>
                 </FileInfo>
             </File>
             <File Path="../user_source/hdl_source/team/osd_display_commit.v">
@@ -360,7 +360,7 @@
                     <Attr Name="UsedInSyn" Val="true"/>
                     <Attr Name="UsedInP&R" Val="true"/>
                     <Attr Name="BelongTo" Val="design_1"/>
-                    <Attr Name="CompileOrder" Val="54"/>
+                    <Attr Name="CompileOrder" Val="52"/>
                 </FileInfo>
             </File>
             <File Path="../user_source/hdl_source/team/frame_compose_read.v">
@@ -368,7 +368,7 @@
                     <Attr Name="UsedInSyn" Val="true"/>
                     <Attr Name="UsedInP&R" Val="true"/>
                     <Attr Name="BelongTo" Val="design_1"/>
-                    <Attr Name="CompileOrder" Val="63"/>
+                    <Attr Name="CompileOrder" Val="60"/>
                 </FileInfo>
             </File>
             <File Path="../user_source/hdl_source/team/frame_read_write_dual.v">
@@ -376,7 +376,7 @@
                     <Attr Name="UsedInSyn" Val="true"/>
                     <Attr Name="UsedInP&R" Val="true"/>
                     <Attr Name="BelongTo" Val="design_1"/>
-                    <Attr Name="CompileOrder" Val="64"/>
+                    <Attr Name="CompileOrder" Val="61"/>
                 </FileInfo>
             </File>
             <File Path="../user_source/hdl_source/team/transition_frame_owner.v">
@@ -384,66 +384,10 @@
                     <Attr Name="UsedInSyn" Val="true"/>
                     <Attr Name="UsedInP&R" Val="true"/>
                     <Attr Name="BelongTo" Val="design_1"/>
-                    <Attr Name="CompileOrder" Val="68"/>
+                    <Attr Name="CompileOrder" Val="64"/>
                 </FileInfo>
             </File>
-            <File Path="../../tf_player/rtl/fat32_ro.sv">
-                <FileInfo>
-                    <Attr Name="UsedInSyn" Val="true"/>
-                    <Attr Name="UsedInP&R" Val="true"/>
-                    <Attr Name="BelongTo" Val="design_1"/>
-                    <Attr Name="CompileOrder" Val="55"/>
-                </FileInfo>
-            </File>
-            <File Path="../../tf_player/rtl/sd_spi_reader.sv">
-                <FileInfo>
-                    <Attr Name="UsedInSyn" Val="true"/>
-                    <Attr Name="UsedInP&R" Val="true"/>
-                    <Attr Name="BelongTo" Val="design_1"/>
-                    <Attr Name="CompileOrder" Val="56"/>
-                </FileInfo>
-            </File>
-            <File Path="../../tf_player/rtl/bmp_file_stream.sv">
-                <FileInfo>
-                    <Attr Name="UsedInSyn" Val="true"/>
-                    <Attr Name="UsedInP&R" Val="true"/>
-                    <Attr Name="BelongTo" Val="design_1"/>
-                    <Attr Name="CompileOrder" Val="57"/>
-                </FileInfo>
-            </File>
-            <File Path="../../tf_player/rtl/tf_file_player.sv">
-                <FileInfo>
-                    <Attr Name="UsedInSyn" Val="true"/>
-                    <Attr Name="UsedInP&R" Val="true"/>
-                    <Attr Name="BelongTo" Val="design_1"/>
-                    <Attr Name="CompileOrder" Val="58"/>
-                </FileInfo>
-            </File>
-            <File Path="../user_source/hdl_source/team/osd_layer_renderer.v">
-                <FileInfo>
-                    <Attr Name="UsedInSyn" Val="true"/>
-                    <Attr Name="UsedInP&R" Val="true"/>
-                    <Attr Name="BelongTo" Val="design_1"/>
-                    <Attr Name="CompileOrder" Val="59"/>
-                </FileInfo>
-            </File>
-            <File Path="../user_source/hdl_source/team/reset_startup_guard.v">
-                <FileInfo>
-                    <Attr Name="UsedInSyn" Val="true"/>
-                    <Attr Name="UsedInP&R" Val="true"/>
-                    <Attr Name="BelongTo" Val="design_1"/>
-                    <Attr Name="CompileOrder" Val="60"/>
-                </FileInfo>
-            </File>
-            <File Path="../user_source/hdl_source/team/audio_control.v">
-                <FileInfo>
-                    <Attr Name="UsedInSyn" Val="true"/>
-                    <Attr Name="UsedInP&R" Val="true"/>
-                    <Attr Name="BelongTo" Val="design_1"/>
-                    <Attr Name="CompileOrder" Val="62"/>
-                </FileInfo>
-            </File>
-            <File Path="../user_source/hdl_source/team/audio_osd.v">
+            <File Path="../user_source/hdl_source/team/transition_mode_control.v">
                 <FileInfo>
                     <Attr Name="UsedInSyn" Val="true"/>
                     <Attr Name="UsedInP&R" Val="true"/>
@@ -451,12 +395,76 @@
                     <Attr Name="CompileOrder" Val="65"/>
                 </FileInfo>
             </File>
+            <File Path="../../tf_player/rtl/fat32_ro.sv">
+                <FileInfo>
+                    <Attr Name="UsedInSyn" Val="true"/>
+                    <Attr Name="UsedInP&R" Val="true"/>
+                    <Attr Name="BelongTo" Val="design_1"/>
+                    <Attr Name="CompileOrder" Val="53"/>
+                </FileInfo>
+            </File>
+            <File Path="../../tf_player/rtl/sd_spi_reader.sv">
+                <FileInfo>
+                    <Attr Name="UsedInSyn" Val="true"/>
+                    <Attr Name="UsedInP&R" Val="true"/>
+                    <Attr Name="BelongTo" Val="design_1"/>
+                    <Attr Name="CompileOrder" Val="54"/>
+                </FileInfo>
+            </File>
+            <File Path="../../tf_player/rtl/bmp_file_stream.sv">
+                <FileInfo>
+                    <Attr Name="UsedInSyn" Val="true"/>
+                    <Attr Name="UsedInP&R" Val="true"/>
+                    <Attr Name="BelongTo" Val="design_1"/>
+                    <Attr Name="CompileOrder" Val="55"/>
+                </FileInfo>
+            </File>
+            <File Path="../../tf_player/rtl/tf_file_player.sv">
+                <FileInfo>
+                    <Attr Name="UsedInSyn" Val="true"/>
+                    <Attr Name="UsedInP&R" Val="true"/>
+                    <Attr Name="BelongTo" Val="design_1"/>
+                    <Attr Name="CompileOrder" Val="56"/>
+                </FileInfo>
+            </File>
+            <File Path="../user_source/hdl_source/team/osd_layer_renderer.v">
+                <FileInfo>
+                    <Attr Name="UsedInSyn" Val="true"/>
+                    <Attr Name="UsedInP&R" Val="true"/>
+                    <Attr Name="BelongTo" Val="design_1"/>
+                    <Attr Name="CompileOrder" Val="57"/>
+                </FileInfo>
+            </File>
+            <File Path="../user_source/hdl_source/team/reset_startup_guard.v">
+                <FileInfo>
+                    <Attr Name="UsedInSyn" Val="true"/>
+                    <Attr Name="UsedInP&R" Val="true"/>
+                    <Attr Name="BelongTo" Val="design_1"/>
+                    <Attr Name="CompileOrder" Val="58"/>
+                </FileInfo>
+            </File>
+            <File Path="../user_source/hdl_source/team/audio_control.v">
+                <FileInfo>
+                    <Attr Name="UsedInSyn" Val="true"/>
+                    <Attr Name="UsedInP&R" Val="true"/>
+                    <Attr Name="BelongTo" Val="design_1"/>
+                    <Attr Name="CompileOrder" Val="59"/>
+                </FileInfo>
+            </File>
+            <File Path="../user_source/hdl_source/team/audio_osd.v">
+                <FileInfo>
+                    <Attr Name="UsedInSyn" Val="true"/>
+                    <Attr Name="UsedInP&R" Val="true"/>
+                    <Attr Name="BelongTo" Val="design_1"/>
+                    <Attr Name="CompileOrder" Val="62"/>
+                </FileInfo>
+            </File>
             <File Path="../user_source/hdl_source/team/key_short_long.v">
                 <FileInfo>
                     <Attr Name="UsedInSyn" Val="true"/>
                     <Attr Name="UsedInP&R" Val="true"/>
                     <Attr Name="BelongTo" Val="design_1"/>
-                    <Attr Name="CompileOrder" Val="67"/>
+                    <Attr Name="CompileOrder" Val="63"/>
                 </FileInfo>
             </File>
         </Verilog>
@@ -603,6 +611,36 @@
         </Run>
         <Run Name="syn_6" Type="Synthesis" ConstraintSet="constraint_1" Description="">
             <Strategy Name="Default_Synthesis_Strategy">
+            </Strategy>
+            <UserParams>
+            </UserParams>
+        </Run>
+        <Run Name="syn_13" Type="Synthesis" ConstraintSet="constraint_1" Description="">
+            <Strategy Name="Default_Synthesis_Strategy">
+            </Strategy>
+            <UserParams>
+            </UserParams>
+        </Run>
+        <Run Name="syn_14" Type="Synthesis" ConstraintSet="constraint_1" Description="">
+            <Strategy Name="Default_Synthesis_Strategy">
+            </Strategy>
+            <UserParams>
+            </UserParams>
+        </Run>
+        <Run Name="syn_15" Type="Synthesis" ConstraintSet="constraint_1" Description="">
+            <Strategy Name="Default_Synthesis_Strategy">
+            </Strategy>
+            <UserParams>
+            </UserParams>
+        </Run>
+        <Run Name="phy_32" Type="PhysicalDesign" ConstraintSet="constraint_1" Description="" SynRun="syn_15">
+            <Strategy Name="Default_PhysicalDesign_Strategy">
+            </Strategy>
+            <UserParams>
+            </UserParams>
+        </Run>
+        <Run Name="phy_33" Type="PhysicalDesign" ConstraintSet="constraint_1" Description="" SynRun="syn_15">
+            <Strategy Name="Default_PhysicalDesign_Strategy">
             </Strategy>
             <UserParams>
             </UserParams>

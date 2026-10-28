@@ -64,6 +64,9 @@ reg cs,nCS_q,wr_req; reg [7:0] tx; wire [7:0] rx; wire ack;
  reg [7:0] poll_count,attempt; reg [15:0] crc,card_crc;
  reg [127:0] csd; reg [7:0] buffer[0:511];
  reg [7:0] buffer_q;reg cancel_hit_q;
+ // Keeping the wide timeout comparisons out of the protocol state mux removes
+ // their marginal 100 MHz path without changing when the timeout takes effect.
+ reg read_active_timeout,init_phase_timeout;
  wire [8:0] buffer_raddr=((|(state & FINISH)) && !cancel_valid && emit_pos<511) ? emit_pos[8:0]+1'b1:emit_pos[8:0];
  always @(posedge clk) begin
   buffer_q<=buffer[buffer_raddr];
@@ -113,6 +116,7 @@ always @(posedge clk or posedge rst)
   if(rst) begin
    state<=POWER;timer<=0;init_timer<=0;read_timer<=0;token_timer<=0;
    media_ready<=0;media_sectors<=0;init_error<=0;block_addressed<=0;init_diagnostic<=0;init_last_rx<=8'hff;
+   read_active_timeout<=0;init_phase_timeout<=0;
    cs<=1;wr_req<=0;tx<=255;divider<=LOW_DIV;gap<=0;active<=0;
    rsp_tag<=0;rsp_valid<=0;rsp_data<=0;rsp_done<=0;rsp_error<=0;
    count<=0;attempt<=0;v2<=0;phase<=0;crc<=0;csd<=0;
@@ -122,6 +126,10 @@ always @(posedge clk or posedge rst)
    if(media_ready) init_timer<=0;
    else if(!(|(state & FAILED))) init_timer<=init_timer+1;
    if(active) read_timer<=read_timer+1;
+   read_active_timeout<=active && (read_timer>=READ_CYCLES-1);
+   init_phase_timeout<=!media_ready && !init_error &&
+    !(|(state & FAILED)) && !(|(state & ABORT)) &&
+    (init_timer>=INIT_CYCLES-1);
    if((|(state & TOKEN)) || (|(state & TOKEN_GOT)) ||
       (((|(state & BYTE_WAIT)) || (|(state & BYTE_GAP))) && (|(resume & TOKEN_GOT)))) token_timer<=token_timer+1;
    // Finish the in-flight byte before aborting; CS stays high until a new CMD0.
@@ -130,12 +138,12 @@ always @(posedge clk or posedge rst)
     if((|(state & BYTE_WAIT))) begin resume<=ABORT;if(ack) begin wr_req<=0;gap<=3;state<=BYTE_GAP;end end
     else if((|(state & BYTE_GAP))) begin resume<=ABORT;if(gap==0) state<=ABORT;else gap<=gap-1;end
     else state<=ABORT;
-   end else if(active && read_timer>=READ_CYCLES && !(|(state & ABORT)) && !(|(state & ABORTED))) begin
+   end else if(active && read_active_timeout && !(|(state & ABORT)) && !(|(state & ABORTED))) begin
     rsp_error<=1;active<=0;media_ready<=0;cs<=1;
     if((|(state & BYTE_WAIT))) begin resume<=ABORT;if(ack) begin wr_req<=0;gap<=3;state<=BYTE_GAP;end end
     else if((|(state & BYTE_GAP))) begin resume<=ABORT;if(gap==0) state<=ABORT;else gap<=gap-1;end
     else state<=ABORT;
-   end else if(!media_ready && !init_error && init_timer>=INIT_CYCLES && !(|(state & FAILED)) && !(|(state & ABORT))) begin
+   end else if(init_phase_timeout) begin
     init_error<=1;cs<=1;
     init_diagnostic<={4'ha,((|(state & (POWER|CLOCKS|CLOCKED))) ? 8'hff:{2'b0,cmd_num}),(ack ? rx:init_last_rx)};
     if((|(state & BYTE_WAIT))) begin resume<=FAILED;if(ack) begin wr_req<=0;gap<=3;state<=BYTE_GAP;end end

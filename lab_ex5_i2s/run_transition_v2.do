@@ -8,6 +8,8 @@ vmap transition_v2_build transition_v2_build/work
 vlog -work transition_v2_build \
     src/user_source/hdl_source/team/frame_compose_read.v \
     src/user_source/hdl_source/team/frame_read_write_dual.v \
+    src/user_source/hdl_source/team/key_short_long.v \
+    src/user_source/hdl_source/team/transition_mode_control.v \
     src/user_source/hdl_source/team/transition_frame_owner.v \
     src/user_source/hdl_source/team/osd_display_commit.v \
     src/user_source/hdl_source/SD/frame_fifo_write.v \
@@ -17,6 +19,7 @@ vlog -work transition_v2_build \
     src/user_source/hdl_source/IP/afifo_16_32_256.v \
     src/user_source/hdl_source/IP/afifo_32_16_256.v \
     sdram_model.v tb_compose_read_sequence.v \
+    tb_transition_mode_control.v \
     tb_transition_owner.v tb_commit_release_v2.v \
     tb_top_commit_readback.v tb_transition_v2_e2e.v
 
@@ -24,6 +27,13 @@ vsim -c -onfinish stop transition_v2_build.tb_compose_read_sequence \
     -do "run -all"
 if {[examine -radix decimal sim:/tb_compose_read_sequence/errors] != 0} {
     error "Compose read sequence test failed"
+}
+quit -sim
+
+vsim -c -onfinish stop transition_v2_build.tb_transition_mode_control \
+    -do "run -all"
+if {[examine -radix decimal sim:/tb_transition_mode_control/errors] != 0} {
+    error "Transition mode control test failed"
 }
 quit -sim
 
