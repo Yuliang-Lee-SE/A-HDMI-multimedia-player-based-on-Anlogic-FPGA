@@ -15,6 +15,7 @@ tools/__pycache__/
 /audit_osd_rom_commands.tcl
 
 /td_*.logw
+/picture_adjust_work/
 
 /OSD_THREE_DELIVERY_README.md
 

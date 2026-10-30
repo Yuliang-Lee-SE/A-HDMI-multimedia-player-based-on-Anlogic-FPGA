@@ -91,6 +91,22 @@ wire        aud_hs;
 wire        aud_vs;
 wire        aud_de;
 
+// Picture processing and adjustment menu.
+wire [23:0] picture_rgb;
+wire        picture_hs;
+wire        picture_vs;
+wire        picture_de;
+wire [23:0] final_rgb;
+wire        final_hs;
+wire        final_vs;
+wire        final_de;
+wire        picture_adjust_mode;
+wire [1:0]  picture_parameter;
+wire signed [7:0] picture_brightness;
+wire [7:0]  picture_contrast;
+wire [3:0]  picture_sharpness;
+wire        picture_auto_key;
+
 wire [3:0]  state_code;
 wire [19:0] tf_init_diagnostic;
 wire [6:0]  seg_data_0;
@@ -296,12 +312,47 @@ always @(posedge sd_card_clk or posedge rst_tf) begin
 end
 assign sd_card_write_ready_owner = sd_card_write_ready && !transition_busy_sync[2];
 
+// Physical KEY4 is top-level key2/C1: short AUTO/PLAY, long picture menu.
+// Physical KEY3 is key3/B1 and physical KEY2 is key1/B2.
+picture_adjust_controller #(
+    .CLK_FREQ_HZ   (25_000_000),
+    .DEBOUNCE_MS   (20),
+    .LONG_PRESS_MS (800),
+    .AUTO_KEY_MS   (30)
+) u_picture_adjust_controller (
+    .clk             (video_clk),
+    .rst             (rst_all),
+    .key4            (key2),
+    .key3            (key3),
+    .key2            (key1),
+    .adjust_mode     (picture_adjust_mode),
+    .parameter_index (picture_parameter),
+    .brightness      (picture_brightness),
+    .contrast        (picture_contrast),
+    .sharpness       (picture_sharpness),
+    .auto_key_o      (picture_auto_key)
+);
+
+// Menu state crosses to the 100 MHz key/player domain before gating the
+// existing KEY2/KEY3 functions.
+(* async_reg = "true" *) reg [1:0] picture_menu_sd_sync;
+always @(posedge sd_card_clk or posedge rst_tf) begin
+    if (rst_tf)
+        picture_menu_sd_sync <= 2'b00;
+    else
+        picture_menu_sd_sync <= {picture_menu_sd_sync[0],
+                                 picture_adjust_mode};
+end
+wire picture_menu_sd = picture_menu_sd_sync[1];
+wire transition_key = picture_menu_sd ? 1'b1 : key1;
+wire zoom_key       = picture_menu_sd ? 1'b1 : key3;
+
 // KEY1 is a single-cycle image-advance pulse outside configuration mode.
 // Holding it for 1.2 seconds enters/leaves transition-mode configuration.
 transition_mode_control u_transition_mode_control (
     .clk                (sd_card_clk),
     .rst                (rst_tf),
-    .key                (key1),
+    .key                (transition_key),
     .mode               (transition_mode_sd),
     .setting_active     (transition_setting_sd),
     .mode_change_toggle (transition_mode_toggle_sd),
@@ -313,8 +364,8 @@ tf_file_player #(.MAX_FILES(TF_MAX_FILES)) sd_card_bmp_m0(
     .clk               (sd_card_clk),
     .rst               (rst_tf),
     .key_next          (next_press_sd),
-    .key_auto          (key2),
-    .key_zoom          (key3),
+    .key_auto          (picture_auto_key),
+    .key_zoom          (zoom_key),
     .write_ready       (sd_card_write_ready_owner),
     .state_code        (state_code),
     .init_diagnostic   (tf_init_diagnostic),
@@ -460,6 +511,22 @@ assign vout_data_raw = display_rgb;
 // 首图提交前黑屏；提交后一直显示当前显示缓冲区内容
 assign vout_data = active_display_valid ? vout_data_raw : 24'd0;
 
+picture_adjust_pipeline u_picture_adjust_pipeline (
+    .clk           (video_clk),
+    .rst           (rst_all),
+    .rgb_in        (vout_data),
+    .hs_in         (hs),
+    .vs_in         (vs),
+    .de_in         (de),
+    .brightness_i  (picture_brightness),
+    .contrast_i    (picture_contrast),
+    .sharpness_i   (picture_sharpness),
+    .rgb_out       (picture_rgb),
+    .hs_out        (picture_hs),
+    .vs_out        (picture_vs),
+    .de_out        (picture_de)
+);
+
 osd_display_commit #(.ITEM_W(21)) u_display_commit(
     .clk(video_clk),.rst(rst_all),.src_toggle(display_commit_toggle),
     .src_bank(disp_buf_idx),.src_item({display_ordinal_sd,display_asset_sd}),.src_valid(display_valid),
@@ -530,7 +597,7 @@ osd_layer_renderer u_osd_layers(
     .clk(video_clk),.rst(rst_all),.enable(active_display_valid),
     .auto_mode(osd_auto_frame),.item_index(video_ordinal-7'd1),
     .caption_index(caption_index),.caption_enable(caption_valid),
-    .hs_in(hs),.vs_in(vs),.de_in(de),.rgb_in(vout_data),
+    .hs_in(picture_hs),.vs_in(picture_vs),.de_in(picture_de),.rgb_in(picture_rgb),
     .hs_out(caption_hs),.vs_out(caption_vs),.de_out(caption_de),.rgb_out(caption_rgb),
     .cfg_valid(1'b0),.cfg_ready(),.cfg_show(1'b1),.cfg_x(10'd24),.cfg_y(10'd380),
     .cfg_alpha(3'd3),.cfg_shadow(1'b1),.cfg_pause(1'b0),.cfg_step(4'd2));
@@ -576,6 +643,25 @@ audio_osd #(
     .vs_out     (aud_vs),
     .de_out     (aud_de),
     .rgb_out    (aud_rgb)
+);
+
+// Picture menu is last so it remains visible over the audio volume bar.
+picture_adjust_osd u_picture_adjust_osd (
+    .clk             (video_clk),
+    .rst             (rst_all),
+    .enable          (picture_adjust_mode),
+    .parameter_index (picture_parameter),
+    .brightness      (picture_brightness),
+    .contrast        (picture_contrast),
+    .sharpness       (picture_sharpness),
+    .hs_in           (aud_hs),
+    .vs_in           (aud_vs),
+    .de_in           (aud_de),
+    .rgb_in          (aud_rgb),
+    .hs_out          (final_hs),
+    .vs_out          (final_vs),
+    .de_out          (final_de),
+    .rgb_out         (final_rgb)
 );
 
 frame_read_write_dual #(
@@ -713,9 +799,9 @@ audio_arc_calculate #(
 video_rgb_to_axis_640x480 u_video_rgb_to_axis_640x480(
     .I_clk         (video_clk),
     .I_rst         (rst_all),
-    .I_vs          (aud_vs),
-    .I_de          (aud_de),
-    .I_rgb         (aud_rgb),
+    .I_vs          (final_vs),
+    .I_de          (final_de),
+    .I_rgb         (final_rgb),
     .O_video_user  (axis_s_user),
     .O_video_valid (axis_s_valid),
     .O_video_last  (axis_s_last),
