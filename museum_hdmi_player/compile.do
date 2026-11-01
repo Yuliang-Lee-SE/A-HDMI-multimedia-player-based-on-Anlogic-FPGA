@@ -1,5 +1,5 @@
 # Compile the active project's self-contained regression tests.
-# Run from lab_ex5_i2s:
+# Run from museum_hdmi_player:
 #   vsim -c -l compile.log -do "do compile.do; quit -f"
 
 set SRCFOUND 0

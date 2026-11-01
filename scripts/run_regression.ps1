@@ -22,7 +22,7 @@ param(
 $ErrorActionPreference = 'Stop'
 
 $repoRoot = Split-Path -Parent $PSScriptRoot
-$simDir = Join-Path $repoRoot 'lab_ex5_i2s'
+$simDir = Join-Path $repoRoot 'museum_hdmi_player'
 $compileDo = Join-Path $simDir 'compile.do'
 if (-not (Test-Path -LiteralPath $compileDo)) {
     throw "Cannot find $compileDo"

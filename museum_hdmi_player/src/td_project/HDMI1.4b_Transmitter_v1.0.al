@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<Project Version="3" Minor="2" Path="D:/FPGA/transition-v2/lab_ex5_i2s/src/td_project">
+<Project Version="3" Minor="2" Path="D:/FPGA/transition-v2/museum_hdmi_player/src/td_project">
     <Project_Created_Time></Project_Created_Time>
     <TD_Version>6.2.168116</TD_Version>
     <Name>HDMI1.4b_Transmitter_v1.0</Name>
