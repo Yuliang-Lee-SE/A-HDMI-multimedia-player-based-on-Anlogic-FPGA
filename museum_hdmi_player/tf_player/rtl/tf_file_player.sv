@@ -31,8 +31,9 @@ module tf_file_player #(
  wire bmp_fready,wav_fready,fready;
  reg mount_valid,open_valid;reg [13:0] open_id;reg [31:0] load_size;
  reg [SLOT_W-1:0] cursor,load_slot;
- wire [4:0] load_group=load_slot/6'd3;
- reg [13:0] load_id;
+ reg [4:0] load_group;
+ reg [13:0] load_id,audio_open_id;
+ reg index_ready,reuse_group;
  reg [13:0] audio_asset;
  reg audio_start;
  wire [15:0] audio_loaded_len;
@@ -50,7 +51,7 @@ module tf_file_player #(
  reg [2:0] ack_sync,finish_sync,abort_sync,commit_sync;reg wrote,bmp_ok,failed;
  wire next_press,auto_press,zoom_press;
  assign next_press=key_next;
- localparam BOOT=0,MOUNT=1,IDLE=2,SELECT=3,OPEN=4,LOAD=5,COMMIT=6,CLEAN=7,CLEAN_RELEASE=8,LOCKED=9,INDEX_WAIT=10,AUDIO_OPEN=11,AUDIO_LOAD=12;
+  localparam BOOT=0,MOUNT=1,IDLE=2,SELECT=3,OPEN=4,LOAD=5,COMMIT=6,CLEAN=7,CLEAN_RELEASE=8,LOCKED=9,INDEX_WAIT=10,AUDIO_OPEN=11,AUDIO_LOAD=12,SELECT_CHECK=13;
  reg [4:0] state;wire loading=state==LOAD;
  assign fready=((state==AUDIO_OPEN)||(state==AUDIO_LOAD)) ? wav_fready : bmp_fready;
  assign audio_loading=(state==AUDIO_OPEN)||(state==AUDIO_LOAD);
@@ -111,6 +112,7 @@ module tf_file_player #(
  always @(posedge clk) begin
   if(rst) begin
    state<=BOOT;mount_valid<=0;open_valid<=0;bmp_start<=0;cursor<=0;load_slot<=0;load_id<=0;open_id<=0;load_size<=0;
+   load_group<=0;audio_open_id<=0;index_ready<=0;reuse_group<=0;
    need_mount<=1;initial_attempted<=0;display_valid<=0;display_commit_toggle<=0;
    display_asset<=0;display_ordinal<=0;disp_buf_idx<=0;write_buf_idx<=0;
    audio_track_idx<=0;audio_track_toggle<=0;audio_enabled<=0;audio_asset<=0;card_reinit<=0;
@@ -125,6 +127,7 @@ module tf_file_player #(
    abort_sync<={abort_sync[1:0],write_abort_done};
    commit_sync<={commit_sync[1:0],display_commit_ack};
    rotation_toggle_sync<={rotation_toggle_sync[1:0],rotation_period_toggle};
+   index_ready<=(state==INDEX_WAIT || state==SELECT) && index_valid;
    if(rotation_toggle_sync[2]!=rotation_toggle_sync[1]) begin
     rotation_period_sd<=rotation_period_s;
     auto_100ms<=9'd0;
@@ -167,9 +170,17 @@ module tf_file_player #(
       end
      end
     end
-    INDEX_WAIT: state<=SELECT; // synchronous index RAM: slot and data must settle
-    SELECT: if(index_valid) begin
+    INDEX_WAIT: begin
+     load_group<=load_slot/6'd3;
+     state<=SELECT;
+    end
+    SELECT: state<=SELECT_CHECK;
+    SELECT_CHECK: if(index_ready) begin
      cursor<=load_slot;load_id<=index_id;open_id<=index_id;load_size<=index_size;
+     audio_open_id<=14'd201+load_group;
+     reuse_group<=display_valid &&
+      ((display_asset==index_id && display_ordinal==load_slot+1) ||
+       (audio_track_ready && audio_asset==load_group));
      zoom_loading<=zoom_wanted;zoom_attempted<=zoom_wanted;
      write_buf_idx<=display_valid ? (disp_buf_idx==0 ? 1:0):0;
      failed<=0;wrote<=0;bmp_ok<=0;request_seen<=0;armed<=0;state<=OPEN;
@@ -180,15 +191,13 @@ module tf_file_player #(
      if(berror || ferror || zoverflow || load_timeout) begin
       failed<=1;write_abort<=1;state<=CLEAN;wait_count<=0;
      end else if(bmp_ok && zsource && zdone && wrote) begin
-      if(display_valid &&
-         ((display_asset==load_id && display_ordinal==load_slot+1) ||
-          (audio_track_ready && audio_asset==load_group)) ) begin
+      if(reuse_group) begin
        // Keep the same BGM playing while advancing through a three-image group.
        disp_buf_idx<=write_buf_idx;display_asset<=load_id;display_ordinal<=load_slot+1;
        display_valid<=1;display_commit_toggle<=!display_commit_toggle;
        state<=COMMIT;wait_count<=0;
       end else begin
-       open_id<=14'd201+load_group;state<=AUDIO_OPEN;wait_count<=0;
+       open_id<=audio_open_id;state<=AUDIO_OPEN;wait_count<=0;
       end
      end else if(fvalid && fready) wait_count<=0;else wait_count<=wait_count+1;
     end
