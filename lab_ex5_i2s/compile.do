@@ -1,24 +1,18 @@
-# ============================================================
-# 纯 RTL 子系统仿真：建库 + 编译全部源文件与 testbench
-# 用法（必须先切到本 sim 目录）：
-#     cd <工程>/sim
-#     vsim -c -do compile.do          （或直接运行 run_all.bat）
-# 源文件来源：
-#   1) 优先用工程里的 ../src/user_source/hdl_source（保证和工程同步）
-#   2) 若本目录被单独拷到别处（例如英文路径），则用同目录下的 rtl/ 副本
-#   注意：ModelSim 不能在有中文的路径下建库，所以整体拷到
-#        纯英文路径（或先用 copy_to_ascii_path.bat）再跑。
-# ============================================================
-# 依次找：工程里的源码（两种相对位置）-> 本目录的 rtl/ 副本
+# Compile the role-C subsystem tests in ModelSim/Questa.
+# Run from lab_ex5_i2s/sim:
+#   vsim -c -l compile.log -do "do ../compile.do; quit -f"
+
 set SRCFOUND 0
 foreach cand {../src/user_source/hdl_source src/user_source/hdl_source} {
     if {!$SRCFOUND && [file exists $cand/SD/bmp_read.v]} {
-        set HDL $cand
+        set HDL [file normalize $cand]
         set SD  $HDL/SD
         set IP  $HDL/IP
         set TEAM $HDL/team
+        set LABROOT [file normalize "$HDL/../../.."]
+        set TFRTL $LABROOT/tf_player/rtl
         set SRCFOUND 1
-        puts "==== 使用源码：$HDL ===="
+        puts "==== using project HDL: $HDL ===="
     }
 }
 if {!$SRCFOUND} {
@@ -26,7 +20,9 @@ if {!$SRCFOUND} {
     set SD  rtl
     set IP  rtl
     set TEAM rtl
-    puts "==== 使用本目录下的 rtl/ 副本 ===="
+    set LABROOT ..
+    set TFRTL rtl
+    puts "==== using local RTL copy ===="
 }
 
 if {![file exists work]} { vlib work }
@@ -40,25 +36,24 @@ vlog -work work +incdir+$SD +incdir+$HDL \
     $SD/video_timing_data.v $SD/color_bar.v $SD/video_delay.v \
     $HDL/video_rgb_to_axis_640x480.v \
     $HDL/hdmi_audio_tone_i2s_64fs.v $HDL/I2S_receiver.v $HDL/audio_arc_calculate.v \
-    $TEAM/audio_rom_player.v \
+    $TEAM/audio_pcm_player.v $TFRTL/wav_pcm_loader.sv \
     sdram_model.v fake_sd_card.v fake_audio_rom.v \
     tb_bmp_read.v tb_sd_card.v tb_frame_fifo.v tb_audio_i2s.v tb_video_axis.v
 
-# 团队自己的 testbench 放在仓库根的 tb/ 下（S6/S7）；目录被单独拷走时自动跳过
-if {[file exists ../tb/tb_audio_rom_player.v]} {
+if {[file exists $LABROOT/tb/tb_wav_pcm_loader.sv]} {
     vlog -work work +incdir+$SD +incdir+$HDL \
-        ../tb/tb_audio_rom_player.v
-    puts "==== 已编译 tb/tb_audio_rom_player.v（S6）===="
+        $LABROOT/tb/tb_wav_pcm_loader.sv
+    puts "==== compiled S6 WAV loader testbench ===="
 } else {
-    puts "==== 跳过 S6：找不到 ../tb/tb_audio_rom_player.v ===="
+    puts "==== skip S6: tb/tb_wav_pcm_loader.sv not found ===="
 }
 
-if {[file exists ../tb/tb_key_control.v]} {
+if {[file exists $LABROOT/tb/tb_key_control.v]} {
     vlog -work work +incdir+$SD +incdir+$HDL \
-        fake_sd_card_multi.v ../tb/tb_key_control.v
-    puts "==== 已编译 tb/tb_key_control.v（S7）===="
+        fake_sd_card_multi.v $LABROOT/tb/tb_key_control.v
+    puts "==== compiled S7 key-control testbench ===="
 } else {
-    puts "==== 跳过 S7：找不到 ../tb/tb_key_control.v ===="
+    puts "==== skip S7: tb/tb_key_control.v not found ===="
 }
 
-puts "==== compile.do 完成：work 库里有 5 个官方子系统 DUT + 7 个 testbench（S1~S7）===="
+puts "==== compile.do complete ===="

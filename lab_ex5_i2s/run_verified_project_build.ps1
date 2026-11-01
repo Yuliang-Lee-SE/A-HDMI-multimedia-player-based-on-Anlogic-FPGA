@@ -1,6 +1,7 @@
 param(
     [Parameter(Mandatory=$true)][string]$RunName,
     [string]$TdExecutable = 'D:/FPGA-learning/Anlogic/TD5.6.2/bin/td_commands_prompt.exe',
+    [ValidateRange(1,20)][int]$PlaceSeed = 3,
     [switch]$ValidateOnly,
     [switch]$RouteOnly
 )
@@ -41,6 +42,12 @@ foreach ($stage in @('syn_1','phy_1')) {
         Copy-Item -LiteralPath (Join-Path (Join-Path $templateRoot $stage) $name) -Destination (Join-Path $destination $name)
     }
 }
+$phyTcl = Join-Path $runRoot 'phy_1/HDMI1.4b_Transmitter_v1.0.tcl'
+$phyTclText = [IO.File]::ReadAllText($phyTcl,[Text.Encoding]::UTF8)
+$seedPattern = 'set_param\s+place\s+seed\s+\d+'
+if ($phyTclText -notmatch $seedPattern) { throw 'Placement seed line not found in routed-flow template.' }
+$phyTclText = [regex]::Replace($phyTclText,$seedPattern,"set_param place seed $PlaceSeed")
+[IO.File]::WriteAllText($phyTcl,$phyTclText,(New-Object Text.UTF8Encoding($false)))
 # Use the captured C flow and its IP constraints. Stop at routing initially;
 # bit generation is a separate step after timing and error checks.
 $phyCfg = Join-Path $runRoot 'phy_1/settings.cfg'

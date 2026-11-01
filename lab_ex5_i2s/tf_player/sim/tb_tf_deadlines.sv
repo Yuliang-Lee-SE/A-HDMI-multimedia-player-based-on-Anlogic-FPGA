@@ -4,6 +4,7 @@ module tb_tf_deadlines;
  reg clk=0,rst=1;always #5 clk=~clk;
  wire wr_req,wr_en,abort_req;wire [1:0] bank,disp;wire [13:0] asset;wire [6:0] ordinal;
     tf_file_player #(.CLK_FREQ_HZ(1000)) dut(.clk(clk),.rst(rst),.key_next(1'b0),.key_auto(1'b1),.key_zoom(1'b1),
+ .rotation_period_s(5'd3),.rotation_period_toggle(1'b0),
  .write_ready(1'b1),.write_req_ack(1'b0),.write_finish_toggle(1'b0),.write_abort_done(1'b0),
  .write_req(wr_req),.write_en(wr_en),.write_data(),.write_abort(abort_req),.write_buf_idx(bank),.disp_buf_idx(disp),
  .display_valid(),.display_commit_toggle(),.display_commit_ack(1'b0),.display_asset(asset),.display_ordinal(ordinal),

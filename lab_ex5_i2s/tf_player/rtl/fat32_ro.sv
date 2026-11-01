@@ -1,6 +1,6 @@
 // Independently written offline prototype. No third-party implementation code.
 module fat32_ro #(
- parameter integer MAX_FILES=32, MAX_CHAIN=1024, MAX_DIR_ENTRIES=4096,
+ parameter integer MAX_FILES=32, MAX_CHAIN=1024, MAX_DIR_ENTRIES=512,
  parameter integer IO_TIMEOUT=20000, STALL_TIMEOUT=20000,
  parameter integer SLOT_W=$clog2(MAX_FILES), COUNT_W=$clog2(MAX_FILES+1)
 )(
@@ -42,6 +42,7 @@ module fat32_ro #(
  FILE_READ=(51'b1<<16),
  STREAM=(51'b1<<17),
  FILE_NEXT=(51'b1<<18),
+ CLUSTER_TEST=(51'b1<<19),
  PART_DONE=(51'b1<<20),
  CHAIN_WAIT=(51'b1<<21),
  FAT_READ=(51'b1<<22),
@@ -107,11 +108,16 @@ module fat32_ro #(
  reg [$clog2(MAX_CHAIN+1)-1:0] chain_count;
  reg [CHAIN_AW-1:0] check_pos;
  reg [31:0] entry_count;
+ reg dir_limit_hit;
  reg [COUNT_W-1:0] search_pos, insert_pos;
  reg [13:0] candidate_id, requested_id;
+ reg [COUNT_W-1:0] total_file_count;
+ reg candidate_is_wav, dir_is_wav;
  reg [31:0] candidate_start, candidate_size;
  reg [2:0] part_no;
  reg found_part;
+ reg io_timeout;
+ reg cluster_bad;
  integer b;
  wire [5:0] mbr_offset=received[5:0]+6'd2;
  // Only fixed metadata windows are shifted. Each response byte drives a few
@@ -211,12 +217,14 @@ module fat32_ro #(
  wire [8:0] fat_offset={current[6:0],2'b00};
  wire [27:0] fat_entry=fat_entry_latched;
  wire [31:0] entry_cluster={`E16(20),`E16(26)};
+ wire bmp_name=(entry_bytes[8]|8'h20)==8'h62 && (entry_bytes[9]|8'h20)==8'h6d && (entry_bytes[10]|8'h20)==8'h70;
+ wire wav_name=(entry_bytes[8]|8'h20)==8'h77 && (entry_bytes[9]|8'h20)==8'h61 && (entry_bytes[10]|8'h20)==8'h76;
  wire short_name=entry_bytes[0]>=8'h30 && entry_bytes[0]<=8'h39 &&
   entry_bytes[1]>=8'h30 && entry_bytes[1]<=8'h39 &&
   entry_bytes[2]>=8'h30 && entry_bytes[2]<=8'h39 &&
   entry_bytes[3]>=8'h30 && entry_bytes[3]<=8'h39 &&
   entry_bytes[4]==32 && entry_bytes[5]==32 && entry_bytes[6]==32 && entry_bytes[7]==32 &&
-  (entry_bytes[8]|8'h20)==8'h62 && (entry_bytes[9]|8'h20)==8'h6d && (entry_bytes[10]|8'h20)==8'h70;
+   (bmp_name || wav_name);
  wire [13:0] name_id=name_hi*14'd100+name_lo;
  assign mount_ready=((|(state & IDLE)));
  assign open_ready=((|(state & IDLE)) && mounted && !mount_valid);
@@ -229,7 +237,7 @@ module fat32_ro #(
  task automatic fail(input [7:0] code);
  begin
   error_valid<=1; error_code<=code; state<=IDLE;
-  if(!is_file) begin mounted<=0; file_count<=0; end
+  if(!is_file) begin mounted<=0; file_count<=0; total_file_count<=0; end
   if((|(state & REQ)) || (|(state & RECEIVE))) begin cancel_valid<=1; cancel_tag<=req_tag; end
  end endtask
  task automatic read_sector(input [31:0] lba, input [STATE_W-1:0] resume, input fat_dest);
@@ -242,16 +250,20 @@ module fat32_ro #(
  end endtask
  always @(posedge clk) begin
   if(rst) begin
-   state<=IDLE; mounted<=0; mount_done<=0; file_count<=0;visited_we<=0;index_we<=0;header_we<=0;mbr_we<=0;
+   state<=IDLE; mounted<=0; mount_done<=0; file_count<=0;total_file_count<=0;candidate_is_wav<=0;dir_is_wav<=0;visited_we<=0;index_we<=0;header_we<=0;mbr_we<=0;
    file_done<=0; error_valid<=0; error_code<=0; cancel_valid<=0; cancel_tag<=0;
-   req_tag<=0; req_lba<=0; timer<=0; received<=0; cache_valid<=0;
+   req_tag<=0; req_lba<=0; timer<=0; received<=0; cache_valid<=0;io_timeout<=0;cluster_bad<=0;dir_limit_hit<=0;
    is_file<=0; pos<=0; media_limit<=0;
   end else begin
    mount_done<=0; file_done<=0; error_valid<=0; cancel_valid<=0;visited_we<=0;index_we<=0;header_we<=0;mbr_we<=0;
+   if((|(state & REQ)) || (|(state & RECEIVE)))
+    io_timeout<=(timer>=IO_TIMEOUT-1);
+   else io_timeout<=0;
    case(1'b1) // synthesis parallel_case
     (|(state & IDLE)): begin
      if(mount_valid) begin
-      mounted<=0; file_count<=0; is_file<=0; cache_valid<=0;
+       mounted<=0; file_count<=0; total_file_count<=0; is_file<=0; cache_valid<=0;
+       entry_count<=0; dir_limit_hit<=0;
       media_limit<=media_sectors; volume<=0; from_mbr<=0;
       // Initial request cannot use previous media_limit.
       if(req_tag==32'hffffffff) fail(LIMIT);
@@ -264,13 +276,13 @@ module fat32_ro #(
     end
     (|(state & REQ)): begin
      if(req_ready) begin state<=RECEIVE; timer<=0; end
-     else if(timer==IO_TIMEOUT-1) fail(TIMEOUT);
+      else if(io_timeout) fail(TIMEOUT);
      else timer<=timer+1;
     end
     (|(state & RECEIVE)): begin
      // Absolute transaction deadline, including arbitrary gaps in the byte stream.
      timer<=timer+1;
-     if(timer==IO_TIMEOUT-1) fail(TIMEOUT);
+      if(io_timeout) fail(TIMEOUT);
      else if(rsp_tag==req_tag) begin
       if(rsp_error) fail(IO);
       else if(rsp_valid && received>=512) fail(PROTOCOL);
@@ -379,7 +391,11 @@ module fat32_ro #(
     end
     (|(state & (DIR_READ|FILE_READ))): begin
      pos<=0;timer<=0;
-     if(current<2 || current>cluster_limit || current>=32'h0ffffff0) fail(CLUSTER);
+     cluster_bad<=current<2 || current>cluster_limit || current>=32'h0ffffff0;
+     state<=CLUSTER_TEST;
+    end
+    (|(state & CLUSTER_TEST)): begin
+     if(cluster_bad) fail(CLUSTER);
      else begin cluster_offset<=current[27:0]-28'd2;state<=READ_SHIFT;end
     end
     (|(state & READ_SHIFT)): begin cluster_sector_offset<={7'd0,cluster_offset}<<spc_shift;state<=READ_ADD;end
@@ -397,15 +413,19 @@ module fat32_ro #(
      else begin entry_byte<=entry_byte+1'b1;state<=DIR_WAIT;end
     end
     (|(state & DIR_ENTRY)): begin
-     if(entry_count>=MAX_DIR_ENTRIES) fail(LIMIT);
+     if(dir_limit_hit) fail(LIMIT);
      else if(entry_bytes[0]==0) begin mounted<=1;mount_done<=1;state<=IDLE;end
      else begin
       entry_count<=entry_count+1;
+      // Register the wide directory-limit compare. It then feeds one flag
+      // instead of fanning through selection and counting logic in a cycle.
+      if(entry_count+1>=MAX_DIR_ENTRIES) dir_limit_hit<=1;
       dir_candidate<=entry_bytes[0]!=8'he5 && (entry_bytes[11]&8'hd8)==0 && short_name &&
        (entry_bytes[0]!=8'h30 || entry_bytes[1]!=8'h30 || entry_bytes[2]!=8'h30 || entry_bytes[3]!=8'h30);
       dir_cluster_bad<=(entry_cluster<2 || entry_cluster>cluster_limit || entry_cluster>=32'h0ffffff0) &&
                        !(`E32(28)==0 && entry_cluster==0);
       dir_start<=entry_cluster;dir_size<=`E32(28);
+      dir_is_wav<=wav_name;
       name_hi<=(entry_bytes[0]-8'd48)*7'd10+(entry_bytes[1]-8'd48);
       name_lo<=(entry_bytes[2]-8'd48)*7'd10+(entry_bytes[3]-8'd48);
       state<=DIR_DECIDE;
@@ -415,21 +435,21 @@ module fat32_ro #(
     (|(state & DIR_VALIDATE)): begin
      if(dir_candidate) begin
       if(dir_cluster_bad) fail(CLUSTER);
-      else begin candidate_id<=dir_id;candidate_start<=dir_start;candidate_size<=dir_size;
+      else begin candidate_id<=dir_id;candidate_start<=dir_start;candidate_size<=dir_size;candidate_is_wav<=dir_is_wav;
        search_pos<=0;state<=LOOKUP_WAIT;end
      end else state<=DIR_NEXT;
     end
     (|(state & LOOKUP_WAIT)): state<=LOOKUP_COMPARE;
     (|(state & LOOKUP_COMPARE)): begin
      table_equal<=table_id==candidate_id;table_greater<=table_id>candidate_id;
-     search_at_end<=search_pos==file_count;search_before_end<=search_pos<file_count;index_full<=file_count==MAX_FILES;
+     search_at_end<=search_pos==total_file_count;search_before_end<=search_pos<total_file_count;index_full<=total_file_count==MAX_FILES;
      state<=LOOKUP;
     end
     (|(state & LOOKUP)): begin
      if(search_before_end && table_equal) fail(DUPLICATE);
      else if(search_at_end || table_greater) begin
       if(index_full) fail(LIMIT);
-      else begin insert_pos<=file_count; state<=INSERT_WAIT; end
+       else begin insert_pos<=total_file_count; state<=INSERT_WAIT; end
      end else begin search_pos<=search_pos+1;state<=LOOKUP_WAIT;end
     end
     (|(state & INSERT_WAIT)): state<=INSERT;
@@ -440,7 +460,9 @@ module fat32_ro #(
       index_wdata<=table_q;insert_pos<=insert_pos-1;state<=INSERT_WRITE;
      end else begin
       index_wdata<={candidate_id,candidate_start,candidate_size};
-      file_count<=file_count+1;state<=DIR_NEXT;
+      total_file_count<=total_file_count+1;
+      if(!candidate_is_wav) file_count<=file_count+1;
+      state<=DIR_NEXT;
      end
     end
     (|(state & DIR_NEXT)): begin
@@ -485,7 +507,7 @@ module fat32_ro #(
     end
     (|(state & OPEN_WAIT)): state<=OPEN_COMPARE;
     (|(state & OPEN_COMPARE)): begin
-     table_equal<=table_id==requested_id;table_empty<=table_size==0;search_at_end<=search_pos==file_count;state<=OPEN_SEARCH;
+     table_equal<=table_id==requested_id;table_empty<=table_size==0;search_at_end<=search_pos==total_file_count;state<=OPEN_SEARCH;
     end
     (|(state & OPEN_SEARCH)): begin
      if(search_at_end) fail(NOT_FOUND);

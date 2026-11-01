@@ -8,7 +8,7 @@ module bmp_file_stream #(
  output reg write_req,input write_req_ack,input write_ready,source_permit,
  output reg frame_start,output reg pixel_valid,output reg [23:0] pixel,
  output reg done,error,output wire busy);
- localparam IDLE=0,HEADER=1,CHECK=2,ACK=3,PRIME=4,BODY=5,DRAIN=6,END=7,CHECK_RESULT=8;
+ localparam IDLE=0,HEADER=1,CHECK=2,ACK=3,PRIME=4,BODY=5,DRAIN=6,END=7,CHECK_RESULT=8,CHECK2=9;
  localparam integer ROW_BYTES=((WIDTH*3+3)/4)*4;
  localparam integer IMAGE_BYTES=ROW_BYTES*HEIGHT;
  reg [3:0] state;reg [7:0] header[0:53];
@@ -47,6 +47,9 @@ module bmp_file_stream #(
     CHECK: begin
      header_bad[0]<=header[0]!=8'h42 || header[1]!=8'h4d || `B32(2)!=size || `B32(6)!=0;
      header_bad[1]<=`B32(14)!=40 || `B32(18)!=WIDTH || `B32(22)!=HEIGHT;
+      state<=CHECK2;
+     end
+     CHECK2: begin
      header_bad[2]<=`B16(26)!=1 || `B16(28)!=24 || `B32(30)!=0;
      header_bad[3]<=(`B32(34)!=0 && `B32(34)!=IMAGE_BYTES) || `B32(46)!=0 || `B32(50)!=0 || `B32(10)<54;
      image_end<={1'b0,`B32(10)}+IMAGE_BYTES;

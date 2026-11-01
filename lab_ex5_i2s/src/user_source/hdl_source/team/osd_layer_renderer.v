@@ -4,7 +4,7 @@
 module osd_layer_renderer #(parameter DEFAULT_STEP=2,
  parameter SCROLL_HEAD_FRAMES=45,parameter SCROLL_TAIL_FRAMES=45)(
  input clk,input rst,input enable,input auto_mode,input [6:0] item_index,
- input [1:0] caption_index,input caption_enable,
+ input [4:0] caption_index,input caption_enable,
  input hs_in,input vs_in,input de_in,input [23:0] rgb_in,
  output reg hs_out,output reg vs_out,output reg de_out,output reg [23:0] rgb_out,
  input cfg_valid,output cfg_ready,input cfg_show,input [9:0] cfg_x,input [9:0] cfg_y,
@@ -55,11 +55,12 @@ end
 wire [10:0] rx={1'b0,x}-{1'b0,origin_x};
 wire [10:0] ry={1'b0,y}-{1'b0,origin_y};
 wire panel=rx<592 && ry<76;
-wire border=panel && (rx<2 || rx>=590 || ry<2 || ry>=74);
-wire title=rx>=16 && rx<272 && ry>=30 && ry<46;
-wire desc=rx>=16 && rx<576 && ry>=54 && ry<70;
+ wire border=1'b0;
+ wire accent=panel && rx>=18 && rx<22 && ry>=30 && ry<70;
+ wire title=rx>=36 && rx<292 && ry>=30 && ry<46;
+ wire desc=rx>=36 && rx<576 && ry>=54 && ry<70;
  wire status_area=rx>=16 && rx<100 && ry>=8 && ry<22;
-wire [10:0] dx=rx-16;
+ wire [10:0] dx=rx-36;
 wire [10:0] dy=title ? ry-30 : ry-54;
 wire [6:0] length;
 wire [10:0] scroll_offset;
@@ -68,11 +69,12 @@ wire [10:0] width={length,4'b0};
 osd_text_lengths lengths(.item_index(caption_index),.description_length(length));
 osd_layer_scroll #(.HEAD_FRAMES(SCROLL_HEAD_FRAMES),.TAIL_FRAMES(SCROLL_TAIL_FRAMES)) scroll(.clk(clk),.rst(rst),.frame_tick(frame_tick),.enable(enable && caption_enable),
  .pause(scroll_pause),.step_frames(scroll_step),.item_index(caption_index),.length(length),.offset(scroll_offset));
-wire [6:0] address=title ? {3'b0,dx[7:4]} : ((sx<width) ? 7'd32+{1'b0,sx[9:4]} : 7'd32);
+ wire [6:0] address=title ? {3'b0,dx[7:4]} : ((sx<width) ? 7'd16+{1'b0,sx[9:4]} : 7'd16);
+ wire [11:0] text_addr=caption_index*8'd80+{5'b0,address};
 wire [7:0] text_id;
 wire [15:0] glyph;
 reg [3:0] row1,col1,col2;
-osd_resources resources(.clk(clk),.text_addr({caption_index,address}),.text_id(text_id),
+ osd_resources resources(.clk(clk),.text_addr(text_addr),.text_id(text_id),
  .glyph_addr({text_id,row1}),.glyph_row(glyph));
 wire [10:0] stx=rx-16,sty=ry-8;
 wire [2:0] stchar=stx/12,stcol=(stx/2)%6,strow=sty/2;
@@ -227,24 +229,35 @@ endfunction
 reg [23:0] rgb1,rgb2,rgb3;
 reg [2:0] sync1,sync2,sync3;
 reg title1,title2,area1,area2,status1,status2,panel1,panel2,border1,border2;
-reg clip1,clip2,clip3,visible1,visible2,shadow1,shadow2,shadow3;
+ reg clip1,clip2,clip3,visible1,visible2,shadow1,shadow2,shadow3,accent1,accent2;
 reg [2:0] alpha1,alpha2;
 reg [9:0] x1,x2,x3,y1,y2,y3;
 reg mask3;
 reg [23:0] ink3;
-// Two row banks avoid cross-port read/write collisions on the FPGA RAM.
-// First-row/first-column gating suppresses unread history without RAM reset.
-reg line_mask[0:2047];
-wire [10:0] mask_write_addr={y2[0],x2};
-wire [10:0] mask_read_addr={~y2[0],x2};
+ // A tiny dual-port RAM stores two alternating scan rows. It is deliberately
+ // mapped to a spare 32Kb block so the 9Kb block budget remains 64/64.
+ wire mask_q;
+ wire mask_ce=!rst && sync2[0];
+ wire mask_now=visible2 && (status2 || (area2 && glyph[15-col2]));
+ EG_LOGIC_BRAM #(
+  .DATA_WIDTH_A(1),.DATA_WIDTH_B(1),.ADDR_WIDTH_A(11),.ADDR_WIDTH_B(11),
+  .DATA_DEPTH_A(2048),.DATA_DEPTH_B(2048),.MODE("DP"),
+  .REGMODE_A("NOREG"),.REGMODE_B("NOREG"),.WRITEMODE_A("NORMAL"),
+  .WRITEMODE_B("NORMAL"),.RESETMODE("SYNC"),.IMPLEMENT("32K"),
+  .INIT_FILE("NONE"),.FILL_ALL("NONE")
+ ) mask_ram(
+  .dia(mask_now),.dib(1'b0),.addra({y2[0],x2}),.addrb({~y2[0],x2}),
+  .cea(mask_ce),.ceb(mask_ce),.ocea(1'b0),.oceb(1'b0),
+  .clka(clk),.clkb(clk),.wea(mask_ce),.web(1'b0),.bea(1'b1),.beb(1'b0),
+  .rsta(1'b0),.rstb(1'b0),.doa(),.dob(mask_q)
+ );
 reg old_line,old_line_prev;
-wire mask_now=visible2 && (status2 || (area2 && glyph[15-col2]));
 always @(posedge clk or posedge rst) begin
  if(rst) begin
   rgb1<=0;rgb2<=0;rgb3<=0;sync1<=0;sync2<=0;sync3<=0;
   row1<=0;col1<=0;col2<=0;title1<=0;title2<=0;area1<=0;area2<=0;
   status1<=0;status2<=0;panel1<=0;panel2<=0;border1<=0;border2<=0;
-  clip1<=0;clip2<=0;clip3<=0;visible1<=0;visible2<=0;
+  clip1<=0;clip2<=0;clip3<=0;visible1<=0;visible2<=0;accent1<=0;accent2<=0;
   shadow1<=0;shadow2<=0;shadow3<=0;alpha1<=0;alpha2<=0;
   x1<=0;x2<=0;x3<=0;y1<=0;y2<=0;y3<=0;
   mask3<=0;ink3<=0;old_line_prev<=0;
@@ -256,15 +269,17 @@ always @(posedge clk or posedge rst) begin
   title1<=title;title2<=title1;area1<=caption_enable && (title || (desc && sx<width));area2<=area1;
   status1<=status_pixel;status2<=status1;
   panel1<=panel;panel2<=panel1;border1<=border;border2<=border1;
+  accent1<=accent;accent2<=accent1;
   clip1<=(caption_enable && (title || desc)) || status_area;clip2<=clip1;clip3<=clip2;
   visible1<=enable && show;visible2<=visible1;
   shadow1<=shadow;shadow2<=shadow1;shadow3<=shadow2 && visible2;
   alpha1<=alpha;alpha2<=alpha1;
   x1<=x;x2<=x1;x3<=x2;y1<=y;y2<=y1;y3<=y2;
   mask3<=sync2[0] && mask_now;
-  ink3<=status2 ? 24'hffff00 : (title2 ? 24'hffffff : 24'hd0e0ff);
+  ink3<=status2 ? 24'hd6b36a : (title2 ? 24'hfff7e8 : 24'he8d8b8);
   if(visible2 && border2) rgb3<=24'hffffff;
-  else if(visible2 && panel2) rgb3<={blend(rgb2[23:16],8'h10,alpha2),blend(rgb2[15:8],8'h20,alpha2),blend(rgb2[7:0],8'h40,alpha2)};
+  else if(visible2 && accent2) rgb3<=24'hc9a96e;
+  else if(visible2 && panel2) rgb3<={blend(rgb2[23:16],8'h08,3),blend(rgb2[15:8],8'h0a,3),blend(rgb2[7:0],8'h0e,3)};
   else rgb3<=rgb2;
   old_line_prev<=old_line;
   {hs_out,vs_out,de_out}<=sync3;
@@ -274,19 +289,18 @@ always @(posedge clk or posedge rst) begin
   else rgb_out<=rgb3;
  end
 end
-// Read the preceding row while writing the current row, at distinct addresses.
-// Never reset or initialize this RAM; visible rows seed it before use.
+ // Read the preceding row while writing the current row.
 always @(posedge clk) if(!rst && sync2[0])begin
- old_line<=line_mask[mask_read_addr];line_mask[mask_write_addr]<=mask_now;
+  old_line<=mask_q;
 end
 endmodule
 
 module osd_layer_scroll #(
  parameter STEP_FRAMES=2, parameter HEAD_FRAMES=45, parameter TAIL_FRAMES=45,
- parameter WINDOW_PIXELS=560, parameter GAP_PIXELS=32
+ parameter WINDOW_PIXELS=448, parameter GAP_PIXELS=32
 )(input clk,input rst,input frame_tick,input enable,input pause,
- input [3:0] step_frames,input [1:0] item_index,input [6:0] length,output reg [10:0] offset);
-reg [1:0] seen_item;
+ input [3:0] step_frames,input [4:0] item_index,input [6:0] length,output reg [10:0] offset);
+reg [4:0] seen_item;
 reg active;
 reg [15:0] step_count,hold_count;
 reg [1:0] phase;

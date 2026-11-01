@@ -7,7 +7,8 @@ module tb_list_boundary_ids;
  wire [1:0] wbank,dbank,track,vbank;wire [13:0] asset;wire [6:0] ordinal;wire [20:0] vitem;
  reg frame=0,memack=0;wire rr,vvalid;integer checks=0;reg reinit_seen=0;reg audio_before;
  always @(posedge clk) if(dut.card_reinit) reinit_seen<=1;
- tf_file_player #(.MAX_FILES(MAX_FILES)) dut(.clk(clk),.rst(rst),.key_next(1'b0),.key_auto(1'b1),.key_zoom(1'b1),
+    tf_file_player #(.MAX_FILES(MAX_FILES)) dut(.clk(clk),.rst(rst),.key_next(1'b0),.key_auto(1'b1),.key_zoom(1'b1),
+ .rotation_period_s(5'd3),.rotation_period_toggle(1'b0),
  .write_ready(1'b1),.write_req_ack(1'b0),.write_finish_toggle(1'b0),.write_abort_done(1'b0),
  .write_req(),.write_en(),.write_data(),.write_abort(abort_req),.write_buf_idx(wbank),.disp_buf_idx(dbank),
  .display_valid(dvalid),.display_commit_toggle(commit),.display_commit_ack(ack),.display_asset(asset),.display_ordinal(ordinal),

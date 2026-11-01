@@ -14,6 +14,8 @@ wire signed [7:0] brightness;
 wire [7:0] contrast;
 wire [3:0] sharpness;
 wire auto_key;
+wire [4:0] rotation_period;
+wire rotation_period_toggle;
 integer failures = 0;
 
 picture_adjust_controller #(
@@ -32,7 +34,9 @@ picture_adjust_controller #(
     .brightness      (brightness),
     .contrast        (contrast),
     .sharpness       (sharpness),
-    .auto_key_o      (auto_key)
+    .auto_key_o      (auto_key),
+    .rotation_period_s (rotation_period),
+    .rotation_period_toggle(rotation_period_toggle)
 );
 
 task check_control;
@@ -117,6 +121,7 @@ reg [1:0] osd_parameter;
 reg signed [7:0] osd_brightness;
 reg [7:0] osd_contrast;
 reg [3:0] osd_sharpness;
+reg [4:0] osd_rotation_period;
 reg hs_osd;
 reg vs_osd;
 reg de_osd;
@@ -135,6 +140,7 @@ picture_adjust_osd dut_osd (
     .brightness      (osd_brightness),
     .contrast        (osd_contrast),
     .sharpness       (osd_sharpness),
+    .rotation_period_s(osd_rotation_period),
     .hs_in           (hs_osd),
     .vs_in           (vs_osd),
     .de_in           (de_osd),
@@ -190,6 +196,7 @@ initial begin
     osd_brightness = 8'sd0;
     osd_contrast = 8'd100;
     osd_sharpness = 4'd0;
+    osd_rotation_period = 5'd3;
     hs_osd = 1'b0;
     vs_osd = 1'b0;
     de_osd = 1'b0;
@@ -223,6 +230,12 @@ initial begin
     check_control(parameter_index == 2'd2, "short KEY4 selects sharpness");
     press_key3;
     check_control(sharpness == 4'd1, "KEY3 increments sharpness");
+    press_key4_short;
+    check_control(parameter_index == 2'd3, "short KEY4 selects rotation period");
+    press_key3;
+    check_control(rotation_period == 5'd4, "KEY3 increments rotation period");
+    press_key2;
+    check_control(rotation_period == 5'd3, "KEY2 decrements rotation period");
     press_key4_short;
     check_control(parameter_index == 2'd0, "parameter selection wraps");
     press_key3;

@@ -27,7 +27,8 @@ module top(
 );
 
 parameter MEM_DATA_BITS = 32;
-parameter TF_MAX_FILES = 32; // Verified configurations: 16, 32, 64.
+// Sorted media index: BMPs 0101-0132, then WAVs 0201-0232.
+parameter TF_MAX_FILES = 64;
 parameter ADDR_BITS     = 21;
 parameter BUSRT_BITS    = 10;
 // Diagnostic switch: force the normal single-bank path without transitions.
@@ -71,10 +72,8 @@ wire [20:0] active_display_item;
 wire        active_display_valid;
 wire [13:0] video_asset=active_display_item[13:0];
 wire [6:0] video_ordinal=active_display_item[20:14];
-wire caption_valid=(video_asset==1 || video_asset==2 || video_asset==3 || video_asset==4);
-wire [1:0] caption_index=(video_asset==1) ? 2'd0 :
-                          (video_asset==2) ? 2'd1 :
-                          (video_asset==3) ? 2'd2 : 2'd3;
+wire caption_valid=(video_ordinal>=7'd1 && video_ordinal<=7'd32);
+wire [4:0] caption_index=video_ordinal-7'd1;
 wire memory_read_req;
 wire [23:0] caption_rgb;
 wire caption_hs, caption_vs, caption_de;
@@ -84,6 +83,10 @@ wire [23:0] wav_rgb;
 wire        wav_hs;
 wire        wav_vs;
 wire        wav_de;
+wire [23:0] spec_rgb;
+wire        spec_hs;
+wire        spec_vs;
+wire        spec_de;
 
 // 角色 C：音量/静音提示层（串在 waveform_overlay 之后）
 wire [23:0] aud_rgb;
@@ -105,6 +108,8 @@ wire [1:0]  picture_parameter;
 wire signed [7:0] picture_brightness;
 wire [7:0]  picture_contrast;
 wire [3:0]  picture_sharpness;
+wire [4:0]  picture_rotation_period;
+wire        picture_rotation_toggle;
 wire        picture_auto_key;
 
 wire [3:0]  state_code;
@@ -196,12 +201,19 @@ wire [19:0] acr_n;
 
 // 角色 C：片内 ROM 语音通路（音频段索引/换段从 sd_card_clk 域传过来）
 wire        audio_track_toggle;
-wire [1:0]  audio_track_idx;
+wire [4:0]  audio_track_idx;
 wire        audio_vol_long;      // KEY3 长按（sd_card_clk 域）
 wire [2:0]  audio_vol_level;     // 0=静音,1=25%,2=50%,3=75%,4=100%
 wire        audio_vol_toggle;    // 每次音量变化翻转
-wire [7:0]  audio_rom_data;
-wire [15:0] audio_rom_addr;
+wire        audio_track_ready;
+wire        audio_loading;
+wire        audio_load_error;
+wire [15:0] audio_track_len;
+wire        audio_ram_we;
+wire [14:0] audio_ram_addr;
+wire [15:0] audio_ram_data;
+wire [14:0] audio_pcm_addr;
+wire [15:0] audio_pcm_data;
 
 wire        axis_s_user;
 wire        axis_s_valid;
@@ -330,7 +342,9 @@ picture_adjust_controller #(
     .brightness      (picture_brightness),
     .contrast        (picture_contrast),
     .sharpness       (picture_sharpness),
-    .auto_key_o      (picture_auto_key)
+    .auto_key_o      (picture_auto_key),
+    .rotation_period_s (picture_rotation_period),
+    .rotation_period_toggle(picture_rotation_toggle)
 );
 
 // Menu state crosses to the 100 MHz key/player domain before gating the
@@ -366,6 +380,8 @@ tf_file_player #(.MAX_FILES(TF_MAX_FILES)) sd_card_bmp_m0(
     .key_next          (next_press_sd),
     .key_auto          (picture_auto_key),
     .key_zoom          (zoom_key),
+    .rotation_period_s (picture_rotation_period),
+    .rotation_period_toggle(picture_rotation_toggle),
     .write_ready       (sd_card_write_ready_owner),
     .state_code        (state_code),
     .init_diagnostic   (tf_init_diagnostic),
@@ -379,6 +395,13 @@ tf_file_player #(.MAX_FILES(TF_MAX_FILES)) sd_card_bmp_m0(
     // 音画联动：当前图号 + 换段脉冲（音频域内部自己同步）
     .audio_track_idx   (audio_track_idx),
     .audio_track_toggle(audio_track_toggle),
+    .audio_track_len   (audio_track_len),
+    .audio_track_ready (audio_track_ready),
+    .audio_loading     (audio_loading),
+    .audio_load_error  (audio_load_error),
+    .audio_ram_we      (audio_ram_we),
+    .audio_ram_addr    (audio_ram_addr),
+    .audio_ram_data    (audio_ram_data),
     .audio_vol_long    (audio_vol_long),
 
     .write_finish_toggle(frame_write_toggle_mem),
@@ -541,21 +564,26 @@ assign display_commit_ack = owner_release_toggle;
 // The selected mode is held in the SD clock domain. Toggle handshakes capture
 // the complete 2-bit value after it has settled in each destination domain.
 (* async_reg = "true" *) reg [2:0] mode_toggle_video_sync;
+(* async_reg = "true" *) reg [1:0] transition_setting_video_sync;
 reg mode_toggle_video_seen;
 always @(posedge video_clk or posedge rst_all) begin
     if (rst_all) begin
         mode_toggle_video_sync <= 3'b000;
+        transition_setting_video_sync <= 2'b00;
         mode_toggle_video_seen <= 1'b0;
         transition_mode_video  <= 2'd0;
     end else begin
         mode_toggle_video_sync <=
             {mode_toggle_video_sync[1:0],transition_mode_toggle_sd};
+        transition_setting_video_sync <=
+            {transition_setting_video_sync[0],transition_setting_sd};
         if (mode_toggle_video_sync[2] != mode_toggle_video_seen) begin
             mode_toggle_video_seen <= mode_toggle_video_sync[2];
             transition_mode_video  <= transition_mode_sd;
         end
     end
 end
+wire transition_setting_video = transition_setting_video_sync[1];
 
 (* async_reg = "true" *) reg [2:0] mode_toggle_display_sync;
 (* async_reg = "true" *) reg [1:0] transition_setting_sync;
@@ -607,7 +635,7 @@ osd_layer_renderer u_osd_layers(
 waveform_overlay #(
     .WAV_X (64),
     .WAV_Y (16),
-    .WAV_W (512),
+    .WAV_W (384),
     .WAV_H (72)
 ) u_waveform_overlay (
     .clk          (video_clk),
@@ -625,6 +653,27 @@ waveform_overlay #(
     .rgb_out      (wav_rgb)
 );
 
+// Character C: 32-point FFT spectrum. The panel sits beside the shortened
+// time-domain waveform and time-shares one multiplier across four products.
+audio_spectrum_overlay #(
+    .SPEC_X (472),
+    .SPEC_Y (16)
+) u_audio_spectrum_overlay (
+    .clk          (video_clk),
+    .rst          (rst_all),
+    .enable       (active_display_valid),
+    .audio_valid  (audio_valid),
+    .audio_sample (audio_left_data),
+    .hs_in        (wav_hs),
+    .vs_in        (wav_vs),
+    .de_in        (wav_de),
+    .rgb_in       (wav_rgb),
+    .hs_out       (spec_hs),
+    .vs_out       (spec_vs),
+    .de_out       (spec_de),
+    .rgb_out      (spec_rgb)
+);
+
 // 角色 C：右侧音量条（比较器实现，无 BRAM、无静音图标）
 audio_osd #(
     .BAR_X  (624),
@@ -635,10 +684,10 @@ audio_osd #(
     .enable     (active_display_valid),
     .vol_level  (audio_vol_level),
     .vol_toggle (audio_vol_toggle),
-    .hs_in      (wav_hs),
-    .vs_in      (wav_vs),
-    .de_in      (wav_de),
-    .rgb_in     (wav_rgb),
+    .hs_in      (spec_hs),
+    .vs_in      (spec_vs),
+    .de_in      (spec_de),
+    .rgb_in     (spec_rgb),
     .hs_out     (aud_hs),
     .vs_out     (aud_vs),
     .de_out     (aud_de),
@@ -650,18 +699,21 @@ picture_adjust_osd u_picture_adjust_osd (
     .clk             (video_clk),
     .rst             (rst_all),
     .enable          (picture_adjust_mode),
+    .transition_enable(transition_setting_video),
+    .transition_mode (transition_mode_video),
     .parameter_index (picture_parameter),
     .brightness      (picture_brightness),
     .contrast        (picture_contrast),
     .sharpness       (picture_sharpness),
+    .rotation_period_s(picture_rotation_period),
     .hs_in           (aud_hs),
     .vs_in           (aud_vs),
     .de_in           (aud_de),
     .rgb_in          (aud_rgb),
-    .hs_out          (final_hs),
-    .vs_out          (final_vs),
-    .de_out          (final_de),
-    .rgb_out         (final_rgb)
+    .hs_out   (final_hs),
+    .vs_out   (final_vs),
+    .de_out   (final_de),
+    .rgb_out  (final_rgb)
 );
 
 frame_read_write_dual #(
@@ -743,31 +795,34 @@ sdram U3(
 // ===================== 音频：片内 ROM 语音（角色 C） =====================
 // 素材：4 段 × 1.536s @ 8kHz signed 8bit（team/audio_speech_rom.mif）
 // ROM 读口挂在 audio_mclk 上，读延迟 1 拍由播放器内部对齐
-AUDIO_SPEECH_ROM u_audio_speech_rom (
-    .doa    (audio_rom_data),
-    .addra  (audio_rom_addr),
-    .clka   (audio_mclk)
+// The TF scheduler writes one 8 kHz PCM narration before committing the
+// matching image. The player reads it from the 12.295 MHz audio clock domain.
+audio_track_ram u_audio_track_ram (
+    .wr_clk  (sd_card_clk),
+    .we      (audio_ram_we),
+    .wr_addr (audio_ram_addr),
+    .wr_data (audio_ram_data),
+    .rd_clk  (audio_mclk),
+    .rd_addr (audio_pcm_addr),
+    .rd_data (audio_pcm_data)
 );
 
-audio_rom_player #(
+audio_pcm_player #(
     .ENABLE_MUTE(1),
     .MCLK_HZ     (12295000),
     .SRC_HZ      (8000),
-    .SEG_SAMPLES (12288),
-    .TRACK0_ADDR (16'd0),
-    .TRACK1_ADDR (16'd12288),
-    .TRACK2_ADDR (16'd24576),
-    .TRACK3_ADDR (16'd36864),
     .RAMP_FRAMES (960)
-) u_audio_rom_player (
+) u_audio_pcm_player (
     .I_mclk          (audio_mclk),
     .I_rst           (rst_all),
     .I_track_idx     (audio_track_idx),
-    .I_enabled(audio_enabled),
+    .I_enabled       (audio_enabled),
+    .I_pcm_ready     (audio_track_ready),
+    .I_pcm_len       (audio_track_len),
     .I_vol_level     (audio_vol_level),
     .I_track_toggle  (audio_track_toggle),
-    .I_rom_data      (audio_rom_data),
-    .O_rom_addr      (audio_rom_addr),
+    .I_pcm_data      (audio_pcm_data),
+    .O_pcm_addr      (audio_pcm_addr),
     .O_i2s_BCLK      (audio_i2s_bclk),
     .O_i2s_LRCK      (audio_i2s_lrck),
     .O_i2s_DOUT      (audio_i2s_dout)

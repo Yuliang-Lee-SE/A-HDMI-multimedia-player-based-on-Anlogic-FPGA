@@ -4,7 +4,7 @@ from pathlib import Path
 p=Path(__file__).with_name('generate_osd_resources.py')
 s=importlib.util.spec_from_file_location('osdgen',p);g=importlib.util.module_from_spec(s);s.loader.exec_module(g)
 root=g.ROOT
-font=Path('C:/Windows/Fonts/simhei.ttf')
+font=Path('C:/Windows/Fonts/NotoSansSC-Medium.otf')
 config=json.loads((root/'osd_assets/captions_test.json').read_text(encoding='utf-8'))
 (root/'osd_sim_inputs').mkdir(exist_ok=True)
 with tempfile.TemporaryDirectory(prefix='osd_resources_',dir=root/'osd_sim_inputs') as temp:
@@ -24,7 +24,10 @@ with tempfile.TemporaryDirectory(prefix='osd_resources_',dir=root/'osd_sim_input
         try:run(bad)
         except ValueError:pass
         else:raise AssertionError('Invalid resource accepted: '+key)
-    for bad in [dict(items=[]),dict(items=[config['items'][0]]*2),dict(items=[dict(id=4,title='',description='')])]:
+    sparse=run(dict(items=[dict(id=4,title='丙',description='丁')]))
+    assert len(sparse['items'])==32 and sparse['items'][4]['title']=='丙'
+    for bad in [dict(items=[]),dict(items=[config['items'][0]]*2),
+                dict(items=[dict(id=32,title='坏',description='值')])]:
         try:run(bad)
         except ValueError:pass
         else:raise AssertionError('Invalid IDs accepted')

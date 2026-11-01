@@ -6,6 +6,7 @@ module frame_fifo_read
 	parameter ADDR_BITS              = 21,
 	parameter BURST_BITS             = 9,
 	parameter FIFO_DEPTH             = 512,
+	parameter USED_WIDTH             = 9,
 	parameter BURST_SIZE             = 128
 )               
 (
@@ -37,7 +38,7 @@ module frame_fifo_read
 	input[1:0]                       read_addr_index,            // select valid base address from read_addr_0 read_addr_1 read_addr_2 read_addr_3
 	input[ADDR_BITS - 1:0]           read_len,                   // data read module read request data length
 	output reg                       fifo_aclr,                  // to fifo asynchronous clear
-	input[BURST_BITS - 1:0]         wrusedw                     // from fifo write used words
+	input[USED_WIDTH - 1:0]         wrusedw                     // from fifo write used words
 
 );
 localparam ONE                       = 256'd1;                   //256 bit '1'   you can use ONE[n-1:0] for n bit '1'

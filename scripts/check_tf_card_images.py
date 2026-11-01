@@ -1,165 +1,149 @@
 #!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-r"""
-check_tf_card_images.py —— 上板前检查 TF 卡里的图片能不能被工程正确读取
+"""Validate the FPGA TF-card media package without modifying it."""
 
-为什么需要它
-------------
-FPGA 端 bmp_read 对 BMP 的要求很死：640×480、24 位、非压缩，而且它不认扩展名、
-只认文件头。图片"能打开"不等于"FPGA 能读"。这个脚本只读不改，几秒就能告诉你
-哪张图有问题、问题在哪，避免上板后黑屏/花屏再回头找。
-
-检查内容
---------
-1) 文件头是不是 "BM"（PNG/JPG 改名成 .bmp 的，这里就会露馅）
-2) 位深是不是 24 位、压缩方式是不是 0（非压缩）
-3) 分辨率是不是 640×480（工程的 bmp_width/bmp_height 写死 640/480）
-4) 像素数据偏移、文件长度声明值与实际长度是否一致
-5) 高度是正还是负：负数代表"自上而下"存储，上板会**上下翻转**
-6) 文件数量：工程只扫描前 4 张，多于 4 张的会被忽略
-
-用法
-----
-    python check_tf_card_images.py E:                  # 检查 E 盘根目录
-    python check_tf_card_images.py E:\ --all-dirs      # 连子目录一起查
-    python check_tf_card_images.py D:\some\folder      # 也可以直接给文件夹
-"""
+from __future__ import annotations
 
 import argparse
-import glob
-import os
+import re
 import struct
-import sys
-
-WANT_W, WANT_H = 640, 480
-
-# 防止在中文 Windows 的 GBK 控制台下因为个别字符编码不了而直接崩掉
-try:
-    sys.stdout.reconfigure(errors="replace")
-except Exception:
-    pass
+import wave
+from pathlib import Path
 
 
-def u16(b, o):
-    return struct.unpack_from("<H", b, o)[0]
+BMP_RE = re.compile(r"^01(0[1-9]|[12][0-9]|3[0-2])\.BMP$", re.IGNORECASE)
+WAV_RE = re.compile(r"^02(0[1-9]|[12][0-9]|3[0-2])\.WAV$", re.IGNORECASE)
 
 
-def u32(b, o):
-    return struct.unpack_from("<I", b, o)[0]
+def u16(data: bytes, offset: int) -> int:
+    return struct.unpack_from("<H", data, offset)[0]
 
 
-def i32(b, o):
-    return struct.unpack_from("<i", b, o)[0]
+def u32(data: bytes, offset: int) -> int:
+    return struct.unpack_from("<I", data, offset)[0]
 
 
-def check_one(path):
-    """返回 (状态, 说明)。状态: OK / WARN / BAD"""
-    with open(path, "rb") as f:
-        head = f.read(64)
+def i32(data: bytes, offset: int) -> int:
+    return struct.unpack_from("<i", data, offset)[0]
+
+
+def check_bmp(path: Path) -> list[str]:
+    problems = []
+    head = path.read_bytes()[:54]
     if len(head) < 54:
-        return "BAD", "文件太小，连 54 字节的 BMP 头都不够"
-    if head[0:2] != b"BM":
-        return "BAD", f"文件头不是 'BM'（是 {head[0:2]!r}），不是标准 BMP"
-
-    file_len_decl = u32(head, 2)
-    data_off = u32(head, 10)
-    w = i32(head, 18)
-    h = i32(head, 22)
-    bpp = u16(head, 28)
-    comp = u32(head, 30)
-    actual = os.path.getsize(path)
-
-    notes = []
-    status = "OK"
-
-    if w != WANT_W or abs(h) != WANT_H:
-        status = "BAD"
-        notes.append(f"分辨率 {w}×{abs(h)}，工程要 {WANT_W}×{WANT_H}")
-    if bpp != 24:
-        status = "BAD"
-        notes.append(f"{bpp} 位，工程要 24 位")
-    if comp != 0:
-        status = "BAD"
-        notes.append(f"压缩方式 {comp}，工程要 0（非压缩）")
-
-    need = data_off + ((w * 3 + 3) // 4) * 4 * abs(h) if w > 0 and h else 0
-    if need and actual < need:
-        status = "BAD"
-        notes.append(f"文件只有 {actual} 字节，按头信息至少需要 {need} 字节（像素数据缺）")
-    if file_len_decl and file_len_decl != actual:
-        if status == "OK":
-            status = "WARN"
-        notes.append(f"头部声明长度 {file_len_decl} 与实际 {actual} 不一致")
-    if w < 0:
-        status = "BAD"
-        notes.append("宽度为负，异常")
-    if h < 0:
-        if status == "OK":
-            status = "WARN"
-        notes.append("高度为负（自上而下存储），上板可能上下翻转")
-
-    info = f"{w}×{abs(h)}, {bpp}bit, comp={comp}, {actual} 字节"
-    return status, info + ("  ；" + "；".join(notes) if notes else "")
+        return ["文件不足 54 字节"]
+    if head[:2] != b"BM":
+        return ["文件头不是 BM"]
+    declared_size = u32(head, 2)
+    data_offset = u32(head, 10)
+    width = i32(head, 18)
+    height = i32(head, 22)
+    planes = u16(head, 26)
+    bits = u16(head, 28)
+    compression = u32(head, 30)
+    actual_size = path.stat().st_size
+    if width != 640 or height != 480:
+        problems.append(f"尺寸 {width}x{height}，要求 640x480")
+    if planes != 1:
+        problems.append(f"planes={planes}")
+    if bits != 24:
+        problems.append(f"位深 {bits}，要求 24")
+    if compression != 0:
+        problems.append(f"压缩方式 {compression}，要求 BI_RGB")
+    if data_offset < 54:
+        problems.append(f"像素偏移异常 {data_offset}")
+    row_bytes = (640 * 3 + 3) // 4 * 4
+    required = data_offset + row_bytes * abs(height) if height else 0
+    if actual_size < required:
+        problems.append(f"文件截断：{actual_size} < {required}")
+    if declared_size != actual_size:
+        problems.append(f"头部长度 {declared_size} != 实际 {actual_size}")
+    return problems
 
 
-def main():
-    ap = argparse.ArgumentParser(description="只读检查 TF 卡图片是否符合本工程要求")
-    ap.add_argument("target", help="TF 卡盘符（如 E:）或图片文件夹")
-    ap.add_argument("--all-dirs", action="store_true",
-                    help="连子目录一起检查（FPGA 是按物理扇区扫描的，子目录里的图也会被扫到）")
-    args = ap.parse_args()
-
-    root = args.target
-    if root.endswith(":") or root.endswith(":\\") or root.endswith(":/"):
-        root = root.rstrip("\\/") + os.sep
-    if not os.path.exists(root):
-        print(f"[错误] 找不到路径：{root}")
-        print("       请先确认 TF 卡已插好并在“此电脑”里能看到盘符。")
-        sys.exit(1)
-
-    pattern = os.path.join(root, "**", "*.bmp") if args.all_dirs else os.path.join(root, "*.bmp")
-    files = sorted(glob.glob(pattern, recursive=args.all_dirs))
-
-    print("=" * 72)
-    print(f"目标：{os.path.abspath(root)}")
-    print(f"找到 BMP：{len(files)} 个" + ("（含子目录）" if args.all_dirs else "（仅根目录）"))
-    print("=" * 72)
-
-    if not files:
-        print("没有任何 .bmp 文件 —— FPGA 会一直找不到图片（数码管状态码停在扫描相关值）。")
-        sys.exit(2)
-
-    bad = warn = 0
-    for i, p in enumerate(files):
-        rel = os.path.relpath(p, root)
+def check_wav(path: Path) -> list[str]:
+    problems = []
+    size = path.stat().st_size
+    header = path.read_bytes()[:44]
+    if len(header) != 44:
+        return ["文件不足 44 字节"]
+    if header[:4] != b"RIFF" or header[8:12] != b"WAVE":
+        problems.append("不是 RIFF/WAVE")
+    if header[12:16] != b"fmt " or header[36:40] != b"data":
+        problems.append("不是规范 44 字节 PCM WAV")
+    if u32(header, 4) + 8 != size:
+        problems.append("RIFF 长度与文件大小不一致")
+    if u16(header, 20) != 1:
+        problems.append("编码不是 PCM")
+    if u16(header, 22) != 1:
+        problems.append("不是单声道")
+    if u32(header, 24) != 8000:
+        problems.append("采样率不是 8000 Hz")
+    if u32(header, 28) != 16000:
+        problems.append("byte rate 不是 16000")
+    if u16(header, 32) != 2 or u16(header, 34) != 16:
+        problems.append("不是 16-bit / block-align 2")
+    if u32(header, 40) != size - 44:
+        problems.append("data 长度与文件大小不一致")
+    if u32(header, 40) > 24576 * 2:
+        problems.append("音频超过 24576 个样点（3.072 秒）")
+    if size >= 44:
         try:
-            status, info = check_one(p)
-        except Exception as e:
-            status, info = "BAD", f"读取失败：{e}"
-        if status == "BAD":
-            bad += 1
-        elif status == "WARN":
-            warn += 1
-        mark = {"OK": "[可用]", "WARN": "[注意]", "BAD": "[不可用]"}[status]
-        tag = f"[第 {i+1} 张]" if i < 4 else "[第 5 张起, 会被忽略]"
-        print(f"{mark} {tag} {rel}")
-        print(f"        {info}")
+            with wave.open(str(path), "rb") as wav:
+                if wav.getnframes() > 24576:
+                    problems.append("wave 帧数超过硬件缓冲")
+        except Exception as exc:
+            problems.append(f"wave 解析失败：{exc}")
+    return problems
 
-    print("-" * 72)
-    if len(files) > 4:
-        print(f"[提示] 共 {len(files)} 张，工程只扫描前 4 张，其余会被忽略。")
-    print(f"结论：可用 {len(files) - bad - warn} 张，需注意 {warn} 张，不可用 {bad} 张")
 
-    if bad:
-        print("")
-        print("不可用的图片请用 scripts/convert_images_to_bmp.py 转成 640×480、24 位、非压缩 BMP。")
-    print("")
-    print("顺序说明：FPGA 按物理扇区顺序扫描，扫描顺序不一定等于文件名顺序。")
-    print("想保证“第 N 张图 ↔ 第 N 段音频”可复现，请用 scripts/sync_to_sd.py 重写一次卡。")
-    print("另外：如果卡里以前删过图片，底层扇区可能残留旧图数据，会被误读。")
-    print("      换图务必用 sync_to_sd.py（先破坏旧文件头再清空），不要手工删了再拷。")
+def main() -> None:
+    parser = argparse.ArgumentParser(description="只读校验 32 图 + 32 WAV 媒体包")
+    parser.add_argument("target", type=Path, help="TF 卡根目录或包含媒体包的目录")
+    parser.add_argument("--allow-partial", action="store_true", help="允许少于 32 组素材")
+    args = parser.parse_args()
+    root = args.target.resolve()
+    if not root.is_dir():
+        raise SystemExit(f"目录不存在：{root}")
 
-    sys.exit(1 if bad else 0)
+    all_files = {p.name.upper(): p for p in root.iterdir() if p.is_file()}
+    bmp_names = sorted(name for name in all_files if BMP_RE.fullmatch(name))
+    wav_names = sorted(name for name in all_files if WAV_RE.fullmatch(name))
+    expected_bmp = {f"{101 + i:04d}.BMP" for i in range(32)}
+    expected_wav = {f"{201 + i:04d}.WAV" for i in range(32)}
+    missing_bmp = sorted(expected_bmp - set(bmp_names))
+    missing_wav = sorted(expected_wav - set(wav_names))
+
+    failures = 0
+    print(f"目录：{root}")
+    print(f"BMP：{len(bmp_names)}；WAV：{len(wav_names)}")
+    if not args.allow_partial and (missing_bmp or missing_wav):
+        print(f"缺少 BMP：{', '.join(missing_bmp) or '无'}")
+        print(f"缺少 WAV：{', '.join(missing_wav) or '无'}")
+        failures += 1
+    if bmp_names != sorted(expected_bmp & set(bmp_names)):
+        print("发现不在 0101-0132 范围内的 BMP 命名")
+        failures += 1
+    if wav_names != sorted(expected_wav & set(wav_names)):
+        print("发现不在 0201-0232 范围内的 WAV 命名")
+        failures += 1
+
+    for name in bmp_names:
+        problems = check_bmp(all_files[name])
+        print(f"[{'OK' if not problems else 'BAD'}] {name}")
+        for problem in problems:
+            print(f"      {problem}")
+        failures += bool(problems)
+    for name in wav_names:
+        problems = check_wav(all_files[name])
+        print(f"[{'OK' if not problems else 'BAD'}] {name}")
+        for problem in problems:
+            print(f"      {problem}")
+        failures += bool(problems)
+
+    if failures:
+        print(f"校验失败，共 {failures} 项问题。")
+        raise SystemExit(1)
+    print("校验通过。可以把 TF 卡插入开发板。")
 
 
 if __name__ == "__main__":

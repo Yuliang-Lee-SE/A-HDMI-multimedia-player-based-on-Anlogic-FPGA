@@ -94,6 +94,8 @@ module audio_rom_player #(
     reg  [7:0]  S_rom_d;          // ROM 数据延迟一拍，保证地址与数据对齐
 
     wire [7:0]  S_gain = S_gain_acc[15:8];
+    reg  signed [23:0] S_lp;
+    reg  signed [23:0] S_lp2;
 
     // 源推进（分数累加器）
     wire [23:0] S_src_sum  = S_src_acc + SRC_INC24;
@@ -130,6 +132,13 @@ module audio_rom_player #(
         endcase
     end
     wire signed [23:0] S_out = (ENABLE_MUTE && !enabled_lat) ? 24'sd0 : S_vol;
+    // Remove most of the 8 kHz zero-order-hold image before HDMI output.
+    wire signed [24:0] S_lp_delta = S_out - S_lp;
+    wire signed [23:0] S_lp_next  = S_lp +
+                                    (S_lp_delta - (S_lp_delta >>> 2));
+    wire signed [24:0] S_lp2_delta = S_lp_next - S_lp2;
+    wire signed [23:0] S_lp2_next  = S_lp2 +
+                                     (S_lp2_delta - (S_lp2_delta >>> 2));
 
     assign O_rom_addr = S_track_base + {{(16-POS_W){1'b0}}, S_pos};
 
@@ -159,6 +168,8 @@ module audio_rom_player #(
             S_gain_acc    <= 16'd0;      // 复位后从 0 淡入，避免上电爆音
             S_fade_state  <= ST_FADE_IN;
             S_sw_req      <= 1'b0;
+            S_lp          <= 24'sd0;
+            S_lp2         <= 24'sd0;
         end else begin
             // 跨域同步链
             S_idx_meta<=I_track_idx;S_idx_sync<=S_idx_meta;
@@ -226,9 +237,11 @@ module audio_rom_player #(
                         end
 
                         // ---- 下一个 24bit 采样 ----
-                        S_sample_next <= S_out;
+                        S_lp          <= S_lp_next;
+                        S_lp2         <= S_lp2_next;
+                        S_sample_next <= S_lp2_next;
                         S_sample_word <= S_sample_next;
-                        S_shift_reg   <= {S_out[23:0], 40'd0};
+                        S_shift_reg   <= {S_lp2_next, 40'd0};
                     end
                 end else
                     S_bit_cnt <= S_bit_cnt + 6'd1;

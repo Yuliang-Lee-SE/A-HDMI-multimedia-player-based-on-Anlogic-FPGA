@@ -66,7 +66,7 @@ reg cs,nCS_q,wr_req; reg [7:0] tx; wire [7:0] rx; wire ack;
  reg [7:0] buffer_q;reg cancel_hit_q;
  // Keeping the wide timeout comparisons out of the protocol state mux removes
  // their marginal 100 MHz path without changing when the timeout takes effect.
- reg read_active_timeout,init_phase_timeout;
+ reg read_active_timeout,init_phase_timeout,power_timeout;
  wire [8:0] buffer_raddr=((|(state & FINISH)) && !cancel_valid && emit_pos<511) ? emit_pos[8:0]+1'b1:emit_pos[8:0];
  always @(posedge clk) begin
   buffer_q<=buffer[buffer_raddr];
@@ -116,7 +116,7 @@ always @(posedge clk or posedge rst)
   if(rst) begin
    state<=POWER;timer<=0;init_timer<=0;read_timer<=0;token_timer<=0;
    media_ready<=0;media_sectors<=0;init_error<=0;block_addressed<=0;init_diagnostic<=0;init_last_rx<=8'hff;
-   read_active_timeout<=0;init_phase_timeout<=0;
+   read_active_timeout<=0;init_phase_timeout<=0;power_timeout<=0;
    cs<=1;wr_req<=0;tx<=255;divider<=LOW_DIV;gap<=0;active<=0;
    rsp_tag<=0;rsp_valid<=0;rsp_data<=0;rsp_done<=0;rsp_error<=0;
    count<=0;attempt<=0;v2<=0;phase<=0;crc<=0;csd<=0;
@@ -127,6 +127,8 @@ always @(posedge clk or posedge rst)
    else if(!(|(state & FAILED))) init_timer<=init_timer+1;
    if(active) read_timer<=read_timer+1;
    read_active_timeout<=active && (read_timer>=READ_CYCLES-1);
+   if((|(state & POWER))) power_timeout<=(timer>=POWER_CYCLES-1);
+   else power_timeout<=0;
    init_phase_timeout<=!media_ready && !init_error &&
     !(|(state & FAILED)) && !(|(state & ABORT)) &&
     (init_timer>=INIT_CYCLES-1);
@@ -152,7 +154,7 @@ always @(posedge clk or posedge rst)
    end else case(1'b1) // synthesis parallel_case
     (|(state & BYTE_WAIT)): if(ack) begin wr_req<=0;gap<=3;state<=BYTE_GAP;end
     (|(state & BYTE_GAP)): if(gap==0) state<=resume;else gap<=gap-1;
-    (|(state & POWER)): if(timer>=POWER_CYCLES) begin count<=0;state<=CLOCKS;end else timer<=timer+1;
+    (|(state & POWER)): if(power_timeout) begin count<=0;state<=CLOCKS;end else timer<=timer+1;
     (|(state & CLOCKS)): byte_io(255,CLOCKED);
     (|(state & CLOCKED)): if(count==9) command_io(0,0,0);else begin count<=count+1;state<=CLOCKS;end
     (|(state & CMD_PRE)): begin cs<=1;byte_io(255,CMD_SELECT);end

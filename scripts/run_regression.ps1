@@ -82,7 +82,7 @@ $allCases = @(
     @{ Id = 's3'; Tb = 'tb_frame_fifo';       Name = 'S3 帧缓存读写' },
     @{ Id = 's4'; Tb = 'tb_audio_i2s';        Name = 'S4 I2S 音频链路' },
     @{ Id = 's5'; Tb = 'tb_video_axis';       Name = 'S5 视频时序 + AXIS' },
-    @{ Id = 's6'; Tb = 'tb_audio_rom_player'; Name = 'S6 片内 ROM 语音播放器' },
+    @{ Id = 's6'; Tb = 'tb_wav_pcm_loader'; Name = 'S6 TF 卡 WAV/PCM 加载器' },
     @{ Id = 's7'; Tb = 'tb_key_control';      Name = 'S7 按键/轮播/音画联动' }
 )
 

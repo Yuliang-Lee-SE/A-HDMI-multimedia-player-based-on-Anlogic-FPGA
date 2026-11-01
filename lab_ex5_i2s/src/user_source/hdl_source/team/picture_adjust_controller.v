@@ -21,7 +21,9 @@ module picture_adjust_controller #(
     output reg signed [7:0] brightness,
     output reg [7:0]  contrast,
     output reg [3:0]  sharpness,
-    output reg        auto_key_o
+    output reg        auto_key_o,
+    output reg [4:0]  rotation_period_s,
+    output reg        rotation_period_toggle
 );
 
 localparam integer DEBOUNCE_TICKS =
@@ -69,7 +71,7 @@ always @(posedge clk or posedge rst) begin
                 k4_long_fired <= 1'b0;
             end else if (!k4_long_fired) begin
                 if (adjust_mode) begin
-                    if (parameter_index == 2'd2)
+                    if (parameter_index == 2'd3)
                         parameter_index <= 2'd0;
                     else
                         parameter_index <= parameter_index + 2'd1;
@@ -158,14 +160,20 @@ always @(posedge clk or posedge rst) begin
         brightness <= 8'sd0;
         contrast   <= 8'd100;
         sharpness  <= 4'd0;
+        rotation_period_s <= 5'd3;
+        rotation_period_toggle <= 1'b0;
     end else if (k3_increment) begin
         case (parameter_index)
             2'd0: if (brightness < 8'sd64)
                       brightness <= brightness + 8'sd8;
             2'd1: if (contrast < 8'd150)
                       contrast <= contrast + 8'd10;
-            default: if (sharpness < 4'd8)
+            2'd2: if (sharpness < 4'd8)
                       sharpness <= sharpness + 4'd1;
+            default: if (rotation_period_s < 5'd30) begin
+                         rotation_period_s <= rotation_period_s + 5'd1;
+                         rotation_period_toggle <= ~rotation_period_toggle;
+                     end
         endcase
     end else if (k2_decrement) begin
         case (parameter_index)
@@ -173,8 +181,12 @@ always @(posedge clk or posedge rst) begin
                       brightness <= brightness - 8'sd8;
             2'd1: if (contrast > 8'd50)
                       contrast <= contrast - 8'd10;
-            default: if (sharpness > 4'd0)
+            2'd2: if (sharpness > 4'd0)
                       sharpness <= sharpness - 4'd1;
+            default: if (rotation_period_s > 5'd1) begin
+                         rotation_period_s <= rotation_period_s - 5'd1;
+                         rotation_period_toggle <= ~rotation_period_toggle;
+                     end
         endcase
     end
 end

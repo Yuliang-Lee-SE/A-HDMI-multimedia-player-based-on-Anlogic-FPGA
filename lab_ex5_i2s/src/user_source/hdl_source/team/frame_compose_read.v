@@ -8,6 +8,7 @@ module frame_compose_read #(
     parameter BURST_BITS = 9,
     parameter BURST_SIZE = 256,
     parameter FIFO_DEPTH = 512,
+    parameter USED_WIDTH = 9,
     parameter H_ACTIVE   = 640,
     parameter V_ACTIVE   = 480,
     parameter BLINDS     = 8
@@ -37,7 +38,7 @@ module frame_compose_read #(
     input [8:0]             read_progress,
 
     output reg              fifo_aclr,
-    input [BURST_BITS-1:0]  wrusedw,
+    input [USED_WIDTH-1:0]  wrusedw,
     output                  fifo_we,
     output [31:0]           fifo_data
 );
@@ -56,7 +57,7 @@ reg read_req_d0, read_req_d1, read_req_d2;
 reg [ADDR_BITS-1:0] read_len_d0, read_len_d1, read_len_latch;
 reg [ADDR_BITS-1:0] read_cnt;
 reg [17:0] issue_count;
-reg [3:0] rd_delay;
+reg [17:0] response_count;
 reg app_rd_arm;
 reg app_rd_en_q;
 reg slide_latch;
@@ -76,12 +77,12 @@ reg fade_product_valid, blend_stage2_we;
 reg [31:0] blended_pixel;
 reg fifo_room_ready;
 
-wire [8:0] room_limit = FIFO_DEPTH - BURST_SIZE;
+wire [USED_WIDTH-1:0] room_limit = FIFO_DEPTH - BURST_SIZE;
 wire [18:0] issue_limit = fade_latch ? (BURST_SIZE*2) : BURST_SIZE;
 wire burst_finish =
     (state == S_BURST) &&
     (issue_count >= issue_limit) &&
-    (rd_delay == 4'd10);
+    (response_count >= issue_limit);
 wire [17:0] slide_width_calc = H_ACTIVE * read_progress;
 wire [11:0] slide_width = slide_width_calc[17:8];
 wire [15:0] blinds_reveal_calc = BLADE_HEIGHT * read_progress;
@@ -136,7 +137,7 @@ always @(posedge mem_clk or posedge rst) begin
         app_rd_arm     <= 1'b0;
         app_rd_en_q    <= 1'b0;
         issue_count    <= 18'd0;
-        rd_delay       <= 4'd0;
+        response_count <= 18'd0;
         slide_latch    <= 1'b0;
         blinds_latch   <= 1'b0;
         fade_latch     <= 1'b0;
@@ -213,7 +214,7 @@ always @(posedge mem_clk or posedge rst) begin
                 end else if (fifo_room_ready) begin
                     app_rd_arm  <= 1'b1;
                     issue_count <= 18'd0;
-                    rd_delay    <= 4'd0;
+                    response_count <= 18'd0;
                     fade_send_phase <= 1'b0;
                     state       <= S_BURST;
                 end
@@ -222,11 +223,8 @@ always @(posedge mem_clk or posedge rst) begin
             S_BURST: begin
                 if (app_rd_en_q)
                     issue_count <= issue_count + 18'd1;
-
-                if (app_rd_en_q)
-                    rd_delay <= 4'd0;
-                else if (issue_count >= BURST_SIZE && rd_delay < 4'd10)
-                    rd_delay <= rd_delay + 4'd1;
+                if (Sdr_rd_en)
+                    response_count <= response_count + 18'd1;
 
                 if (burst_finish) begin
                     app_rd_arm <= 1'b0;

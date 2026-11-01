@@ -33,6 +33,7 @@ module tb_stage3_e2e;
  wire [20:0] app_waddr,app_raddr;wire [3:0] app_dm;wire [31:0] protocol_errors;
  reg app_ref_req=0;integer ref_cycles=0;
     tf_file_player #(.DEBOUNCE_MS(1)) dut(.clk(clk),.rst(rst),.key_next(1'b0),.key_auto(1'b1),.key_zoom(1'b1),
+ .rotation_period_s(5'd3),.rotation_period_toggle(1'b0),
   .write_ready(ready),.write_req_ack(ack),.write_finish_toggle(finish_toggle),.write_abort_done(abort_done),
   .write_req(wr_req),.write_en(wr_en),.write_data(wr_data),.write_abort(abort_req),
   .write_buf_idx(wr_bank),.disp_buf_idx(disp_bank),.display_valid(display_valid),

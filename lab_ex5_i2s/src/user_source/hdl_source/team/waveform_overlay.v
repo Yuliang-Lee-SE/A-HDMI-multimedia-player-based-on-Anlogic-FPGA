@@ -34,9 +34,9 @@ module waveform_overlay #(
     parameter WAV_H      = 72,      // 窗口高度
     parameter BUF_AW     = 8,       // 缓冲地址位宽，深度 = 2^BUF_AW = 256 点
     parameter DECIM      = 6,       // 48kHz -> 8kHz
-    parameter BORDER_COLOR = 24'h404040,
-    parameter AXIS_COLOR   = 24'h606060,
-    parameter WAVE_COLOR   = 24'h00FFFF
+    parameter BORDER_COLOR = 24'h6B5A43,
+    parameter AXIS_COLOR   = 24'h8F7958,
+    parameter WAVE_COLOR   = 24'hD2AC68
 )(
     input  wire        clk,
     input  wire        rst,
