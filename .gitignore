@@ -1,9 +1,4 @@
-# ==========================================================
-# FPGA / 安路 Tang Dynasty (TD) 项目 .gitignore
-# 原则：忽略可再生的构建与仿真输出，保留设计源文件
-# ==========================================================
-
-# ---------- TD 构建产物 ----------
+# TD build outputs
 *.bit
 *.rbf
 *.jed
@@ -11,20 +6,18 @@
 *.rpt
 *.log
 *.logfile
-
-# TD 工程缓存、布局布线中间目录与备份
-# 不同 TD 版本目录名可能不同，首次构建后可用 git status 继续补充
-*.cache/
-*_backup/
-*_synth/
-*_impl/
-*_pnr/
-*_timing/
-*_place_route/
-work/
 *.bak
+*_Runs/
+work/
+*.qdb
+*.qpg
+*.qtl
+*.vstf
+*.dmp
+.lock.f
+.recent_user_depot.ini
 
-# ---------- 仿真输出 ----------
+# Simulation outputs
 *.vcd
 *.wlf
 *.fsdb
@@ -39,40 +32,21 @@ csrc/
 transcript
 ucli.key
 
-# ---------- 编辑器与个人配置 ----------
+# Editor and OS files
 .vscode/
 .idea/
-.metadata/
 *.swp
 *~
 *.user
-
-# ---------- 操作系统临时文件 ----------
 Thumbs.db
 desktop.ini
 .DS_Store
 
-# ---------- 生成的大体积资源目录（按需启用）----------
-# 如果展品图片/音频由脚本从 assets_src 生成，可只提交源文件和脚本：
-# assets/generated/
-# res_generated/
-#
-# 如确需提交 BMP/WAV，建议使用 Git LFS，而不是直接塞进普通 Git：
-# git lfs track "*.bmp"
-# git lfs track "*.wav"
-
-# ---------- lab_ex5 例程构建产物 ----------
-lab_ex5_i2s/src/td_project/log/
-lab_ex5_i2s/src/td_project/*_Runs/
-*.qdb
-*.qpg
-*.qtl
-*.vstf
-*.dmp
-.lock.f
-.recent_user_depot.ini
-
-# TD 本机设备配置
-lab_ex5_i2s/src/td_project/HDMI1.4b_Transmitter_v1.0_devicesetting.cfg
-*.cr.mti
-lab_ex5_i2s/sim/*.mpf
+# OSD generator previews and intermediate files
+lab_ex5_i2s/osd_assets/manifest.json
+lab_ex5_i2s/osd_assets/text_ids.json
+lab_ex5_i2s/osd_assets/layers_cases.json
+lab_ex5_i2s/osd_assets/layers_preview*.png
+lab_ex5_i2s/osd_assets/preview_*.png
+lab_ex5_i2s/osd_assets/scroll_preview.gif
+lab_ex5_i2s/osd_sim_inputs/
