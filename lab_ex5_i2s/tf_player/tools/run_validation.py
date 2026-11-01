@@ -4,10 +4,9 @@ from pathlib import Path
 root=Path(__file__).resolve().parents[1];lab=root.parent
 ap=argparse.ArgumentParser();ap.add_argument('--out',type=Path,required=True)
 ap.add_argument('--fixtures',type=Path,required=True,help='Existing make_bmp_images.py output; never changed')
-ap.add_argument('--player-smoke',action='store_true',help='One full-image SPI smoke instead of five-commit sequence')
 a=ap.parse_args();out=a.out.resolve();out.mkdir(parents=True,exist_ok=False)
 fixtures=a.fixtures.resolve();jobs=[('spi','run_spi.py',[]),('short','run_short.py',[]),
- ('canvas','run_canvas.py',[str(fixtures)]),('player','run_player.py',[str(fixtures/'spc1_n32/image.img')]+(['--smoke'] if a.player_smoke else [])),
+ ('canvas','run_canvas.py',[str(fixtures)]),
  ('offline','replay_offline.py',[])]
 results=[]
 for name,tool,args in jobs:

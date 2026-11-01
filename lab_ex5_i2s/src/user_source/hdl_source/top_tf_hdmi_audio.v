@@ -30,7 +30,6 @@ parameter MEM_DATA_BITS = 32;
 // Sorted media index: BMPs 0101-0132, then WAVs 0201-0232.
 parameter TF_MAX_FILES = 64;
 parameter ADDR_BITS     = 21;
-parameter BUSRT_BITS    = 10;
 // Diagnostic switch: force the normal single-bank path without transitions.
 parameter integer DIAG_BYPASS_TRANSITION = 0;
 parameter [ADDR_BITS-1:0] FRAME_PIXELS = 307200;   // 640*480，与 frame_read_write 的地址端口同宽
@@ -54,10 +53,6 @@ wire de;
 
 wire [23:0] vout_data_raw;
 wire [23:0] vout_data;
-wire [23:0] osd_rgb;
-wire        osd_hs;
-wire        osd_vs;
-wire        osd_de;
 wire        osd_auto_mode_sd;
 wire [13:0] display_asset_sd;
 wire [6:0] display_ordinal_sd;
@@ -374,7 +369,7 @@ transition_mode_control u_transition_mode_control (
 );
 
 // ===================== TF 多图扫描与缓存（双缓冲） =====================
-tf_file_player #(.MAX_FILES(TF_MAX_FILES)) sd_card_bmp_m0(
+tf_file_player #(.MAX_FILES(TF_MAX_FILES)) u_tf_file_player(
     .clk               (sd_card_clk),
     .rst               (rst_tf),
     .key_next          (next_press_sd),

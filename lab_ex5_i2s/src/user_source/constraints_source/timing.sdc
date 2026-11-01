@@ -71,7 +71,7 @@ set_clock_groups -asynchronous \
 #      2026-10-10 布局布线报告（_Runs/phy_1/HDMI1.4b_Transmitter_v1.0_pr.timing）里
 #      全局 SWNS -2.037ns / STNS -6.103ns 只有 3 条违例，全部落在
 #      Path Group "sd_card_clk -> audio_mclk"：
-#        Begin Point : sd_card_bmp_m0/audio_track_idx_reg[0]_syn_7.clk
+#        Begin Point : u_tf_file_player/audio_track_idx_reg[0]_syn_7.clk
 #        net         : audio_track_idx[1:0] / audio_track_toggle（sd_card_bmp.v）
 #      这几条路径的真实数据延迟只有约 0.5ns，工具却按 Fmax 3.05MHz 计
 #      （= 327.877ns 周期）—— 它是按两个相位不相关时钟的最坏对齐算的，

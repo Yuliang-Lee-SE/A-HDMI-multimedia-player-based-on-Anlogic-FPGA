@@ -103,7 +103,7 @@ module tf_file_player #(
  .in_valid(bvalid && source_ready && loading && !failed),.in_rgb(bpixel),
  .out_valid(zvalid),.out_ready(source_ready && loading && !failed),.out_rgb(zpixel),
  .out_last(),.out_frame_last(),.source_done(zsource),.output_done(zdone),.overflow(zoverflow));
- key_press_debounce #(.CLK_FREQ_HZ(CLK_FREQ_HZ),.DEBOUNCE_MS(DEBOUNCE_MS)) ka(clk,rst,key_auto,auto_press);
+ board_key_debounce #(.CLK_FREQ_HZ(CLK_FREQ_HZ),.DEBOUNCE_MS(DEBOUNCE_MS)) ka(clk,rst,key_auto,auto_press);
  // KEY3 short press keeps the zoom cycle; a 1.2 s hold becomes volume step.
  key_short_long #(.CLK_FREQ_HZ(CLK_FREQ_HZ),.DEBOUNCE_MS(DEBOUNCE_MS),
   .LONG_MS(VOLUME_LONG_MS)) kz(.clk(clk),.rst(rst),.button_in(key_zoom),

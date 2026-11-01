@@ -4,7 +4,7 @@ root=Path(__file__).resolve().parents[1];lab=root.parent;rtl=lab/'src/user_sourc
 out=root/'runs'/sys.argv[1];out.mkdir(parents=True,exist_ok=False)
 ms=Path('D:/j1573/modelsim/modelsim_ase/win32aloem')
 sources=[*sorted((root/'rtl').glob('*.sv')),
- *[rtl/s for s in ['SD/spi_master.v','SD/sd_card_bmp.v','SD/frame_fifo_write.v','team/bmp_center_zoom_2x.v','team/image_scaler_2x_pingpong.v','team/osd_display_commit.v','team/audio_rom_player.v','team/osd_text_renderer.v','team/osd_resources.v','osd_overlay.v','top_tf_hdmi_audio.v']],
+ *[rtl/s for s in ['SD/spi_master.v','team/bmp_center_zoom_2x.v','team/image_scaler_2x_pingpong.v','team/osd_display_commit.v','team/board_key_debounce.v','team/key_short_long.v']],
  root/'stage3/tb_list_boundary_ids.sv']
 def run(args,name):
  p=subprocess.run([str(ms/args[0]),*map(str,args[1:])],cwd=out,capture_output=True,text=True,errors='replace',timeout=180)

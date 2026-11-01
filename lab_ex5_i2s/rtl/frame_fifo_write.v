@@ -11,7 +11,9 @@ module frame_fifo_write
 	parameter FRAME_HEIGHT           = 480
 )               
 (
-	input                            rst,                  
+	input                            rst,
+    input                            abort_req,
+    output reg                       abort_done,
 	input                            mem_clk,                    // external memory controller user interface clock
 	input							 Sdr_init_done,
 	input							 Sdr_init_ref_vld,
@@ -80,7 +82,24 @@ reg App_wr_en_d0;
 
 wire into_burst;
 reg [BURST_BITS-1 : 0]rdusedw_r;
-assign into_burst = (((write_len_latch <= (rdusedw_r + write_cnt))||rdusedw_r > BURST_SIZE) && ~App_rd_busy);//当rd在突发时不会进入burst
+reg [2:0] abort_sync;
+always @(posedge mem_clk or posedge rst)
+ if(rst) abort_sync<=0;else abort_sync<={abort_sync[1:0],abort_req === 1'b1};
+localparam S_ABORT=6;
+localparam S_DRAIN=7;
+// A completed App burst first enters S_DRAIN. The local registered request
+// must be empty and the vendor controller must acknowledge idle, including
+// refresh. There is no fixed quiet-cycle delay hiding a physical write tail.
+wire controller_drained = !Sdr_busy && !Sdr_init_ref_vld && !App_wr_en && !App_wr_en_r;
+// Acknowledge the drained controller in its own domain before crossing to
+// the source. Hold the acknowledgement until the abort request is released.
+always @(posedge mem_clk or posedge rst)
+ if(rst) abort_done<=1'b0;
+ else if(state!=S_ABORT || !abort_sync[2]) abort_done<=1'b0;
+ else if(controller_drained) abort_done<=1'b1;
+// Start a new burst only after the vendor controller is idle. Do not
+// overlap a direction change with its physical tail or refresh handling.
+assign into_burst = (((write_len_latch <= (rdusedw_r + write_cnt))||rdusedw_r > BURST_SIZE) && ~App_rd_busy && !Sdr_busy && !Sdr_init_ref_vld);//当rd在突发时不会进入burst
 
 assign App_wr_addr = {App_wr_addr_r[ADDR_BITS - 1:0]};
 //assign O_wr_busy = (state != S_IDLE || (S_IDLE && write_req_d2));
@@ -200,7 +219,8 @@ begin
 			//idle state,waiting for write write_req_d2 == '1' goto the 'S_ACK'
 			S_IDLE:
 			begin
-				if(write_req_d2 == 1'b1 && Sdr_init_done)
+				if(abort_sync[2]) begin state<=S_ABORT;fifo_aclr<=1;end
+                else if(write_req_d2 == 1'b1 && Sdr_init_done)
 				begin
 					state <= S_ACK;
 				end
@@ -209,6 +229,8 @@ begin
 			//'S_ACK' state completes the write request response, the FIFO reset, the address latch, and the data length latch
 			S_ACK:
 			begin
+                if(abort_sync[2]) begin state<=S_ABORT;fifo_aclr<=1;write_req_ack<=0;end
+                else begin
 				//after write request revocation(write_req_d2 == '0'),goto 'S_CHECK_FIFO',write_req_ack goto '0'
 				if(write_req_d2 == 1'b0)
 				begin
@@ -238,11 +260,13 @@ begin
 				end
 				//write data counter reset, write_cnt <= 0;
 				write_cnt <= ZERO[ADDR_BITS - 1:0];
+				end
 			end
 			S_CHECK_FIFO:
 			begin
 				//if there is a write request at this time, enter the 'S_ACK' state
-				if(write_req_d2 == 1'b1)
+				if(abort_sync[2]) begin state<=S_ABORT;fifo_aclr<=1;end
+                else if(write_req_d2 == 1'b1)
 				begin
 					state <= S_ACK;
 				end
@@ -272,7 +296,8 @@ begin
 			S_WRITE_BURST_END:
 			begin
 				//if there is a write request at this time, enter the 'S_ACK' state
-				if(write_req_d2 == 1'b1)
+				if(abort_sync[2]) begin state<=S_ABORT;fifo_aclr<=1;end
+                else if(write_req_d2 == 1'b1)
 				begin
 					state <= S_ACK;
 				end
@@ -284,13 +309,23 @@ begin
 				end
 				else
 				begin
-					state <= S_END;
+						state <= S_DRAIN;
 				end
 			end
 			S_END:
 			begin
 				state <= S_IDLE;
 			end
+            S_ABORT: begin
+                App_wr_en_r<=0;write_req_ack<=0;fifo_aclr<=1;
+                if(!abort_sync[2] && !Sdr_busy && !App_wr_en) begin
+                    fifo_aclr<=0;state<=S_IDLE;
+                end
+            end
+            S_DRAIN: begin
+                if(abort_sync[2]) begin state<=S_ABORT;fifo_aclr<=1;end
+                else if(controller_drained) state<=S_END;
+            end
 			default:
 				state <= S_IDLE;
 		endcase
